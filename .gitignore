@@ -1,1 +1,7 @@
+build/
+dist/
 lib/
+test/
+arbol.dot
+arbol.png
+Errores.html
