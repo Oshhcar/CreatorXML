@@ -2,6 +2,7 @@ build/
 dist/
 lib/
 test/
+iconos/
 arbol.dot
 arbol.png
 Errores.html

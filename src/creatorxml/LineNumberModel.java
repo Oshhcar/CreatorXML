@@ -5,19 +5,14 @@
  */
 package creatorxml;
 
+import java.awt.Rectangle;
+
 /**
  *
  * @author oscar
  */
-public class CreatorXML {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-        Editor e = new Editor();
-        e.show();
-    }
+public interface LineNumberModel {
+    public int getNumberLines();
     
+    public Rectangle getLineRect(int line);
 }
