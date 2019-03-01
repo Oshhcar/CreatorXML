@@ -1,0 +1,229 @@
+package genericxml;
+
+import java_cup.runtime.Symbol;
+import java.util.ArrayList;
+import java.util.LinkedList;
+
+parser code
+{:
+	private Arbol arbol;
+	public String resultado="";
+	public int contador = 1;
+	
+	public Arbol getArbol(){
+		return arbol;
+	}
+	
+    @Override
+    public void syntax_error(Symbol s){
+        System.out.println("Error Sintactico en la Linea " + (s.right+1) +" Columna "+(s.left+1)+ ". Identificador " +s.value + " no reconocido." );
+		//AnalizadorError tmp = new AnalizadorError();
+		//tmp.setColumna(s.right+1);
+		//tmp.setLinea(s.left+1);
+		//tmp.setValor(s.value+"");
+		//tmp.setError("Sintáctico");
+        
+		//error.add(tmp);
+    }
+
+    @Override
+    public void unrecovered_syntax_error(Symbol s){
+        System.out.println("Error Sintactico Fatal en la Linea " + (s.right+1)+ " Columna "+(s.left+1)+". Identificador " + s.value + " no reconocido.");
+		//report_fatal_error("Error sintactico: <"+s.value+">", cur_token);
+	}
+:}
+
+action code
+{:
+
+:}
+
+terminal String tstring, textoPlano, entero, decimal, true_, false_, codigo;
+terminal mayorque, menorque, igual, diagonal;
+terminal importar_, ventana_, contenedor_, texto_, control_, listadatos_, dato_, defecto_, multimedia_, boton_, enviar_;
+terminal id_, tipo_, color_, accioninicial_, accionfinal_, x_, y_, alto_, ancho_, borde_, nombre_, fuente_, tam_;
+terminal negrita_, cursiva_, maximo_, minimo_, accion_, referencia_, path_, autoreproduccion_;
+
+non terminal INICIO;
+non terminal Arbol XML;
+non terminal LinkedList<Etiqueta> IMPORTS;
+non terminal Etiqueta IMPORT;
+non terminal LinkedList<Etiqueta> ETIQUETAS;
+non terminal String TEXTO_PLANO;
+non terminal LinkedList<Etiqueta> TAGS;
+non terminal Etiqueta TAG;
+non terminal Etiqueta VENTANA;
+non terminal Etiqueta CONTENEDOR;
+non terminal Etiqueta TEXTO;
+non terminal Etiqueta CONTROL;
+non terminal Etiqueta LISTADATOS;
+non terminal Etiqueta DATO;
+non terminal Etiqueta DEFECTO;
+non terminal Etiqueta MULTIMEDIA;
+non terminal Etiqueta BOTON;
+non terminal Etiqueta ENVIAR;
+non terminal LinkedList<Elemento> ELEMENT;
+non terminal LinkedList<Elemento> ELEMENTOS;  
+non terminal Elemento ELEMENTO;
+non terminal Elemento.Tipo ELEMENTO_TAG;
+non terminal Object VALORES;
+
+start with INICIO;
+
+INICIO ::= XML:xml 
+		{:
+			parser.arbol = xml;
+            System.out.println("genericXML OK");
+		:};
+
+XML ::= IMPORTS:r1 ETIQUETAS:r2{:RESULT = new Arbol(r1, r2);:}
+		| ETIQUETAS:r1 {:RESULT = new Arbol(null, r1);:};
+	
+IMPORTS ::= IMPORTS:r1 IMPORT:r2 {:RESULT = r1; RESULT.add(r2);:}
+		| IMPORT:r1{:RESULT = new LinkedList<>(); RESULT.add(r1);:};
+
+IMPORT ::= menorque importar_:r mayorque TEXTO_PLANO:text  menorque diagonal importar_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.IMPORTAR, text, rleft+1, rright+1, null, null);
+		:};
+
+		
+TEXTO_PLANO::= textoPlano:r2{:RESULT=r2.toString();:}
+			|{:RESULT=null;:};
+
+ETIQUETAS ::= TAGS:r1{:RESULT=r1;:}
+			|{:RESULT=null;:}
+			;
+			
+TAGS ::= TAGS:r1 TAG:r2{:RESULT = r1; RESULT.add(r2);:}
+		| TAG:r1{:RESULT=new LinkedList<>(); RESULT.add(r1);:};
+
+TAG ::=  VENTANA:r1 {:RESULT = r1;:}
+		|CONTENEDOR:r1 {:RESULT = r1;:}
+		|TEXTO:r1 {:RESULT = r1;:}
+		|CONTROL:r1 {:RESULT = r1;:}
+		|LISTADATOS:r1 {:RESULT = r1;:}
+		|DATO:r1 {:RESULT = r1;:}
+		|DEFECTO:r1 {:RESULT = r1;:}
+		|MULTIMEDIA:r1 {:RESULT = r1;:}
+		|BOTON:r1 {:RESULT = r1;:}
+		|ENVIAR:r1 {:RESULT = r1;:};
+
+VENTANA ::= menorque ventana_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 TAGS:r3 menorque diagonal ventana_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.VENTANA, r2, rleft+1, rright+1, r3, r1);
+		:}
+		| menorque ventana_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 menorque diagonal ventana_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.VENTANA, r2, rleft+1, rright+1, null, r1);
+		:};
+
+CONTENEDOR ::= menorque contenedor_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 TAGS:r3 menorque diagonal contenedor_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.CONTENEDOR, r2, rleft+1, rright+1, r3, r1);
+		:}
+		| menorque contenedor_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 menorque diagonal contenedor_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.CONTENEDOR, r2, rleft+1, rright+1, null, r1);
+		:};
+		
+TEXTO ::= menorque texto_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2  TAGS:r3 menorque diagonal texto_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.TEXTO, r2, rleft+1, rright+1, r3, r1);
+		:}
+		| menorque texto_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 menorque diagonal texto_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.TEXTO, r2, rleft+1, rright+1, null, r1);
+		:};
+		
+CONTROL ::= menorque control_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 TAGS:r3 menorque diagonal control_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.CONTROL, r2, rleft+1, rright+1, r3, r1);
+		:}
+		| menorque control_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 menorque diagonal control_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.CONTROL, r2, rleft+1, rright+1, null, r1);
+		:};
+
+LISTADATOS ::= menorque listadatos_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 TAGS:r3 menorque diagonal listadatos_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.LISTADATOS, r2, rleft+1, rright+1, r3, r1);
+		:}
+		| menorque listadatos_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 menorque diagonal listadatos_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.LISTADATOS, r2, rleft+1, rright+1, null, r1);
+		:};
+
+DATO ::= menorque dato_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 TAGS:r3 menorque diagonal dato_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.DATO, r2, rleft+1, rright+1, r3, r1);
+		:}
+		| menorque dato_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 menorque diagonal dato_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.DATO, r2, rleft+1, rright+1, null, r1);
+		:};
+		
+DEFECTO ::= menorque defecto_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 TAGS:r3 menorque diagonal defecto_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.DEFECTO, r2, rleft+1, rright+1, r3, r1);
+		:}
+		| menorque defecto_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2  menorque diagonal defecto_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.DEFECTO, r2, rleft+1, rright+1, null, r1);
+		:};
+
+MULTIMEDIA ::= menorque multimedia_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2  TAGS:r3 menorque diagonal multimedia_ mayorque TEXTO_PLANO:err{:
+				RESULT = new Etiqueta(Etiqueta.Tipo.MULTIMEDIA, r2, rleft+1, rright+1, r3, r1);
+			:}
+			| menorque multimedia_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 menorque diagonal multimedia_ mayorque TEXTO_PLANO:err{:
+				RESULT = new Etiqueta(Etiqueta.Tipo.MULTIMEDIA, r2, rleft+1, rright+1, null, r1);
+			:};
+		
+BOTON ::= menorque boton_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 TAGS:r3 menorque diagonal boton_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.BOTON, r2, rleft+1, rright+1, r3, r1);
+		:}
+		| menorque boton_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 menorque diagonal boton_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.BOTON, r2, rleft+1, rright+1, null, r1);
+		:};
+		
+ENVIAR ::= menorque enviar_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 TAGS:r3 menorque diagonal enviar_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.ENVIAR, r2, rleft+1, rright+1, r3, r1);
+		:}
+		| menorque enviar_:r ELEMENT:r1 mayorque TEXTO_PLANO:r2 menorque diagonal enviar_ mayorque TEXTO_PLANO:err{:
+			RESULT = new Etiqueta(Etiqueta.Tipo.ENVIAR, r2, rleft+1, rright+1, null, r1);
+		:};
+			
+ELEMENT ::= ELEMENTOS:r1{:RESULT=r1;:}
+			|{:RESULT=null;:}
+			;
+			
+ELEMENTOS ::= ELEMENTOS:r1 ELEMENTO:r2{:RESULT=r1; 
+			if(r2.comprobarTipo())
+				RESULT.add(r2);
+			else
+				System.out.println("Error! Tipo no valido para el parametro "+r2.getTipo().toString()+". Linea:"+(r2left+1));
+			
+			:}
+			| ELEMENTO:r1{:RESULT=new LinkedList<>(); 
+			if(r1.comprobarTipo())
+				RESULT.add(r1);
+			else
+				System.out.println("Error! Tipo no valido para el parametro "+r1.getTipo().toString()+". Linea:"+(r1left+1));
+			:};
+
+ELEMENTO ::= ELEMENTO_TAG:r1 igual VALORES:r2 {:RESULT = new Elemento(r1,r2,r1left,r1right);:};
+			
+ELEMENTO_TAG ::= id_{:RESULT = Elemento.Tipo.ID;:}
+				|tipo_{:RESULT = Elemento.Tipo.TIPO;:}
+				|color_{:RESULT = Elemento.Tipo.COLOR;:}
+				|accioninicial_{:RESULT = Elemento.Tipo.ACCIONINICIAL;:}
+				|accionfinal_{:RESULT = Elemento.Tipo.ACCIONFINAL;:}
+				|x_{:RESULT = Elemento.Tipo.X;:}
+				|y_{:RESULT = Elemento.Tipo.Y;:}
+				|alto_{:RESULT = Elemento.Tipo.ALTO;:}
+				|ancho_{:RESULT = Elemento.Tipo.ANCHO;:}
+				|borde_{:RESULT = Elemento.Tipo.BORDE;:}
+				|nombre_{:RESULT = Elemento.Tipo.NOMBRE;:}
+				|fuente_{:RESULT = Elemento.Tipo.FUENTE;:}
+				|tam_{:RESULT = Elemento.Tipo.TAM;:}
+				|negrita_{:RESULT = Elemento.Tipo.NEGRITA;:}
+				|cursiva_{:RESULT = Elemento.Tipo.CURSIVA;:}
+				|maximo_{:RESULT = Elemento.Tipo.MAXIMO;:}
+				|minimo_{:RESULT = Elemento.Tipo.MINIMO;:}
+				|accion_{:RESULT = Elemento.Tipo.ACCION;:}
+				|referencia_{:RESULT = Elemento.Tipo.REFERENCIA;:}
+				|path_{:RESULT = Elemento.Tipo.PATH;:}
+				|autoreproduccion_{:RESULT = Elemento.Tipo.AUTO_REPRODUCCION;:};
+				
+VALORES ::= tstring:r1{:RESULT = r1;:}
+			|entero:r1{:RESULT = new Integer(r1);:}
+			|decimal:r1{:RESULT = new Double(r1);:}
+			|true_:r1{:RESULT = new Boolean(true);:}
+			|false_:r1{:RESULT =new Boolean(false);:}
+			|codigo:r1 {:RESULT = r1;:};
+			

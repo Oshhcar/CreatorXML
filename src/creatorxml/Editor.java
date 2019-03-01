@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -31,6 +32,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 
+import genericxml.*;
+
 /**
  *
  * @author oscar
@@ -39,7 +42,10 @@ public class Editor extends javax.swing.JFrame {
 
     int pestañas;
     int nuevoArchivo;
-    
+
+    genericxml.Lexico lexicoGenericxml;
+    genericxml.Sintactico sintacticoGenericxml;
+
     /**
      * Creates new form Editor
      */
@@ -47,7 +53,7 @@ public class Editor extends javax.swing.JFrame {
         initComponents();
         pestañas = 0;
         nuevoArchivo = 0;
-        
+
         this.setLocationRelativeTo(null);
         this.setMinimumSize(new Dimension(900, 600));
         //this.jPanel2.setLayout(new BorderLayout());
@@ -456,7 +462,7 @@ public class Editor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        //compilarActual();
+        compilarActual();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
@@ -469,9 +475,9 @@ public class Editor extends javax.swing.JFrame {
 
     private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
         JOptionPane.showMessageDialog(null,
-         "Creator XML\n\nCredits:\nOscar Morales 201213336\noskralberto14@gmail.com",
-         "Acerca de",
-         JOptionPane.PLAIN_MESSAGE);
+                "Creator XML\n\nCredits:\nOscar Morales 201213336\noskralberto14@gmail.com",
+                "Acerca de",
+                JOptionPane.PLAIN_MESSAGE);
     }//GEN-LAST:event_jMenuItem11ActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
@@ -499,8 +505,8 @@ public class Editor extends javax.swing.JFrame {
         //JPanel panel = new JPanel(false);
         JTextArea filler = new JTextArea();
         filler.setTabSize(4);
-        filler.setFont(new Font("Arial", Font.PLAIN ,14));
-        
+        filler.setFont(new Font("Arial", Font.PLAIN, 14));
+
         LineNumberModel lineNumberModel = new LineNumberModel() {
             @Override
             public int getNumberLines() {
@@ -509,7 +515,7 @@ public class Editor extends javax.swing.JFrame {
 
             @Override
             public Rectangle getLineRect(int line) {
-                try{
+                try {
 
                     return filler.modelToView(filler.getLineStartOffset(line));
 
@@ -522,22 +528,20 @@ public class Editor extends javax.swing.JFrame {
                 }
             }
         };
-        
-	LineNumberComponent lineNumberComponent = new LineNumberComponent(lineNumberModel);
-        
-        lineNumberComponent.setFont(new Font("Arial",Font.PLAIN, 14));
-        
+
+        LineNumberComponent lineNumberComponent = new LineNumberComponent(lineNumberModel);
+
+        lineNumberComponent.setFont(new Font("Arial", Font.PLAIN, 14));
+
         //filler.setHorizontalAlignment(JLabel.CENTER);
         //panel.setLayout(new GridLayout(1, 1));
         JScrollPane scrollPane = new JScrollPane(filler);
         //scrollPane.add(filler);
         scrollPane.setRowHeaderView(lineNumberComponent);
         lineNumberComponent.setAlignment(LineNumberComponent.CENTER_ALIGNMENT);
-        
+
         filler.getDocument().addDocumentListener(new DocumentListener() {
-            
-            
-            
+
             @Override
 
             public void changedUpdate(DocumentEvent arg0) {
@@ -562,7 +566,7 @@ public class Editor extends javax.swing.JFrame {
 
             }
         });
-        
+
         filler.addCaretListener(new CaretListener() {
 
             public void caretUpdate(CaretEvent e) {
@@ -587,13 +591,13 @@ public class Editor extends javax.swing.JFrame {
 
         });
 
-        if(archivo == null){
+        if (archivo == null) {
             filler.setName("");
             filler.setText("");
         } else {
             FileReader fr = null;
             BufferedReader br = null;
-            
+
             try {
                 fr = new FileReader(archivo);
                 br = new BufferedReader(fr);
@@ -621,30 +625,30 @@ public class Editor extends javax.swing.JFrame {
                     e2.printStackTrace();
                 }
             }
-            
+
         }
-    
+
         //panel.add(filler);
         lineNumberComponent.adjustWidth();
         return scrollPane;
     }
-        
-    private void nuevoArchivo(){
+
+    private void nuevoArchivo() {
         ImageIcon icon = new ImageIcon("iconos/archivox16.png");
         Component panel2 = makeTextPanel(null);
-        panel2.setName("pestaña"+(++pestañas));
-        jTabbedPane1.addTab("nuevo "+nuevoArchivo, icon, panel2, "nuevo "+nuevoArchivo);
+        panel2.setName("pestaña" + (++pestañas));
+        jTabbedPane1.addTab("nuevo " + nuevoArchivo, icon, panel2, "nuevo " + nuevoArchivo);
         jTabbedPane1.setSelectedComponent(panel2);
     }
-    
-    private void abrirArchivo(){
+
+    private void abrirArchivo() {
         JFileChooser fileChooser = new JFileChooser();
         File f = new File("C:/users/Oscar");
         fileChooser.setCurrentDirectory(f);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos FS y GXML", "fs", "gxml", "txt");
         fileChooser.setFileFilter(filter);
         int seleccion = fileChooser.showOpenDialog(this);
-        
+
         if (seleccion == JFileChooser.APPROVE_OPTION) {
             int i = jTabbedPane1.getSelectedIndex();
             if (i != -1) {
@@ -654,18 +658,18 @@ public class Editor extends javax.swing.JFrame {
                 leerArchivo(fileChooser);
                 nuevoArchivo++;
             }
-            
+
         } else {
 //            JOptionPane.showMessageDialog(null,
 //                "No se ha seleccionado un archivo",
 //                "Mensaje de Error",
 //                JOptionPane.ERROR_MESSAGE);
         }
-        
+
     }
-        
-    private void leerArchivo(JFileChooser fileChooser){
-        
+
+    private void leerArchivo(JFileChooser fileChooser) {
+
         int i = jTabbedPane1.getSelectedIndex();
         JScrollPane scroll = (JScrollPane) jTabbedPane1.getComponent(i);
         JViewport view = (JViewport) scroll.getViewport();
@@ -695,7 +699,7 @@ public class Editor extends javax.swing.JFrame {
                 jTabbedPane1.setTitleAt(i, nombre);
                 jTabbedPane1.setToolTipTextAt(i, nombre);
                 nuevoArchivo--;
-                
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -716,18 +720,18 @@ public class Editor extends javax.swing.JFrame {
             leerArchivo(fileChooser);
             nuevoArchivo++;
         }
-  
+
     }
-    
-    private void guardarArchivo(){
-        
+
+    private void guardarArchivo() {
+
         int i = jTabbedPane1.getSelectedIndex();
-        
+
         if (i != -1) {
-           JScrollPane scroll = (JScrollPane) jTabbedPane1.getComponent(i);
-           JViewport view = (JViewport) scroll.getViewport();
-           JTextArea text = (JTextArea) view.getComponent(0);
-           
+            JScrollPane scroll = (JScrollPane) jTabbedPane1.getComponent(i);
+            JViewport view = (JViewport) scroll.getViewport();
+            JTextArea text = (JTextArea) view.getComponent(0);
+
             if (!text.getName().equals("")) {
                 FileWriter fichero = null;
                 PrintWriter pw = null;
@@ -739,9 +743,9 @@ public class Editor extends javax.swing.JFrame {
                     for (String line : text.getText().split("\n")) {
                         pw.println(line);
                     }
-                    
+
                     JOptionPane.showMessageDialog(null,
-                            "Se ha guardado el archivo en \n"+text.getName(),
+                            "Se ha guardado el archivo en \n" + text.getName(),
                             "Mensaje Informativo",
                             JOptionPane.INFORMATION_MESSAGE);
 
@@ -765,32 +769,32 @@ public class Editor extends javax.swing.JFrame {
             } else {
                 guardarComo();
             }
-           
+
         } else {
             JOptionPane.showMessageDialog(null,
                     "No ha abierto un archivo.",
                     "Mensaje de Error",
-                     JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    private void guardarComo(){
+
+    private void guardarComo() {
         int i = jTabbedPane1.getSelectedIndex();
-        
+
         if (i != -1) {
-           JScrollPane scroll = (JScrollPane) jTabbedPane1.getComponent(i);
-           JViewport view = (JViewport) scroll.getViewport();
-           JTextArea text = (JTextArea) view.getComponent(0);
-           
+            JScrollPane scroll = (JScrollPane) jTabbedPane1.getComponent(i);
+            JViewport view = (JViewport) scroll.getViewport();
+            JTextArea text = (JTextArea) view.getComponent(0);
+
             JFileChooser fileChooser = new JFileChooser();
             File f = new File("C:/users/Oscar");
             fileChooser.setCurrentDirectory(f);
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos lz", "lz", "txt");
             fileChooser.setFileFilter(filter);
             int seleccion = fileChooser.showSaveDialog(this);
-            
-            if (seleccion == JFileChooser.APPROVE_OPTION){
-                
+
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+
                 FileWriter fichero = null;
                 PrintWriter pw = null;
 
@@ -801,16 +805,17 @@ public class Editor extends javax.swing.JFrame {
                     for (String line : text.getText().split("\n")) {
                         pw.println(line);
                     }
-                    
-                    if(text.getName().equals(""))
+
+                    if (text.getName().equals("")) {
                         nuevoArchivo--;
-                    
+                    }
+
                     text.setName(fileChooser.getSelectedFile().getPath());
                     jTabbedPane1.setTitleAt(i, fileChooser.getSelectedFile().getName());
                     jTabbedPane1.setToolTipTextAt(i, fileChooser.getSelectedFile().getName());
-                    
+
                     JOptionPane.showMessageDialog(null,
-                            "Se ha guardado el archivo en \n"+text.getName(),
+                            "Se ha guardado el archivo en \n" + text.getName(),
                             "Mensaje Informativo",
                             JOptionPane.INFORMATION_MESSAGE);
 
@@ -831,75 +836,127 @@ public class Editor extends javax.swing.JFrame {
                                 JOptionPane.WARNING_MESSAGE);
                     }
                 }
-                
-                
+
             }
-           
+
         } else {
             JOptionPane.showMessageDialog(null,
                     "No ha abierto un archivo.",
                     "Mensaje de Error",
-                     JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    private void cerrarArchivo(int i){
+
+    private void cerrarArchivo(int i) {
 
         if (i != -1) {
-           JScrollPane scroll = (JScrollPane) jTabbedPane1.getComponent(i);
-           JViewport view = (JViewport) scroll.getViewport();
-           JTextArea text = (JTextArea) view.getComponent(0);
-           
-           if(!text.getText().equals("")){
-               String[] opciones = new String[3];
-               opciones[0] = "Si";
-               opciones[1] = "No";
-               opciones[2] = "Cancelar";
-               
-               int seleccion = JOptionPane.showOptionDialog(this, 
-                       "¿Desea guardar el archivo?",
-                       "Guardar",
-                       JOptionPane.YES_NO_CANCEL_OPTION,
-                       JOptionPane.QUESTION_MESSAGE,
-                       null,
-                       opciones, //Títulos de los botones.
-                       opciones[0]); //El título del botón por default.
-               
-               if(seleccion == JOptionPane.YES_OPTION){
-                   guardarArchivo();
-                   jTabbedPane1.remove(i);
-               } else if(seleccion == JOptionPane.NO_OPTION){
-                   jTabbedPane1.remove(i);
-               }
-               
-           } else {
-               nuevoArchivo--;
-               jTabbedPane1.remove(i);
-           }
-           
+            JScrollPane scroll = (JScrollPane) jTabbedPane1.getComponent(i);
+            JViewport view = (JViewport) scroll.getViewport();
+            JTextArea text = (JTextArea) view.getComponent(0);
+
+            if (!text.getText().equals("")) {
+                String[] opciones = new String[3];
+                opciones[0] = "Si";
+                opciones[1] = "No";
+                opciones[2] = "Cancelar";
+
+                int seleccion = JOptionPane.showOptionDialog(this,
+                        "¿Desea guardar el archivo?",
+                        "Guardar",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        opciones, //Títulos de los botones.
+                        opciones[0]); //El título del botón por default.
+
+                if (seleccion == JOptionPane.YES_OPTION) {
+                    guardarArchivo();
+                    jTabbedPane1.remove(i);
+                } else if (seleccion == JOptionPane.NO_OPTION) {
+                    jTabbedPane1.remove(i);
+                }
+
+            } else {
+                nuevoArchivo--;
+                jTabbedPane1.remove(i);
+            }
+
         } else {
             JOptionPane.showMessageDialog(null,
                     "No ha abierto un archivo.",
                     "Mensaje de Error",
                     JOptionPane.ERROR_MESSAGE);
         }
-        
+
     }
-    
-    private void cerrarTodo(){
+
+    private void cerrarTodo() {
         int j = jTabbedPane1.getComponentCount();
-        for(int y=0; y < j; y++){
+        for (int y = 0; y < j; y++) {
             cerrarArchivo(jTabbedPane1.getSelectedIndex());
         }
-        
-        if(j==0){
+
+        if (j == 0) {
             JOptionPane.showMessageDialog(null,
                     "No ha abierto un archivo.",
                     "Mensaje de Error",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
+    private void compilarActual() {
+        int i = jTabbedPane1.getSelectedIndex();
+        if (i != -1) {
+            JScrollPane scroll = (JScrollPane) jTabbedPane1.getComponent(i);
+            JViewport view = (JViewport) scroll.getViewport();
+            JTextArea text = (JTextArea) view.getComponent(0);
+
+            String entrada;
+            entrada = text.getText();
+
+            File a;
+
+            if (!text.getName().equals("")) {
+                a = new File(text.getName());
+            } else {
+                a = new File("nuevo" + (i + 1) + ".gxml");
+            }
+
+            String name = a.getName().replaceAll("\\.([a-zA-ZñÑ]+)", "");
+
+            lexicoGenericxml = new genericxml.Lexico(new BufferedReader(new StringReader(entrada)));
+            sintacticoGenericxml = new genericxml.Sintactico(lexicoGenericxml);
+
+            Arbol arbol = null;
+            try {
+                sintacticoGenericxml.parse();
+                arbol = sintacticoGenericxml.getArbol();
+
+                if (arbol != null) {
+                    if (arbol.getEtiquetas() == null && arbol.getImports() == null) {
+                        System.out.println("Error al generar el arbol.");
+                    } else {
+                        //arbol.traducir(name);
+                        //arbol.recorrer();
+                        System.out.println("" + arbol.traducir(name));
+                    }
+                } else {
+                    System.out.println("No se pudo generar el arbol");
+                }
+                
+            } catch (Exception ex) {
+                System.out.println("Exception " + ex);
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(null,
+                    "No se ha seleccionado un archivo",
+                    "Mensaje de Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
+
     public void abrirarchivo(String archivo) {
 
         try {
@@ -912,7 +969,7 @@ public class Editor extends javax.swing.JFrame {
         }
 
     }
-    
+
     /**
      * @param args the command line arguments
      */
