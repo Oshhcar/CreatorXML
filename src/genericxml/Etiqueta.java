@@ -37,11 +37,13 @@ public class Etiqueta {
             public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre) {
                 String cad = "";
                 if (p == null) {
-                    String id = "";
-                    String tipo = "";
+                    String id = null;
+                    String tipo = null;
                     String color = "#ffffff";
-                    String accioninicial = "";
-                    String accionfinal = "";
+                    int alto = 500;
+                    int ancho = 500;
+                    String accioninicial = null;
+                    String accionfinal = null;
 
                     if (e.getElementos() != null) {
                         for (Elemento elemento : e.getElementos()) {
@@ -51,6 +53,10 @@ public class Etiqueta {
                                 tipo = elemento.getValor().toString();
                             } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
                                 color = elemento.getValor().toString();
+                            } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
+                                alto = new Integer(elemento.getValor().toString());
+                            } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
+                                ancho = new Integer(elemento.getValor().toString());
                             } else if (elemento.getTipo() == Elemento.Tipo.ACCIONINICIAL) {
                                 accioninicial = elemento.getValor().toString();
                             } else if (elemento.getTipo() == Elemento.Tipo.ACCIONFINAL) {
@@ -60,8 +66,9 @@ public class Etiqueta {
                             }
                         }
 
-                        if (!"".equals(id) && !"".equals(tipo)) {
-                            cad = "Var " + id + "_" + name + " = CrearVentana(\"" + color + "\");\n";
+                        if (id != null && tipo != null) {
+                            cad = "Var " + id + "_" + name + " = CrearVentana(\"" + color + "\", "
+                                    + alto + ", " + ancho + ");\n";
 
                             if (e.getEtiquetas() != null) {
                                 for (Etiqueta et : e.getEtiquetas()) {
@@ -90,9 +97,9 @@ public class Etiqueta {
 
                 if (p != null && !"".equals(padre)) {
                     if (p.getTipo() == Etiqueta.Tipo.VENTANA) {
-                        String id = "";
-                        int x = -1;
-                        int y = -1;
+                        String id = null;
+                        Integer x = null;
+                        Integer y = null;
 
                         int alto = 500;
                         int ancho = 500;
@@ -120,7 +127,7 @@ public class Etiqueta {
                                 }
                             }
 
-                            if (!"".equals(id) && x != -1 && y != -1) {
+                            if (id != null && x != null && y != null) {
                                 String b = (borde) ? "verdadero" : "falso";
 
                                 cad = "Var " + id + "_" + name + " = " + padre + ".CrearContenedor(" + alto + ", " + ancho + ", \""
@@ -157,9 +164,9 @@ public class Etiqueta {
 
                 if (p != null && !"".equals(padre)) {
                     if (p.getTipo() == Etiqueta.Tipo.CONTENEDOR) {
-                        String nombre = "";
-                        int x = -1;
-                        int y = -1;
+                        String nombre = null;
+                        Integer x = null;
+                        Integer y = null;
 
                         String fuente = "Arial";
                         int tam = 14;
@@ -190,7 +197,7 @@ public class Etiqueta {
                                 }
                             }
 
-                            if (!"".equals(nombre) && x != -1 && y != -1 && e.plano != null) {
+                            if (nombre != null && x != null && y != null && e.plano != null) {
                                 String n = negrita ? "verdadero" : "falso";
                                 String c = cursiva ? "verdadero" : "falso";
 
@@ -224,10 +231,10 @@ public class Etiqueta {
                 String cad = "";
                 if (p != null && !"".equals(padre)) {
                     if (p.getTipo() == Etiqueta.Tipo.CONTENEDOR) {
-                        String tipo = "";
-                        String nombre = "";
-                        int x = -1;
-                        int y = -1;
+                        String tipo = null;
+                        String nombre = null;
+                        Integer x = null;
+                        Integer y = null;
 
                         int alto = 50;
                         int ancho = 50;
@@ -236,8 +243,8 @@ public class Etiqueta {
                         String color = "#000000";
                         boolean negrita = false;
                         boolean cursiva = false;
-                        int maximo = -1;
-                        int minimo = -1;
+                        Integer maximo = null;
+                        Integer minimo = null;
                         String accion = "";
 
                         if (e.getElementos() != null) {
@@ -278,36 +285,90 @@ public class Etiqueta {
                             String n = negrita ? "verdadero" : "falso";
                             String c = cursiva ? "verdadero" : "falso";
 
-                            if (!"".equals(tipo) && !"".equals(nombre) && x != -1 && y != -1) {
+                            String defecto = null;
+
+                            if (e.getEtiquetas() != null) {
+                                for (Etiqueta et : e.getEtiquetas()) {
+                                    if (et.getTipo() == Etiqueta.Tipo.DEFECTO) {
+                                        if (defecto == null) {
+                                            defecto = et.traducir(e, name, padre, colorPadre);
+                                        } else {
+                                            System.out.println("Error! Definicion de mas de un defecto. Control. Línea:" + et.getLinea());
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (tipo.toLowerCase().equals("numérico") || tipo.toLowerCase().equals("numerico")) {
+                                if (defecto != null) {
+                                    try {
+                                        Integer val = new Integer(defecto.replaceAll(" ", ""));
+                                        defecto = val.toString();
+                                    } catch (Exception ex) {
+                                        defecto = "nulo";
+                                        System.out.println("Error! Valor defecto en númerico no es numérico. Linea:" + e.getLinea());
+                                    }
+                                } else {
+                                    defecto = "nulo";
+                                }
+                            } else if (!tipo.toLowerCase().equals("desplegable")) {
+                                defecto = defecto == null ? "nulo" : "\"" + defecto + "\"";
+                            }
+
+                            if (tipo != null && nombre != null && x != null && y != null) {
                                 if (tipo.toLowerCase().equals("texto")) {
                                     cad = padre + ".CrearCajaTexto(" + alto + ", " + ancho + ", \"" + fuente + "\", "
-                                            + tam + ", " + "\"" + color + "\", " + x + ", " + y + ", " + n + ", " + c + ");\n";
+                                            + tam + ", " + "\"" + color + "\", " + x + ", " + y + ", " + n + ", " + c
+                                            + ", " + defecto + ", \"" + nombre + "\");\n";
                                 } else if (tipo.toLowerCase().equals("numérico") || tipo.toLowerCase().equals("numerico")) {
-                                    cad = padre + ".CrearControlNumerico(" + alto + ", " + ancho + ", " + maximo + ", "
-                                            + minimo + ", " + x + ", " + y + ");\n";
+                                    String max = maximo != null ? maximo.toString() : "nulo";
+                                    String min = minimo != null ? minimo.toString() : "nulo";
+
+                                    cad = padre + ".CrearControlNumerico(" + alto + ", " + ancho + ", " + max + ", "
+                                            + min + ", " + x + ", " + y + ", " + defecto + ", \"" + nombre + "\");\n";
                                 } else if (tipo.toLowerCase().equals("textoarea")) {
                                     cad = padre + ".CrearAreaTexto(" + alto + ", " + ancho + ", \"" + fuente + "\", "
-                                            + tam + ", " + "\"" + color + "\", " + x + ", " + y + ", " + n + ", " + c + ");\n";
+                                            + tam + ", " + "\"" + color + "\", " + x + ", " + y + ", " + n + ", " + c + ", "
+                                            + defecto + ", \"" + nombre + "\");\n";
                                 } else if (tipo.toLowerCase().equals("desplegable")) {
                                     if (e.getEtiquetas() != null) {
                                         String res = "";
+                                        String defect = "";
+
                                         for (Etiqueta et : e.getEtiquetas()) {
-                                            if(et.getTipo() == Etiqueta.Tipo.LISTADATOS){
-                                                if("".equals(res))
-                                                    res = et.traducir(e, name, nombre, colorPadre);
-                                                else
-                                                    System.out.println("Error! Ya se definio una lista. Linea:"+et.getLinea());
-                                            } else {
-                                                System.out.println("Error! Etiqueta incorrecta en control. Linea:"+et.getLinea());
+                                            if (et.getTipo() == Etiqueta.Tipo.LISTADATOS) {
+                                                if ("".equals(res)) {
+                                                    res = et.traducir(e, name, nombre, defecto);
+                                                } else {
+                                                    System.out.println("Error! Ya se definio una lista. Linea:" + et.getLinea());
+                                                }
+                                            } else if (et.getTipo() != Etiqueta.Tipo.DEFECTO) {
+                                                System.out.println("Error! Etiqueta incorrecta en control. Linea:" + et.getLinea());
                                             }
                                         }
-                                        if(!"".equals(res)){
-                                            cad = res + padre +".CrearDesplegable(" + alto + ", " + ancho + ", " + nombre + "_lista, "
-                                                    + x + ", " + y + ", " + nombre + "_lista[0]);\n";
+
+                                        if (!"".equals(res)) {
+                                            String arr[] = res.split("#");
+                                            res = arr[0];
+                                            defect = arr[1];
+
+                                            if (defecto != null) {
+                                                if (!"-1".equals(defect)) {
+                                                    defecto = nombre + "_lista[" + defect + "]";
+                                                } else {
+                                                    defecto = "nulo";
+                                                    System.out.println("Error! Se definio un defecto que no esta en la lista. Linea:" + e.getLinea());
+                                                }
+                                            } else {
+                                                defecto = "nulo";
+                                            }
+
+                                            cad = res + padre + ".CrearDesplegable(" + alto + ", " + ancho + ", " + nombre + "_lista, "
+                                                    + x + ", " + y + ", " + defecto + ", \"" + nombre + "\");\n";
                                         } else {
-                                            System.out.println("Error! No se definio una listadatos. Linea:"+e.getLinea());
+                                            System.out.println("Error! No se definio una listadatos. Linea:" + e.getLinea());
                                         }
-                                        
+
                                     } else {
                                         System.out.println("Error! Desplegable sin listadatos. Linea:" + e.getLinea());
                                     }
@@ -341,14 +402,24 @@ public class Etiqueta {
                         if (e.getEtiquetas() != null) {
                             boolean bandera = false;
                             cad = "Var " + padre + "_lista = [";
-
+                            int pos = -1;
+                            int i = 0;
                             for (Etiqueta et : e.getEtiquetas()) {
                                 if (et.tipo == Etiqueta.Tipo.DATO) {
                                     if (!"".equals(et.traducir(e, name, padre, colorPadre))) {
-                                        if(bandera)
-                                            cad = cad +", ";
+                                        if (bandera) {
+                                            cad = cad + ", ";
+                                        }
                                         bandera = true;
-                                        cad = cad + "\"" + et.traducir(e, name, padre, colorPadre) + "\"";
+                                        String valor = et.traducir(e, name, padre, colorPadre);
+                                        cad = cad + "\"" + valor + "\"";
+
+                                        if (colorPadre != null) {
+                                            if (colorPadre.equals(valor)) {
+                                                pos = i;
+                                            }
+                                        }
+                                        i++;
                                     }
                                 } else {
                                     System.out.println("Error! Etiqueta incorrecta, lista datos. Linea:" + et.getLinea());
@@ -356,7 +427,7 @@ public class Etiqueta {
                             }
 
                             if (bandera) {
-                                cad = cad + "];\n";
+                                cad = cad + "];\n#" + pos;
                             } else {
                                 System.out.println("Error! No se encontraron datos. Lista datos. Linea:" + e.getLinea());
                             }
@@ -380,14 +451,14 @@ public class Etiqueta {
 
                 if (p != null && !"".equals(padre)) {
                     if (p.getTipo() == Etiqueta.Tipo.LISTADATOS) {
-                        if (e.plano != null) {
+                        if (e.getPlano() != null) {
                             if (e.getElementos() != null) {
                                 System.out.println("Error! Elementos incorrectos en Dato. Linea:" + e.getLinea());
                             }
                             if (e.getEtiquetas() != null) {
                                 System.out.println("Error! Etiquetas incorrectas en Dato. Linea:" + e.getLinea());
                             }
-                            cad = e.plano;
+                            cad = e.getPlano();
                         } else {
                             System.out.println("Error! Dato sin valor. Linea:" + e.getLinea());
                         }
@@ -403,26 +474,328 @@ public class Etiqueta {
         DEFECTO {
             @Override
             public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre) {
-                return "";
+                String cad = "";
+
+                if (p != null && !"".equals(padre)) {
+                    if (p.getTipo() == Etiqueta.Tipo.CONTROL) {
+                        if (e.getPlano() != null) {
+                            if (e.getElementos() != null) {
+                                System.out.println("Error! Elementos incorrectos en Defecto. Linea:" + e.getLinea());
+                            }
+                            if (e.getEtiquetas() != null) {
+                                System.out.println("Error! Etiquetas incorrectas en Defecto. Linea:" + e.getLinea());
+                            }
+                            cad = e.getPlano();
+                        } else {
+                            System.out.println("Error! Defecto sin valor. Linea:" + e.getLinea());
+                        }
+                    } else {
+                        System.out.println("Error! Defecto no viente dentro de control. Linea:" + e.getLinea());
+                    }
+                } else {
+                    System.out.println("Error! Etiqueta defecto no viene de forma correcta. Linea:" + e.getLinea());
+                }
+                return cad;
             }
         },
         MULTIMEDIA {
             @Override
             public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre) {
-                return "";
+                String cad = "";
+
+                if (p != null && !"".equals(padre)) {
+                    if (p.getTipo() == Etiqueta.Tipo.CONTENEDOR) {
+                        String path = null;
+                        String tipo = null;
+                        String nombre = null;
+                        Integer x = null;
+                        Integer y = null;
+                        
+                        int alto = 500;
+                        int ancho = 500;
+                        boolean auto_reproduccion = false;
+                        
+                        if  (e.getElementos() != null) {
+                            for (Elemento elemento : e.getElementos()) {
+                                if (elemento.getTipo() == Elemento.Tipo.PATH) {
+                                    path = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.TIPO) {
+                                    tipo = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
+                                    nombre = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.X) {
+                                    x = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.Y) {
+                                    y = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
+                                    alto = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
+                                    ancho = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.AUTO_REPRODUCCION) {
+                                    auto_reproduccion = Boolean.valueOf(elemento.getValor().toString());
+                                } else {
+                                    System.out.println("Error! Elemento incorrecto en texto");
+                                }
+                            }
+                            
+                            if (path != null && nombre!= null && tipo != null && x != null && y != null) {
+                                String auto = auto_reproduccion? "verdadero":"falso";
+                                if (tipo.toLowerCase().equals("imagen")) {
+                                    cad = padre + ".CrearImagen(\"" + path + "\", " + x + ", " + y + ", " 
+                                            + auto + ", " + alto + ", " + ancho + ");\n";
+                                } else if (tipo.toLowerCase().equals("musica") || tipo.toLowerCase().equals("música")) {
+                                    cad = padre + ".CrearReproductor(\"" + path + "\", " + x + ", " + y + ", " 
+                                            + auto + ", " + alto + ", " + ancho + ");\n";
+                                } else if (tipo.toLowerCase().equals("video")) {
+                                    cad = padre + ".CrearVideo(\"" + path + "\", " + x + ", " + y + ", " 
+                                            + auto + ", " + alto + ", " + ancho + ");\n";
+                                } else {
+                                    System.out.println("Error! Tipo incorrecto en multimedia. Línea:" + e.getLinea());
+                                }
+                            } else {
+                                System.out.println("Error! Multimedia sin elementos obligatorios Línea:" + e.getLinea());
+                            }
+                            
+                        } else {
+                            System.out.println("Error! Multimedia sin elementos Linea:" + e.getLinea());
+                        }
+                    } else {
+                        System.out.println("Error! Multimedia no viente dentro de contenedor. Linea:" + e.getLinea());
+                    }
+                } else {
+                    System.out.println("Error! Etiqueta multimedia no viene de forma correcta. Linea:" + e.getLinea());
+                }
+
+                return cad;
             }
 
         },
         BOTON {
             @Override
             public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre) {
-                return "";
+                String cad = "";
+
+                if (p != null && !"".equals(padre)) {
+                    if (p.getTipo() == Etiqueta.Tipo.CONTENEDOR) {
+                        String nombre = null;
+                        Integer x = null;
+                        Integer y = null;
+
+                        String fuente = "Arial";
+                        int tam = 14;
+                        String color = "#000000";
+                        int alto = 500;
+                        int ancho = 500;
+                        String referencia = null;
+                        String accion = null;
+
+                        String plano = e.getPlano();
+
+                        if (e.getElementos() != null) {
+                            for (Elemento elemento : e.getElementos()) {
+                                if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
+                                    nombre = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.X) {
+                                    x = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.Y) {
+                                    y = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.FUENTE) {
+                                    fuente = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.TAM) {
+                                    tam = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
+                                    color = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
+                                    alto = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
+                                    ancho = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.REFERENCIA) {
+                                    referencia = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.ACCION) {
+                                    accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                } else {
+                                    System.out.println("Error! Elemento incorrecto en boton. Línea:" + e.getLinea());
+                                }
+                            }
+                        }
+
+                        if (e.getEtiquetas() != null) {
+                            for (Etiqueta et : e.getEtiquetas()) {
+                                if (et.tipo == Etiqueta.Tipo.TEXTO) {
+                                    plano = et.getPlano();
+                                    if (et.getElementos() != null) {
+                                        for (Elemento elemento : et.getElementos()) {
+                                            if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
+                                                nombre = elemento.getValor().toString();
+                                            } else if (elemento.getTipo() == Elemento.Tipo.X) {
+                                                x = new Integer(elemento.getValor().toString());
+                                            } else if (elemento.getTipo() == Elemento.Tipo.Y) {
+                                                y = new Integer(elemento.getValor().toString());
+                                            } else if (elemento.getTipo() == Elemento.Tipo.FUENTE) {
+                                                fuente = elemento.getValor().toString();
+                                            } else if (elemento.getTipo() == Elemento.Tipo.TAM) {
+                                                tam = new Integer(elemento.getValor().toString());
+                                            } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
+                                                color = elemento.getValor().toString();
+                                            } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
+                                                alto = new Integer(elemento.getValor().toString());
+                                            } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
+                                                ancho = new Integer(elemento.getValor().toString());
+                                            } else if (elemento.getTipo() == Elemento.Tipo.REFERENCIA) {
+                                                referencia = elemento.getValor().toString();
+                                            } else if (elemento.getTipo() == Elemento.Tipo.ACCION) {
+                                                accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                            } else {
+                                                System.out.println("Error! Elemento incorrecto en texto. Línea:" + et.getLinea());
+                                            }
+                                        }
+                                    }
+
+                                    if (et.getEtiquetas() != null) {
+                                        System.out.println("Error! Etiquetas dentro de Texto Linea:" + et.getLinea());
+                                    }
+                                } else {
+                                    System.out.println("Error! Etiqueta incorrecta, boton. Linea:" + et.getLinea());
+                                }
+                            }
+                        }
+
+                        if (nombre != null && x != null && y != null) {
+                            plano = plano == null ? "" : plano;
+                            referencia = referencia == null ? "nulo" : "CargarVentana_" + referencia + "()";
+                            cad = "Var " + nombre + "_" + name + " = " + padre + ".CrearBoton(\"" + fuente + "\", " + tam
+                                    + ", \"" + color + "\", " + x + ", " + y + ", " + referencia + ", \"" + plano
+                                    + "\", " + alto + ", " + ancho + ");\n";
+
+                            if (accion != null) {
+                                cad = cad + nombre + "_" + name + ".AlClic(" + accion + ");\n";
+                            }
+
+                        } else {
+                            System.out.println("Error! Etiqueta boton sin elementos obligatorios. Línea:" + e.getLinea());
+                        }
+
+                    } else {
+                        System.out.println("Error! Boton no viente dentro de contenedor. Línea:" + e.getLinea());
+                    }
+                } else {
+                    System.out.println("Error! Etiqueta boton no viene de forma correcta. Línea:" + e.getLinea());
+                }
+
+                return cad;
             }
         },
         ENVIAR {
             @Override
             public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre) {
-                return "";
+                String cad = "";
+                if (p != null && !"".equals(padre)) {
+                    if (p.getTipo() == Etiqueta.Tipo.CONTENEDOR) {
+                        String nombre = null;
+                        Integer x = null;
+                        Integer y = null;
+
+                        String fuente = "Arial";
+                        int tam = 14;
+                        String color = "#000000";
+                        int alto = 500;
+                        int ancho = 500;
+                        String referencia = null;
+                        String accion = null;
+
+                        String plano = e.getPlano();
+
+                        if (e.getElementos() != null) {
+                            for (Elemento elemento : e.getElementos()) {
+                                if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
+                                    nombre = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.X) {
+                                    x = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.Y) {
+                                    y = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.FUENTE) {
+                                    fuente = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.TAM) {
+                                    tam = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
+                                    color = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
+                                    alto = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
+                                    ancho = new Integer(elemento.getValor().toString());
+                                } else if (elemento.getTipo() == Elemento.Tipo.REFERENCIA) {
+                                    referencia = elemento.getValor().toString();
+                                } else if (elemento.getTipo() == Elemento.Tipo.ACCION) {
+                                    accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                } else {
+                                    System.out.println("Error! Elemento incorrecto en boton. Línea:" + e.getLinea());
+                                }
+                            }
+                        }
+
+                        if (e.getEtiquetas() != null) {
+                            for (Etiqueta et : e.getEtiquetas()) {
+                                if (et.tipo == Etiqueta.Tipo.TEXTO) {
+                                    plano = et.getPlano();
+                                    if (et.getElementos() != null) {
+                                        for (Elemento elemento : et.getElementos()) {
+                                            if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
+                                                nombre = elemento.getValor().toString();
+                                            } else if (elemento.getTipo() == Elemento.Tipo.X) {
+                                                x = new Integer(elemento.getValor().toString());
+                                            } else if (elemento.getTipo() == Elemento.Tipo.Y) {
+                                                y = new Integer(elemento.getValor().toString());
+                                            } else if (elemento.getTipo() == Elemento.Tipo.FUENTE) {
+                                                fuente = elemento.getValor().toString();
+                                            } else if (elemento.getTipo() == Elemento.Tipo.TAM) {
+                                                tam = new Integer(elemento.getValor().toString());
+                                            } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
+                                                color = elemento.getValor().toString();
+                                            } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
+                                                alto = new Integer(elemento.getValor().toString());
+                                            } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
+                                                ancho = new Integer(elemento.getValor().toString());
+                                            } else if (elemento.getTipo() == Elemento.Tipo.REFERENCIA) {
+                                                referencia = elemento.getValor().toString();
+                                            } else if (elemento.getTipo() == Elemento.Tipo.ACCION) {
+                                                accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                            } else {
+                                                System.out.println("Error! Elemento incorrecto en texto. Línea:" + et.getLinea());
+                                            }
+                                        }
+                                    }
+
+                                    if (et.getEtiquetas() != null) {
+                                        System.out.println("Error! Etiquetas dentro de Texto Linea:" + et.getEtiquetas().get(0).getLinea());
+                                    }
+                                } else {
+                                    System.out.println("Error! Etiqueta incorrecta, Enviar. Linea:" + et.getLinea());
+                                }
+                            }
+                        }
+
+                        if (nombre != null && x != null && y != null) {
+                            plano = plano == null ? "" : plano;
+                            referencia = referencia == null ? "nulo" : "CargarVentana_" + referencia + "()";
+                            cad = "Var " + nombre + "_" + name + " = " + padre + ".CrearBoton(\"" + fuente + "\", " + tam
+                                    + ", \"" + color + "\", " + x + ", " + y + ", " + referencia + ", \"" + plano
+                                    + "\", " + alto + ", " + ancho + ");\n";
+                            cad = cad = cad + nombre + "_" + name + ".AlClic(Guardar_" + padre + ");\n"; //arreglar esto
+                            if (accion != null) {
+                                cad = cad + nombre + "_" + name + ".AlClic(" + accion + ");\n";
+                            }
+
+                        } else {
+                            System.out.println("Error! Etiqueta boton sin elementos obligatorios. Línea:" + e.getLinea());
+                        }
+
+                    } else {
+                        System.out.println("Error! Boton no viente dentro de contenedor. Línea:" + e.getLinea());
+                    }
+                } else {
+                    System.out.println("Error! Etiqueta boton no viene de forma correcta. Línea:" + e.getLinea());
+                }
+                return cad;
             }
         };
 
@@ -459,7 +832,7 @@ public class Etiqueta {
     }
 
     public void recorrer() {
-        System.out.println(this.getTipo().toString()+": "+((this.plano!=null)?this.plano:""));
+        System.out.println(this.getTipo().toString() + ": " + ((this.plano != null) ? this.plano : ""));
         if (etiquetas != null) {
             for (Etiqueta e : etiquetas) {
                 e.recorrer();
