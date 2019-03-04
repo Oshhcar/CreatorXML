@@ -33,6 +33,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 
 import genericxml.*;
+import fs.*;
 
 /**
  *
@@ -43,8 +44,11 @@ public class Editor extends javax.swing.JFrame {
     int pestañas;
     int nuevoArchivo;
 
-    genericxml.Lexico lexicoGenericxml;
-    genericxml.Sintactico sintacticoGenericxml;
+    Lexico lexicoGenericxml;
+    Sintactico sintacticoGenericxml;
+    
+    LexicoFs lexicoFs;
+    SintacticoFs sintacticoFs;
 
     /**
      * Creates new form Editor
@@ -924,25 +928,30 @@ public class Editor extends javax.swing.JFrame {
 
             String name = a.getName().replaceAll("\\.([a-zA-ZñÑ]+)", "");
 
-            lexicoGenericxml = new genericxml.Lexico(new BufferedReader(new StringReader(entrada)));
-            sintacticoGenericxml = new genericxml.Sintactico(lexicoGenericxml);
-
+            //lexicoGenericxml = new genericxml.Lexico(new BufferedReader(new StringReader(entrada)));
+            //sintacticoGenericxml = new genericxml.Sintactico(lexicoGenericxml);
+            
+            lexicoFs = new LexicoFs(new BufferedReader(new StringReader(entrada)));
+            sintacticoFs = new SintacticoFs(lexicoFs);
+            
             Arbol arbol = null;
             try {
-                sintacticoGenericxml.parse();
-                arbol = sintacticoGenericxml.getArbol();
+                //sintacticoGenericxml.parse();
+                //arbol = sintacticoGenericxml.getArbol();
 
-                if (arbol != null) {
-                    if (arbol.getEtiquetas() == null && arbol.getImports() == null) {
-                        System.out.println("Error al generar el arbol.");
-                    } else {
-                        //arbol.traducir(name);
-                        //arbol.recorrer();
-                        System.out.println("" + arbol.traducir(name));
-                    }
-                } else {
-                    System.out.println("No se pudo generar el arbol");
-                }
+//                if (arbol != null) {
+//                    if (arbol.getEtiquetas() == null && arbol.getImports() == null) {
+//                        System.out.println("Error al generar el arbol.");
+//                    } else {
+//                        //arbol.traducir(name);
+//                        //arbol.recorrer();
+//                        System.out.println("" + arbol.traducir(name));
+//                    }
+//                } else {
+//                    System.out.println("No se pudo generar el arbol");
+//                }
+
+                sintacticoFs.parse();
                 
             } catch (Exception ex) {
                 System.out.println("Exception " + ex);

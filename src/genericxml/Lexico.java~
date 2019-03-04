@@ -1101,7 +1101,7 @@ public class Lexico implements java_cup.runtime.Scanner {
             }
           case 69: break;
           case 15: 
-            { string.append( "" );
+            { string.append( " " );
             }
           case 70: break;
           case 16: 

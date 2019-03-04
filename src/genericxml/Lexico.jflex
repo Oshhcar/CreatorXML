@@ -97,8 +97,8 @@ codigo = "{""{"*([^"}"])*"}"*"}"
 <YYINITIAL> "auto-reproduccion"	{return symbol(Sym.autoreproduccion_);}
 
 
-<YYINITIAL> "true"				{ return symbol(Sym.true_, yytext());}
-<YYINITIAL> "false"				{ return symbol(Sym.false_, yytext());}
+<YYINITIAL> "verdadero"				{ return symbol(Sym.true_, yytext());}
+<YYINITIAL> "falso"				{ return symbol(Sym.false_, yytext());}
 
 
 <YYINITIAL>{

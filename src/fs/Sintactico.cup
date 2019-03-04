@@ -1,0 +1,301 @@
+package fs;
+
+import java_cup.runtime.Symbol;
+import java.util.ArrayList;
+
+parser code
+{:
+	
+    @Override
+    public void syntax_error(Symbol s){
+        System.out.println("Error Sintactico en la Linea " + (s.right+1) +" Columna "+(s.left+1)+ ". Identificador " +s.value + " no reconocido." );
+		//AnalizadorError tmp = new AnalizadorError();
+		//tmp.setColumna(s.right+1);
+		//tmp.setLinea(s.left+1);
+		//tmp.setValor(s.value+"");
+		//tmp.setError("Sintáctico");
+        
+		//error.add(tmp);
+    }
+
+    @Override
+    public void unrecovered_syntax_error(Symbol s){
+        System.out.println("Error Sintactico Fatal en la Linea " + (s.right+1)+ " Columna "+(s.left+1)+". Identificador " + s.value + " no reconocido.");
+		//report_fatal_error("Error sintactico: <"+s.value+">", cur_token);
+	}
+:}
+
+action code
+{:
+
+:}
+
+terminal String tstring, tchar, entero, decimal, identificador, nulo_, verdadero_, falso_;
+terminal llaveIzquierda, llaveDerecha, parIzquierda, parDerecha, corcheteIzquierda, corcheteDerecha, puntoycoma, coma, punto;
+terminal dospuntos, interrogacion;
+terminal mas, menos, asterisco, diagonal, potencia, umenos, umas, masmas, menosmenos;
+terminal mayorque, menorque, mayorigual, menorigual, igualigual, diferente;
+terminal and, or, not;
+terminal igual, masigual, menosigual, porigual, diagonaligual;
+terminal var_, imprimir_, importar_, detener_, retornar_, si_, sino_, selecciona_, caso_, defecto_, funcion_;
+
+non terminal INICIO, E, INSTRUCCIONES, INSTRUCCION, DECLARACION, ASIGNACION, SEMIDECLARACION, ASIGNA, OP_ASIGNACION, EXS;
+non terminal OBJETO, OBJS, OBJ, IMPRIMIR, IMPORTAR, SI, SINO, BLOQUES, BLOQUE, SELECCIONA, CASOS, CASO, FUNCION, PARAMETROS;
+non terminal LLAMADA_METODO, LLAMADA_METODOS, PARMS, ACCESO_OBJETO, TIPO_ACCESO;
+
+precedence left interrogacion;
+precedence left or;
+precedence left and;
+precedence right not;
+precedence left igualigual;
+precedence left diferente;
+precedence left mayorque, menorque, mayorigual, menorigual;
+precedence left mas, menos;
+precedence left asterisco, diagonal;
+precedence right potencia;
+precedence right masmas, menosmenos;
+precedence right umenos, umas;
+
+start with INICIO;
+
+INICIO ::= INSTRUCCIONES:a 
+		{:
+            System.out.println("FS OK");
+			
+		:};
+		
+INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b
+				{:
+
+				:}
+				| INSTRUCCION:a{::};
+
+INSTRUCCION ::= DECLARACION:a puntoycoma{::}
+				|ASIGNACION:a puntoycoma{::}
+				|OBJETO:a puntoycoma{::}
+				|IMPRIMIR:a puntoycoma{::}
+				|IMPORTAR:a puntoycoma{::}
+				|SI:a {::}
+				|SELECCIONA:a {::}
+				|FUNCION:a {::}
+				|LLAMADA_METODO:a puntoycoma{::}
+				|LLAMADA_METODOS:a puntoycoma{::};
+
+TIPO_ACCESO ::= ACCESO_OBJETO:a{::}
+				| identificador:a
+				{:
+				:};
+				
+ASIGNACION ::= TIPO_ACCESO:a OP_ASIGNACION:o E:b
+			{:
+
+			:}
+			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha
+			{:
+
+			:}
+			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha
+			{:
+
+			:};
+				
+DECLARACION ::= var_ SEMIDECLARACION:a
+				{:
+
+				:};
+
+SEMIDECLARACION ::= SEMIDECLARACION:a coma ASIGNA:b
+				{:
+
+				:}
+				| ASIGNA:a
+				{:
+				:};
+				
+ASIGNA ::= identificador:a 
+		{:	
+		:}
+		| identificador:a OP_ASIGNACION:o E:b
+		{:
+		:}
+		| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha
+		{:
+		:}
+		| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha
+		{:
+		:};
+
+OP_ASIGNACION ::= igual 
+				{:
+				:}
+				| masigual
+				{:
+				:}
+				| menosigual
+				{:
+				:}
+				| porigual
+				{:
+				:}
+				| diagonaligual
+				{:
+				:};
+
+EXS ::= EXS:a coma E:b 
+		{:
+		:}
+		|E:a{::};
+		
+
+OBJETO ::= 	 var_ identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha
+			{:
+			:}
+			|var_ identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha
+			{:
+			:};
+			
+OBJS ::= OBJS:a coma OBJ:b
+		{:
+		:}
+		|OBJ:a{::};
+
+OBJ ::= identificador:a dospuntos E:b
+		{:
+		:};
+
+IMPRIMIR ::= imprimir_ parIzquierda parDerecha
+			{:
+			:}
+			|imprimir_ parIzquierda E:a parDerecha
+			{:
+			:};
+
+IMPORTAR ::= importar_ parIzquierda parDerecha
+			{:
+			:}
+			|importar_ parIzquierda E:a parDerecha
+			{:
+			:};
+
+BLOQUES ::= BLOQUES:a BLOQUE:b 
+			{:
+			:}
+			|BLOQUE:a {::};
+			
+			
+BLOQUE ::= DECLARACION:a puntoycoma{::}
+		|ASIGNACION:a puntoycoma{::}
+		|OBJETO:a puntoycoma{::}
+		|IMPRIMIR:a puntoycoma{::}
+		|IMPORTAR:a puntoycoma{::}
+		| detener_ puntoycoma
+		{:
+		:}
+		| retornar_ E:a puntoycoma
+		{:
+		:}
+		|SI:a {::}
+		|SELECCIONA:a {::}
+		|LLAMADA_METODO:a puntoycoma{::}
+		|LLAMADA_METODOS:a puntoycoma{::};
+
+
+SI ::= si_ parIzquierda E:a parDerecha llaveIzquierda BLOQUES:b llaveDerecha SINO:c
+		{:
+		:};
+
+SINO ::= {:RESULT=null;:}
+		| sino_ SI:a 
+		{:
+		:}
+		| sino_ llaveIzquierda BLOQUES:a llaveDerecha
+		{:
+		:};
+
+SELECCIONA ::= selecciona_ parIzquierda E:a parDerecha llaveIzquierda CASOS:b llaveDerecha
+			{:
+			:};
+			
+CASOS ::= CASOS:a CASO:b
+		{:
+		:}
+		| CASO:a {::};
+		
+CASO ::= caso_ E:a dospuntos llaveIzquierda BLOQUES:b llaveDerecha
+		{:
+		
+		
+		:}
+		|defecto_ dospuntos llaveIzquierda BLOQUES:a llaveDerecha
+		{:
+			
+		:};
+
+FUNCION ::= funcion_ identificador:a parIzquierda PARAMETROS:b parDerecha llaveIzquierda BLOQUES:c llaveDerecha
+		{:
+		:}
+		| funcion_ identificador:a parIzquierda parDerecha llaveIzquierda BLOQUES:c llaveDerecha
+		{:
+		:};
+
+PARAMETROS ::= PARAMETROS:a coma var_ identificador:b 
+			{:
+			:}
+			| var_ identificador:b
+			{:
+			:};
+
+LLAMADA_METODO ::= identificador:a parIzquierda PARMS:b parDerecha
+				{:
+				:};
+
+LLAMADA_METODOS ::=LLAMADA_METODOS:c punto identificador:a parIzquierda PARMS:b parDerecha
+				{:
+				:}
+				|identificador:a punto identificador:b parIzquierda PARMS:c parDerecha
+				{:
+				:};
+
+PARMS ::= {:RESULT=null;:}
+		| EXS:a{::};
+
+ACCESO_OBJETO ::= identificador:a punto identificador:b
+				{:
+				:};
+				
+E ::= 	  menos E:a {::} %prec umenos
+	|     mas E:a {::} %prec umas
+	| E:a mas E:b{::}
+	| E:a menos E:b{::}
+	| E:a asterisco E:b{::}
+	| E:a diagonal E:b{::}
+	| E:a potencia E:b{::}
+	| E:a masmas{::}
+	| E:a menosmenos{::}
+	| E:a mayorque E:b{::}
+	| E:a menorque E:b{::}
+	| E:a mayorigual E:b{::}
+	| E:a menorigual E:b{::}
+	| E:a igualigual E:b{::}
+	| E:a diferente E:b{::}
+	| E:a and E:b{::}
+	| E:a or E:b{::}
+	| not E:a{::}
+	| tstring:a{::}
+	| tchar:a{::}
+	| entero:a{::}
+	| decimal:a{::}
+	| identificador:a{::}
+	| nulo_:a{::}
+	| verdadero_:a{::}
+	| falso_:a{::}
+	| parIzquierda E:a parDerecha{::}
+	| identificador:a corcheteIzquierda E:b corcheteDerecha{::}
+	| identificador:a corcheteIzquierda E:b corcheteDerecha punto identificador:c{::}
+	| E:a interrogacion E:b dospuntos E:c{::}
+	|LLAMADA_METODO:a {::}
+	|LLAMADA_METODOS:a {::}
+	|ACCESO_OBJETO:a {::};
+		
+		
+		
