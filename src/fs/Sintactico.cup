@@ -1,10 +1,22 @@
 package fs;
 
+import fs.ast.*;
+import fs.ast.expresion.*;
+import fs.ast.expresion.operacion.*;
+import fs.ast.simbolos.*;
+import fs.ast.instruccion.*;
+import fs.ast.instruccion.condicionales.*;
+
 import java_cup.runtime.Symbol;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 parser code
 {:
+	private AST ast;
+	
+	public AST getAST(){
+		return ast;
+	}
 	
     @Override
     public void syntax_error(Symbol s){
@@ -39,9 +51,26 @@ terminal and, or, not;
 terminal igual, masigual, menosigual, porigual, diagonaligual;
 terminal var_, imprimir_, importar_, detener_, retornar_, si_, sino_, selecciona_, caso_, defecto_, funcion_;
 
-non terminal INICIO, E, INSTRUCCIONES, INSTRUCCION, DECLARACION, ASIGNACION, SEMIDECLARACION, ASIGNA, OP_ASIGNACION, EXS;
-non terminal OBJETO, OBJS, OBJ, IMPRIMIR, IMPORTAR, SI, SINO, BLOQUES, BLOQUE, SELECCIONA, CASOS, CASO, FUNCION, PARAMETROS;
+non terminal INICIO, OP_ASIGNACION, EXS;
+non terminal OBJETO, OBJS, OBJ, IMPORTAR, FUNCION, PARAMETROS;
 non terminal LLAMADA_METODO, LLAMADA_METODOS, PARMS, ACCESO_OBJETO, TIPO_ACCESO;
+
+non terminal LinkedList<NodoAST> INSTRUCCIONES;
+non terminal NodoAST INSTRUCCION;
+non terminal Declaracion DECLARACION;
+non terminal LinkedList<Asignacion> SEMIDECLARACION;
+non terminal Asignacion ASIGNA;
+non terminal Asignacion ASIGNACION;
+non terminal Imprimir IMPRIMIR;
+non terminal LinkedList<NodoAST> BLOQUES;
+non terminal NodoAST BLOQUE;
+non terminal Si SI;
+non terminal SubSi SINO;
+non terminal LinkedList<SubSi> SINOSI;
+non terminal Selecciona SELECCIONA;
+non terminal LinkedList<Caso> CASOS;
+non terminal Caso CASO;
+non terminal Expresion E;
 
 precedence left interrogacion;
 precedence left or;
@@ -60,239 +89,153 @@ start with INICIO;
 
 INICIO ::= INSTRUCCIONES:a 
 		{:
+			parser.ast = new AST(a);
             System.out.println("FS OK");
 			
 		:};
 		
-INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b
-				{:
+INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b{:RESULT = a; RESULT.add(b);:}
+				| INSTRUCCION:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};
 
-				:}
-				| INSTRUCCION:a{::};
-
-INSTRUCCION ::= DECLARACION:a puntoycoma{::}
-				|ASIGNACION:a puntoycoma{::}
+INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
+				|ASIGNACION:a puntoycoma{:RESULT = a;:}
 				|OBJETO:a puntoycoma{::}
-				|IMPRIMIR:a puntoycoma{::}
+				|IMPRIMIR:a puntoycoma{:RESULT = a;:}
 				|IMPORTAR:a puntoycoma{::}
-				|SI:a {::}
-				|SELECCIONA:a {::}
+				|SI:a {:RESULT = a;:}
+				|SELECCIONA:a {:RESULT = a;:}
 				|FUNCION:a {::}
 				|LLAMADA_METODO:a puntoycoma{::}
 				|LLAMADA_METODOS:a puntoycoma{::};
 
 TIPO_ACCESO ::= ACCESO_OBJETO:a{::}
-				| identificador:a
-				{:
-				:};
+				| identificador:a{:RESULT = a;:};
 				
-ASIGNACION ::= TIPO_ACCESO:a OP_ASIGNACION:o E:b
-			{:
-
-			:}
-			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha
-			{:
-
-			:}
-			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha
-			{:
-
-			:};
+ASIGNACION ::= TIPO_ACCESO:a OP_ASIGNACION:o E:b{: RESULT = new Asignacion(a.toString(), b, oleft+1, oright+1); :}
+			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{::}
+			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{::};
 				
-DECLARACION ::= var_ SEMIDECLARACION:a
-				{:
+DECLARACION ::= var_:x SEMIDECLARACION:a{:RESULT = new Declaracion(a, xleft+1, xright+1);:};
 
-				:};
-
-SEMIDECLARACION ::= SEMIDECLARACION:a coma ASIGNA:b
-				{:
-
-				:}
-				| ASIGNA:a
-				{:
-				:};
+SEMIDECLARACION ::= SEMIDECLARACION:a coma ASIGNA:b{:RESULT = a; RESULT.add(b);:}
+				| ASIGNA:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};
 				
-ASIGNA ::= identificador:a 
-		{:	
-		:}
-		| identificador:a OP_ASIGNACION:o E:b
-		{:
-		:}
-		| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha
-		{:
-		:}
-		| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha
-		{:
-		:};
+ASIGNA ::= identificador:a {:RESULT = new Asignacion(a, null, aleft+1, aright+1);:}
+		| identificador:a OP_ASIGNACION:o E:b{:RESULT = new Asignacion(a, b, aleft+1, aright+1);:}
+		| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{::}
+		| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{::};
 
-OP_ASIGNACION ::= igual 
-				{:
-				:}
-				| masigual
-				{:
-				:}
-				| menosigual
-				{:
-				:}
-				| porigual
-				{:
-				:}
-				| diagonaligual
-				{:
-				:};
+OP_ASIGNACION ::= igual {::}
+				| masigual{::}
+				| menosigual{::}
+				| porigual{::}
+				| diagonaligual{::};
 
-EXS ::= EXS:a coma E:b 
-		{:
-		:}
+EXS ::= EXS:a coma E:b {::}
 		|E:a{::};
 		
 
-OBJETO ::= 	 var_ identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha
-			{:
-			:}
-			|var_ identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha
-			{:
-			:};
+OBJETO ::= 	 var_ identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{::}
+			|var_ identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{::};
 			
-OBJS ::= OBJS:a coma OBJ:b
-		{:
-		:}
+OBJS ::= OBJS:a coma OBJ:b{::}
 		|OBJ:a{::};
 
-OBJ ::= identificador:a dospuntos E:b
-		{:
-		:};
+OBJ ::= identificador:a dospuntos E:b{::};
 
-IMPRIMIR ::= imprimir_ parIzquierda parDerecha
-			{:
-			:}
-			|imprimir_ parIzquierda E:a parDerecha
-			{:
-			:};
+IMPRIMIR ::= imprimir_:x parIzquierda parDerecha{:RESULT = new Imprimir(null, xleft+1, xright+1);:}
+			|imprimir_:x parIzquierda E:a parDerecha{:RESULT = new Imprimir(a, xleft+1, xright+1);:};
 
-IMPORTAR ::= importar_ parIzquierda parDerecha
-			{:
-			:}
-			|importar_ parIzquierda E:a parDerecha
-			{:
-			:};
+IMPORTAR ::= importar_ parIzquierda parDerecha{::}
+			|importar_ parIzquierda E:a parDerecha{::};
 
-BLOQUES ::= BLOQUES:a BLOQUE:b 
-			{:
-			:}
-			|BLOQUE:a {::};
+BLOQUES ::= BLOQUES:a BLOQUE:b {:RESULT = a; RESULT.add(b);:}
+			|BLOQUE:a {:RESULT = new LinkedList<>(); RESULT.add(a);:};
 			
 			
-BLOQUE ::= DECLARACION:a puntoycoma{::}
-		|ASIGNACION:a puntoycoma{::}
+BLOQUE ::= DECLARACION:a puntoycoma{:RESULT = a;:}
+		|ASIGNACION:a puntoycoma{:RESULT = a;:}
 		|OBJETO:a puntoycoma{::}
-		|IMPRIMIR:a puntoycoma{::}
+		|IMPRIMIR:a puntoycoma{:RESULT = a;:}
 		|IMPORTAR:a puntoycoma{::}
-		| detener_ puntoycoma
-		{:
-		:}
-		| retornar_ E:a puntoycoma
-		{:
-		:}
-		|SI:a {::}
-		|SELECCIONA:a {::}
+		| detener_:x puntoycoma{:RESULT = new Detener(xleft+1, xright+1);:}
+		| retornar_ E:a puntoycoma{::}
+		|SI:a {:RESULT = a;:}
+		|SELECCIONA:a {:RESULT = a;:}
 		|LLAMADA_METODO:a puntoycoma{::}
 		|LLAMADA_METODOS:a puntoycoma{::};
 
 
-SI ::= si_ parIzquierda E:a parDerecha llaveIzquierda BLOQUES:b llaveDerecha SINO:c
-		{:
-		:};
+SI ::= si_:x parIzquierda E:a parDerecha llaveIzquierda BLOQUES:b llaveDerecha
+			{:RESULT = new Si(a, b, xleft+1, xright+1);:}
+		|si_:x parIzquierda E:a parDerecha llaveIzquierda BLOQUES:b llaveDerecha 	SINO:c
+			{:RESULT = new Si(a, b, xleft+1, xright+1, c);:}
+		|si_:x parIzquierda E:a parDerecha llaveIzquierda BLOQUES:b llaveDerecha SINOSI:c
+			{:RESULT = new Si(a, b, xleft+1, xright+1, c);:}
+		|si_:x parIzquierda E:a parDerecha llaveIzquierda BLOQUES:b llaveDerecha SINOSI:c SINO:d
+			{:RESULT = new Si(a, b, xleft+1, xright+1, c, d);:};
 
-SINO ::= {:RESULT=null;:}
-		| sino_ SI:a 
-		{:
-		:}
-		| sino_ llaveIzquierda BLOQUES:a llaveDerecha
-		{:
-		:};
+SINO ::= sino_:x llaveIzquierda BLOQUES:a llaveDerecha{:RESULT = new SubSi(a, xleft+1, xright+1);:};
+		
+SINOSI ::= SINOSI:a sino_:x si_ parIzquierda E:b parDerecha llaveIzquierda BLOQUES:c llaveDerecha
+			{:RESULT = a; RESULT.add(new SubSi(b, c, xleft+1, xright+1));:}
+		| sino_:x si_ parIzquierda E:a parDerecha llaveIzquierda BLOQUES:b llaveDerecha
+			{:RESULT = new LinkedList<>(); RESULT.add(new SubSi(a, b, xleft+1, xright+1));:};
 
-SELECCIONA ::= selecciona_ parIzquierda E:a parDerecha llaveIzquierda CASOS:b llaveDerecha
-			{:
-			:};
+SELECCIONA ::= selecciona_:x parIzquierda E:a parDerecha llaveIzquierda CASOS:b llaveDerecha{:RESULT = new Selecciona(a, b, xleft+1, xright+1);:};
 			
-CASOS ::= CASOS:a CASO:b
-		{:
-		:}
-		| CASO:a {::};
+CASOS ::= CASOS:a CASO:b{:RESULT = a; RESULT.add(b);:}
+		| CASO:a {:RESULT = new LinkedList<>(); RESULT.add(a);:};
 		
-CASO ::= caso_ E:a dospuntos llaveIzquierda BLOQUES:b llaveDerecha
-		{:
-		
-		
-		:}
-		|defecto_ dospuntos llaveIzquierda BLOQUES:a llaveDerecha
-		{:
-			
-		:};
+CASO ::= caso_:x E:a dospuntos llaveIzquierda BLOQUES:b llaveDerecha{:RESULT = new Caso(a, b, xleft+1, xright+1);:}
+		|defecto_:x dospuntos llaveIzquierda BLOQUES:a llaveDerecha{:RESULT = new Caso(a, xleft+1, xright+1);:};
 
-FUNCION ::= funcion_ identificador:a parIzquierda PARAMETROS:b parDerecha llaveIzquierda BLOQUES:c llaveDerecha
-		{:
-		:}
-		| funcion_ identificador:a parIzquierda parDerecha llaveIzquierda BLOQUES:c llaveDerecha
-		{:
-		:};
+FUNCION ::= funcion_ identificador:a parIzquierda PARAMETROS:b parDerecha llaveIzquierda BLOQUES:c llaveDerecha{::}
+		| funcion_ identificador:a parIzquierda parDerecha llaveIzquierda BLOQUES:c llaveDerecha{::};
 
-PARAMETROS ::= PARAMETROS:a coma var_ identificador:b 
-			{:
-			:}
-			| var_ identificador:b
-			{:
-			:};
+PARAMETROS ::= PARAMETROS:a coma var_ identificador:b {::}
+			| var_ identificador:b{::};
 
-LLAMADA_METODO ::= identificador:a parIzquierda PARMS:b parDerecha
-				{:
-				:};
+LLAMADA_METODO ::= identificador:a parIzquierda PARMS:b parDerecha{::};
 
-LLAMADA_METODOS ::=LLAMADA_METODOS:c punto identificador:a parIzquierda PARMS:b parDerecha
-				{:
-				:}
-				|identificador:a punto identificador:b parIzquierda PARMS:c parDerecha
-				{:
-				:};
+LLAMADA_METODOS ::=LLAMADA_METODOS:c punto identificador:a parIzquierda PARMS:b parDerecha{::}
+				|identificador:a punto identificador:b parIzquierda PARMS:c parDerecha{::};
 
 PARMS ::= {:RESULT=null;:}
 		| EXS:a{::};
 
-ACCESO_OBJETO ::= identificador:a punto identificador:b
-				{:
-				:};
+ACCESO_OBJETO ::= identificador:a punto identificador:b{::};
 				
-E ::= 	  menos E:a {::} %prec umenos
-	|     mas E:a {::} %prec umas
-	| E:a mas E:b{::}
-	| E:a menos E:b{::}
-	| E:a asterisco E:b{::}
-	| E:a diagonal E:b{::}
-	| E:a potencia E:b{::}
-	| E:a masmas{::}
-	| E:a menosmenos{::}
-	| E:a mayorque E:b{::}
-	| E:a menorque E:b{::}
-	| E:a mayorigual E:b{::}
-	| E:a menorigual E:b{::}
-	| E:a igualigual E:b{::}
-	| E:a diferente E:b{::}
-	| E:a and E:b{::}
-	| E:a or E:b{::}
-	| not E:a{::}
-	| tstring:a{::}
-	| tchar:a{::}
-	| entero:a{::}
-	| decimal:a{::}
-	| identificador:a{::}
-	| nulo_:a{::}
-	| verdadero_:a{::}
-	| falso_:a{::}
-	| parIzquierda E:a parDerecha{::}
+E ::= 	  menos:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MENOS, xleft+1, xright+1);:} %prec umenos
+	|     mas:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MAS, xleft+1, xright+1);:} %prec umas
+	| E:a mas:x E:b{:RESULT = new Aritmetica(a, b, Operacion.Operador.MAS, xleft+1, xright+1);:}
+	| E:a menos:x E:b{:RESULT = new Aritmetica(a, b, Operacion.Operador.MENOS, xleft+1, xright+1);:}
+	| E:a asterisco:x E:b{:RESULT = new Aritmetica(a, b, Operacion.Operador.ASTERISCO, xleft+1, xright+1);:}
+	| E:a diagonal:x E:b{:RESULT = new Aritmetica(a, b, Operacion.Operador.BARRA, xleft+1, xright+1);:}
+	| E:a potencia:x E:b{:RESULT = new Aritmetica(a, b, Operacion.Operador.INTERCALACION, xleft+1, xright+1);:}
+	| E:a masmas:x{:RESULT = new Aritmetica(a, Operacion.Operador.AUMENTO, xleft+1, xright+1);:}
+	| E:a menosmenos:x{:RESULT = new Aritmetica(a, Operacion.Operador.DECREMENTO, xleft+1, xright+1);:}
+	| E:a mayorque:x E:b{:RESULT = new Relacional(a, b, Operacion.Operador.MAYORQUE, xleft+1, xright+1);:}
+	| E:a menorque:x E:b{:RESULT = new Relacional(a, b, Operacion.Operador.MENORQUE, xleft+1, xright+1);:}
+	| E:a mayorigual:x E:b{:RESULT = new Relacional(a, b, Operacion.Operador.MAYORIGUALQUE, xleft+1, xright+1);:}
+	| E:a menorigual:x E:b{:RESULT = new Relacional(a, b, Operacion.Operador.MENORIGUALQUE, xleft+1, xright+1);:}
+	| E:a igualigual:x E:b{:RESULT = new Relacional(a, b, Operacion.Operador.IGUAL, xleft+1, xright+1);:}
+	| E:a diferente:x E:b{:RESULT = new Relacional(a, b, Operacion.Operador.DIFERENTE, xleft+1, xright+1);:}
+	| E:a and:x E:b{:RESULT = new Logica(a, b, Operacion.Operador.AND, xleft+1, xright+1);:}
+	| E:a or:x E:b{:RESULT = new Logica(a, b, Operacion.Operador.OR, xleft+1, xright+1);:}
+	| not:x E:a{:RESULT = new Logica(a, xleft+1, xright+1);:}
+	| tstring:a{:RESULT = new Literal(Tipo.CADENA, a, aleft+1, aright+1);:}
+	| tchar:a{:RESULT = new Literal(Tipo.CADENA, a, aleft+1, aright+1);:}
+	| entero:a{:RESULT = new Literal(Tipo.ENTERO, new Integer(a), aleft+1, aright+1);:}
+	| decimal:a{:RESULT = new Literal(Tipo.DECIMAL, new Double(a), aleft+1, aright+1);:}
+	| identificador:a{:RESULT = new Identificador(a, aleft+1, aright+1);:}
+	| nulo_:a{:RESULT = new Literal(Tipo.NULL, "nulo", aleft+1, aright+1);:}
+	| verdadero_:a{:RESULT = new Literal(Tipo.BOOLEANO, "verdadero", aleft+1, aright+1);:}
+	| falso_:a{:RESULT = new Literal(Tipo.BOOLEANO, "falso", aleft+1, aright+1);:}
+	| parIzquierda E:a parDerecha{:RESULT = a;:}
 	| identificador:a corcheteIzquierda E:b corcheteDerecha{::}
 	| identificador:a corcheteIzquierda E:b corcheteDerecha punto identificador:c{::}
-	| E:a interrogacion E:b dospuntos E:c{::}
+	| E:a interrogacion:x E:b dospuntos E:c{:RESULT = new Ternario(a, b, c, xleft+1, xright+1);:}
 	|LLAMADA_METODO:a {::}
 	|LLAMADA_METODOS:a {::}
 	|ACCESO_OBJETO:a {::};

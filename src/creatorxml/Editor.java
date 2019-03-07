@@ -34,6 +34,7 @@ import javax.swing.text.BadLocationException;
 
 import genericxml.*;
 import fs.*;
+import fs.ast.AST;
 
 /**
  *
@@ -935,6 +936,7 @@ public class Editor extends javax.swing.JFrame {
             sintacticoFs = new SintacticoFs(lexicoFs);
             
             Arbol arbol = null;
+            AST ast = null;
             try {
                 //sintacticoGenericxml.parse();
                 //arbol = sintacticoGenericxml.getArbol();
@@ -952,6 +954,13 @@ public class Editor extends javax.swing.JFrame {
 //                }
 
                 sintacticoFs.parse();
+                ast = sintacticoFs.getAST();
+                
+                if(ast != null) {
+                    ast.ejecutar(this.jTextArea1);
+                } else {
+                    System.out.println("No se genero el ast.");
+                }
                 
             } catch (Exception ex) {
                 System.out.println("Exception " + ex);
