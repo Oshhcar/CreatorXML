@@ -8,6 +8,7 @@ package fs.ast.expresion;
 import fs.ast.simbolos.Tipo;
 import fs.ast.NodoAST;
 import fs.ast.simbolos.TablaSimbolo;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -15,5 +16,5 @@ import fs.ast.simbolos.TablaSimbolo;
  */
 public interface Expresion extends NodoAST{
     public Tipo getTipo(TablaSimbolo tabla);
-    public Object getValor(TablaSimbolo tabla);
+    public Object getValor(TablaSimbolo tabla, JTextArea salida);
 }

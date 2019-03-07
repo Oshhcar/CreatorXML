@@ -30,7 +30,7 @@ public class Asignacion implements Instruccion {
     @Override
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
         if (valor != null) {
-            Object val = valor.getValor(tabla);
+            Object val = valor.getValor(tabla, salida);
             if (val != null) {
                 tabla.setValor(getId(), val);
             }

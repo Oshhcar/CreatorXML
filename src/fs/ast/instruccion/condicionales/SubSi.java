@@ -44,7 +44,7 @@ public class SubSi implements Instruccion {
     @Override
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
         if (!isSino) {
-            Object valorCondicion = condicion.getValor(tabla);
+            Object valorCondicion = condicion.getValor(tabla, salida);
             Object tipoCondicion = condicion.getTipo(tabla);
 
             if (tipoCondicion != null) {

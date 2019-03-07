@@ -7,6 +7,7 @@ package fs.ast.expresion;
 
 import fs.ast.simbolos.TablaSimbolo;
 import fs.ast.simbolos.Tipo;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -32,7 +33,7 @@ public class Literal implements Expresion{
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla) {
+    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
         return valor;
     }
 

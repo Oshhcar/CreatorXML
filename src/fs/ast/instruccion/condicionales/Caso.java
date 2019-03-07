@@ -62,8 +62,8 @@ public class Caso implements Instruccion {
         } else {
             if (!isDefecto) {
                 if (expSwitch != null) {
-                    Object valExpSwitch = expSwitch.getValor(tabla);
-                    Object valExpresion = expresion.getValor(tabla);
+                    Object valExpSwitch = expSwitch.getValor(tabla, salida);
+                    Object valExpresion = expresion.getValor(tabla, salida);
                     Object tipExpSwitch = expSwitch.getTipo(tabla);
                     Object tipExpresion = expresion.getTipo(tabla);
 

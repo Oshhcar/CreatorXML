@@ -28,7 +28,7 @@ public class Imprimir implements Instruccion{
     
     @Override
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
-        Object valExp = exp.getValor(tabla);
+        Object valExp = exp.getValor(tabla, salida);
         if(valExp != null){
             System.out.println(String.valueOf(valExp));
             salida.append(String.valueOf(valExp)+"\n");
