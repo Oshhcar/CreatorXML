@@ -7,6 +7,8 @@ package fs.ast.instruccion.condicionales;
 
 import fs.ast.NodoAST;
 import fs.ast.expresion.Expresion;
+import fs.ast.expresion.Literal;
+import fs.ast.expresion.Retornar;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.TablaSimbolo;
 import fs.ast.simbolos.Tipo;
@@ -55,6 +57,14 @@ public class SubSi implements Instruccion {
                         for (NodoAST bloque : bloques) {
                             if (bloque instanceof Instruccion) {
                                 ((Instruccion) bloque).ejecutar(tabla, salida);
+                            } else {
+                                if (bloque instanceof Retornar) {
+                                    Object valor = ((Retornar) bloque).getValor(tabla, salida);
+                                    Tipo tipo = ((Retornar) bloque).getTipo(tabla);
+
+                                    Literal l = new Literal(tipo, valor, linea, columna);
+                                    return l;
+                                }
                             }
                         }
                         return true;
@@ -69,6 +79,14 @@ public class SubSi implements Instruccion {
             for (NodoAST bloque : bloques) {
                 if (bloque instanceof Instruccion) {
                     ((Instruccion) bloque).ejecutar(tabla, salida);
+                } else {
+                    if (bloque instanceof Retornar) {
+                        Object valor = ((Retornar) bloque).getValor(tabla, salida);
+                        Tipo tipo = ((Retornar) bloque).getTipo(tabla);
+
+                        Literal l = new Literal(tipo, valor, linea, columna);
+                        return l;
+                    }
                 }
             }
         }

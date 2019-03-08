@@ -1388,10 +1388,13 @@ class CUP$SintacticoFs$actions {
           case 50: // BLOQUE ::= retornar_ E puntoycoma 
             {
               NodoAST RESULT =null;
+		int xleft = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-2)).left;
+		int xright = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-2)).right;
+		Object x = (Object)((java_cup.runtime.Symbol) CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-2)).value;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).right;
 		Expresion a = (Expresion)((java_cup.runtime.Symbol) CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).value;
-		
+		RESULT = new Retornar(a, xleft+1, xright+1);
               CUP$SintacticoFs$result = parser.getSymbolFactory().newSymbol("BLOQUE",17, ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-2)), ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.peek()), RESULT);
             }
           return CUP$SintacticoFs$result;

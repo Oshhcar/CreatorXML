@@ -7,6 +7,7 @@ package fs.ast.instruccion.condicionales;
 
 import fs.ast.NodoAST;
 import fs.ast.expresion.Expresion;
+import fs.ast.expresion.Retornar;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.TablaSimbolo;
 import java.util.LinkedList;
@@ -59,8 +60,12 @@ public class Si implements Instruccion{
         for(SubSi si: subSis){
             Object r = si.ejecutar(tabla, salida);
             if(r != null){
-                if((boolean)r){
-                    return null;
+                if(r instanceof Boolean){
+                    if((boolean)r){
+                        return null;
+                    }
+                } else{
+                    return r;
                 }
             }
         }

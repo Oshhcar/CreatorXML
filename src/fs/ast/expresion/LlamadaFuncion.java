@@ -19,14 +19,15 @@ import javax.swing.JTextArea;
  *
  * @author oscar
  */
-public class LlamadaFuncion implements Expresion{
+public class LlamadaFuncion implements Expresion {
+
     private final String id;
     private final LinkedList<Expresion> parametros;
     private Tipo tipo;
     private final int linea;
     private final int columna;
-    
-        public LlamadaFuncion(String id, LinkedList<Expresion> parametros, int linea, int columna) {
+
+    public LlamadaFuncion(String id, LinkedList<Expresion> parametros, int linea, int columna) {
         this.id = id;
         this.parametros = parametros;
         this.linea = linea;
@@ -41,51 +42,77 @@ public class LlamadaFuncion implements Expresion{
         this.columna = columna;
         this.tipo = null;
     }
-    
+
     @Override
     public Tipo getTipo(TablaSimbolo tabla) {
-        return tipo;    
+        return tipo;
     }
 
     @Override
     public Object getValor(TablaSimbolo tabla, JTextArea salida) {
         FuncionSim fun = tabla.getFuncion(id);
-        if(fun != null){
-            if(this.parametros != null && fun.getParametros() != null){
-                if(this.parametros.size() == fun.getParametros().size()){
+        if (fun != null) {
+            if (this.parametros != null && fun.getParametros() != null) {
+                if (this.parametros.size() == fun.getParametros().size()) {
                     TablaSimbolo local = new TablaSimbolo();
-                   
-                    for(int i = 0; i < this.parametros.size(); i++){
+                    local.addAll(tabla);
+
+                    for (int i = 0; i < this.parametros.size(); i++) {
                         String idActual = fun.getParametros().get(i);
                         Simbolo sim = new Simbolo(Tipo.VAR, idActual);
                         local.add(sim);
                         Expresion expActual = this.parametros.get(i);
                         Object valActual = expActual.getValor(tabla, salida);
                         Tipo tipActual = expActual.getTipo(tabla);
-                        
-                        if(tipActual != null && valActual != null){
+
+                        if (tipActual != null && valActual != null) {
                             sim.setValor(valActual);
                             local.add(sim);
                         } else {
-                            System.err.println("Error, no se puede asignar el parametro. Linea:"+linea);
+                            System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
                             return null;
                         }
-                        
+
                     }
-                    
+
                     for (NodoAST bloque : fun.getBloques()) {
-                            if (bloque instanceof Instruccion) {
-                                ((Instruccion) bloque).ejecutar(local, salida);
+                        if (bloque instanceof Instruccion) {
+                            Object o = ((Instruccion) bloque).ejecutar(local, salida);
+                            if (o != null) {
+                                tipo = ((Literal) o).getTipo(tabla);
+                                return ((Literal) o).getValor(tabla, salida);
                             }
+                        } else {
+                            if (bloque instanceof Retornar) {
+                                tipo = ((Retornar) bloque).getTipo(tabla);
+                                return ((Retornar) bloque).getValor(local, salida);
+                            }
+                        }
                     }
-                    
+
                 } else {
-                    System.err.println("Error, los parametros no son los mismos en la funcion. Linea:"+linea);
+                    System.err.println("Error, los parametros no son los mismos en la funcion. Linea:" + linea);
                 }
             } else {
-                
+                TablaSimbolo local = new TablaSimbolo();
+                local.addAll(tabla);
+
+                for (NodoAST bloque : fun.getBloques()) {
+                    if (bloque instanceof Instruccion) {
+                        Object o = ((Instruccion) bloque).ejecutar(local, salida);
+                        if (o != null) {
+                            tipo = ((Literal) o).getTipo(tabla);
+                            return ((Literal) o).getValor(tabla, salida);
+                        }
+                    } else {
+                        if (bloque instanceof Retornar) {
+                            tipo = ((Retornar) bloque).getTipo(tabla);
+                            return ((Retornar) bloque).getValor(local, salida);
+                        }
+                    }
+                }
             }
-        } 
+        }
         return null;
     }
 
@@ -98,5 +125,5 @@ public class LlamadaFuncion implements Expresion{
     public int getColumna() {
         return columna;
     }
-    
+
 }
