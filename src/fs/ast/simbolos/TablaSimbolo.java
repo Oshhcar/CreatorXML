@@ -17,6 +17,22 @@ public class TablaSimbolo extends LinkedList<Simbolo> {
         super();
     }
 
+    public FuncionSim getFuncion(String id){
+        for(int i = 0; i < this.size(); i++){
+            Object s = this.get(i);
+            
+            if(s instanceof FuncionSim){
+                FuncionSim fun = (FuncionSim) s;
+                
+                if(fun.getId().equals(id)){
+                    return fun;
+                }
+            }
+        }
+        System.err.println("Error, funcion "+id+" no encontrada.");
+        return null;
+    }
+    
     public Object getValor(String id) {
         for (int i = this.size() - 1; i >= 0; i--) {
             Simbolo s = this.get(i);

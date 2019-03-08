@@ -17,7 +17,7 @@ import javax.swing.JTextArea;
  */
 public class Funcion implements Instruccion{
     private final String id;
-    private final Declaracion parametros;
+    private final LinkedList<String> parametros;
     private final LinkedList<NodoAST> bloques;
     private final int linea;
     private final int columna;
@@ -30,7 +30,7 @@ public class Funcion implements Instruccion{
         this.columna = columna;
     }
 
-    public Funcion(String id, Declaracion parametros, LinkedList<NodoAST> bloques, int linea, int columna) {
+    public Funcion(String id, LinkedList<String> parametros, LinkedList<NodoAST> bloques, int linea, int columna) {
         this.id = id;
         this.parametros = parametros;
         this.bloques = bloques;

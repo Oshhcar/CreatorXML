@@ -14,10 +14,10 @@ import java.util.LinkedList;
  * @author oscar
  */
 public class FuncionSim extends Simbolo{
-    private Declaracion parametros;
+    private LinkedList<String> parametros;
     private LinkedList<NodoAST> bloques;
 
-    public FuncionSim(Declaracion parametros, LinkedList<NodoAST> bloques, String id) {
+    public FuncionSim(LinkedList<String> parametros, LinkedList<NodoAST> bloques, String id) {
         super(Tipo.FUNCION, id);
         this.parametros = parametros;
         this.bloques = bloques;
@@ -26,14 +26,14 @@ public class FuncionSim extends Simbolo{
         /**
      * @return the parametros
      */
-    public Declaracion getParametros() {
+    public LinkedList<String> getParametros() {
         return parametros;
     }
 
     /**
      * @param parametros the parametros to set
      */
-    public void setParametros(Declaracion parametros) {
+    public void setParametros(LinkedList<String> parametros) {
         this.parametros = parametros;
     }
 

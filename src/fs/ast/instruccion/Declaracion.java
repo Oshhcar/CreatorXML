@@ -28,7 +28,7 @@ public class Declaracion implements Instruccion{
     
     @Override
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
-        for (Asignacion asignacion: asignaciones){
+        for (Asignacion asignacion: getAsignaciones()){
             Simbolo sim = new Simbolo(Tipo.VAR, asignacion.getId());
             tabla.add(sim);
             asignacion.ejecutar(tabla, salida);
@@ -44,6 +44,13 @@ public class Declaracion implements Instruccion{
     @Override
     public int getColumna() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * @return the asignaciones
+     */
+    public LinkedList<Asignacion> getAsignaciones() {
+        return asignaciones;
     }
     
 }

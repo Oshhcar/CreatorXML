@@ -51,9 +51,9 @@ terminal and, or, not;
 terminal igual, masigual, menosigual, porigual, diagonaligual;
 terminal var_, imprimir_, importar_, detener_, retornar_, si_, sino_, selecciona_, caso_, defecto_, funcion_;
 
-non terminal INICIO, OP_ASIGNACION, EXS;
+non terminal INICIO, OP_ASIGNACION;
 non terminal OBJETO, OBJS, OBJ, IMPORTAR;
-non terminal LLAMADA_METODO, LLAMADA_METODOS, PARMS, ACCESO_OBJETO, TIPO_ACCESO;
+non terminal LLAMADA_METODOS, ACCESO_OBJETO, TIPO_ACCESO;
 
 non terminal LinkedList<NodoAST> INSTRUCCIONES;
 non terminal NodoAST INSTRUCCION;
@@ -71,8 +71,11 @@ non terminal Selecciona SELECCIONA;
 non terminal LinkedList<Caso> CASOS;
 non terminal Caso CASO;
 non terminal Funcion FUNCION;
-non terminal Declaracion PARAMETROS;
-non terminal LinkedList<Asignacion> PARAMETRO;
+non terminal LinkedList<String> PARAMETROS;
+non terminal LinkedList<String> PARAMETRO;
+non terminal LinkedList<Expresion> EXS;
+non terminal LinkedList<Expresion> PARMS;
+non terminal LlamadaFuncion LLAMADA_METODO;
 non terminal Expresion E;
 
 precedence left interrogacion;
@@ -108,7 +111,7 @@ INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 				|SI:a {:RESULT = a;:}
 				|SELECCIONA:a {:RESULT = a;:}
 				|FUNCION:a {:RESULT = a;:}
-				|LLAMADA_METODO:a puntoycoma{::}
+				|LLAMADA_METODO:a puntoycoma{:RESULT = a;:}
 				|LLAMADA_METODOS:a puntoycoma{::};
 
 TIPO_ACCESO ::= ACCESO_OBJETO:a{::}
@@ -134,8 +137,8 @@ OP_ASIGNACION ::= igual {::}
 				| porigual{::}
 				| diagonaligual{::};
 
-EXS ::= EXS:a coma E:b {::}
-		|E:a{::};
+EXS ::= EXS:a coma E:b {:RESULT = a; RESULT.add(b);:}
+		|E:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};
 		
 
 OBJETO ::= 	 var_ identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{::}
@@ -165,7 +168,7 @@ BLOQUE ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 		| retornar_ E:a puntoycoma{::}
 		|SI:a {:RESULT = a;:}
 		|SELECCIONA:a {:RESULT = a;:}
-		|LLAMADA_METODO:a puntoycoma{::}
+		|LLAMADA_METODO:a puntoycoma{:RESULT = a;:}
 		|LLAMADA_METODOS:a puntoycoma{::};
 
 
@@ -198,18 +201,25 @@ FUNCION ::= funcion_:x identificador:a parIzquierda PARAMETROS:b parDerecha llav
 		| funcion_:x identificador:a parIzquierda parDerecha llaveIzquierda BLOQUES:c llaveDerecha
 			{:RESULT = new Funcion(a, c, xleft+1, xright+1);:};
 
-PARAMETROS ::= PARAMETRO:a {:RESULT = new Declaracion(a, aleft+1, aright+1);:};
+PARAMETROS ::= PARAMETRO:a {:RESULT = a;:};
 			
-PARAMETRO ::= PARAMETRO:a coma var_:x identificador:b {:RESULT = a; RESULT.add(new Asignacion(b, null, xleft+1, xright+1));:}
-			| var_:x identificador:a{:RESULT = new LinkedList<>(); RESULT.add(new Asignacion(a, null, xleft+1, xright+1));:};
+PARAMETRO ::= PARAMETRO:a coma var_ identificador:b {:RESULT = a; RESULT.add(b);:}
+			| var_ identificador:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};
 			
-LLAMADA_METODO ::= identificador:a parIzquierda PARMS:b parDerecha{::};
+LLAMADA_METODO ::= identificador:a parIzquierda PARMS:b parDerecha
+					{:
+						if(b != null){
+							RESULT = new LlamadaFuncion(a, b, aleft+1, aright+1);
+						} else {
+							RESULT = new LlamadaFuncion(a, b, aleft+1, aright+1);
+						}
+					:};
 
 LLAMADA_METODOS ::=LLAMADA_METODOS:c punto identificador:a parIzquierda PARMS:b parDerecha{::}
 				|identificador:a punto identificador:b parIzquierda PARMS:c parDerecha{::};
 
 PARMS ::= {:RESULT=null;:}
-		| EXS:a{::};
+		| EXS:a{:RESULT = a;:};
 
 ACCESO_OBJETO ::= identificador:a punto identificador:b{::};
 				
@@ -243,7 +253,7 @@ E ::= 	  menos:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MENOS, xlef
 	| identificador:a corcheteIzquierda E:b corcheteDerecha{::}
 	| identificador:a corcheteIzquierda E:b corcheteDerecha punto identificador:c{::}
 	| E:a interrogacion:x E:b dospuntos E:c{:RESULT = new Ternario(a, b, c, xleft+1, xright+1);:}
-	|LLAMADA_METODO:a {::}
+	|LLAMADA_METODO:a {:RESULT = a;:}
 	|LLAMADA_METODOS:a {::}
 	|ACCESO_OBJETO:a {::};
 		
