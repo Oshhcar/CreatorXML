@@ -9,6 +9,8 @@ import fs.ast.instruccion.condicionales.*;
 
 import java_cup.runtime.Symbol;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.HashMap;
 
 parser code
 {:
@@ -52,7 +54,7 @@ terminal igual, masigual, menosigual, porigual, diagonaligual;
 terminal var_, imprimir_, importar_, detener_, retornar_, si_, sino_, selecciona_, caso_, defecto_, funcion_;
 
 non terminal INICIO, OP_ASIGNACION;
-non terminal OBJETO, OBJS, OBJ, IMPORTAR;
+non terminal IMPORTAR;
 non terminal LLAMADA_METODOS, ACCESO_OBJETO, TIPO_ACCESO;
 
 non terminal LinkedList<NodoAST> INSTRUCCIONES;
@@ -76,6 +78,7 @@ non terminal LinkedList<String> PARAMETRO;
 non terminal LinkedList<Expresion> EXS;
 non terminal LinkedList<Expresion> PARMS;
 non terminal LlamadaFuncion LLAMADA_METODO;
+non terminal Map<String, Expresion> OBJS;
 non terminal Expresion E;
 
 precedence left interrogacion;
@@ -105,7 +108,6 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b{:RESULT = a; RESULT.add(b);:}
 
 INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 				|ASIGNACION:a puntoycoma{:RESULT = a;:}
-				|OBJETO:a puntoycoma{::}
 				|IMPRIMIR:a puntoycoma{:RESULT = a;:}
 				|IMPORTAR:a puntoycoma{::}
 				|SI:a {:RESULT = a;:}
@@ -117,19 +119,23 @@ INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 TIPO_ACCESO ::= ACCESO_OBJETO:a{::}
 				| identificador:a{:RESULT = a;:};
 				
-ASIGNACION ::= TIPO_ACCESO:a OP_ASIGNACION:o E:b{: RESULT = new Asignacion(a.toString(), b, oleft+1, oright+1); :}
+ASIGNACION ::=TIPO_ACCESO:a OP_ASIGNACION:o E:b{: RESULT = new Asignacion(Tipo.VAR, a.toString(), b, oleft+1, oright+1); :}
 			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{::}
-			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{::};
+			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{::}
+			| TIPO_ACCESO:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a.toString(), aleft+1, aright+1);:}
+			| TIPO_ACCESO:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a.toString(), c, aleft+1, aright+1);:};
 				
 DECLARACION ::= var_:x SEMIDECLARACION:a{:RESULT = new Declaracion(a, xleft+1, xright+1);:};
 
 SEMIDECLARACION ::= SEMIDECLARACION:a coma ASIGNA:b{:RESULT = a; RESULT.add(b);:}
 				| ASIGNA:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};
 				
-ASIGNA ::= identificador:a {:RESULT = new Asignacion(a, null, aleft+1, aright+1);:}
-		| identificador:a OP_ASIGNACION:o E:b{:RESULT = new Asignacion(a, b, aleft+1, aright+1);:}
+ASIGNA ::= identificador:a {:RESULT = new Asignacion(Tipo.VAR, a, aleft+1, aright+1);:}
+		| identificador:a OP_ASIGNACION:o E:b{:RESULT = new Asignacion(Tipo.VAR, a, b, aleft+1, aright+1);:}
 		| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{::}
-		| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{::};
+		| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{::}
+		| identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{: RESULT = new Asignacion(Tipo.OBJETO, a, aleft+1, aright+1);:}
+		| identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, c, aleft+1, aright+1);:};
 
 OP_ASIGNACION ::= igual {::}
 				| masigual{::}
@@ -138,16 +144,10 @@ OP_ASIGNACION ::= igual {::}
 				| diagonaligual{::};
 
 EXS ::= EXS:a coma E:b {:RESULT = a; RESULT.add(b);:}
-		|E:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};
-		
-
-OBJETO ::= 	 var_ identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{::}
-			|var_ identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{::};
+		|E:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};	
 			
-OBJS ::= OBJS:a coma OBJ:b{::}
-		|OBJ:a{::};
-
-OBJ ::= identificador:a dospuntos E:b{::};
+OBJS ::= OBJS:a coma identificador:b dospuntos E:c{:RESULT = a; RESULT.put(b, c);:}
+		|identificador:a dospuntos E:b{:RESULT = new HashMap<String, Expresion>(); RESULT.put(a, b);:};
 
 IMPRIMIR ::= imprimir_:x parIzquierda parDerecha{:RESULT = new Imprimir(null, xleft+1, xright+1);:}
 			|imprimir_:x parIzquierda E:a parDerecha{:RESULT = new Imprimir(a, xleft+1, xright+1);:};
@@ -161,7 +161,6 @@ BLOQUES ::= BLOQUES:a BLOQUE:b {:RESULT = a; RESULT.add(b);:}
 			
 BLOQUE ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 		|ASIGNACION:a puntoycoma{:RESULT = a;:}
-		|OBJETO:a puntoycoma{::}
 		|IMPRIMIR:a puntoycoma{:RESULT = a;:}
 		|IMPORTAR:a puntoycoma{::}
 		| detener_:x puntoycoma{:RESULT = new Detener(xleft+1, xright+1);:}
@@ -255,7 +254,7 @@ E ::= 	  menos:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MENOS, xlef
 	| E:a interrogacion:x E:b dospuntos E:c{:RESULT = new Ternario(a, b, c, xleft+1, xright+1);:}
 	|LLAMADA_METODO:a {:RESULT = a;:}
 	|LLAMADA_METODOS:a {::}
-	|ACCESO_OBJETO:a {::};
+	|identificador:a punto identificador:b{:RESULT = new AccesoObjeto(a, b, aleft+1, aright+1);:};
 		
 		
 		

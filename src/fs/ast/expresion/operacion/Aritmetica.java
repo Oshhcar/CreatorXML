@@ -39,13 +39,13 @@ public class Aritmetica extends Operacion implements Expresion {
         Tipo tip1 = op1.getTipo(tabla);
 
         if (unario) {
-            if(tip1 != null){
-                switch(operador){
+            if (tip1 != null) {
+                switch (operador) {
                     case MAS:
-                        if(tip1 == Tipo.ENTERO){
+                        if (tip1 == Tipo.ENTERO) {
                             tipo = Tipo.ENTERO;
                             return new Integer(val1.toString());
-                        } else if(tip1 == Tipo.DECIMAL){
+                        } else if (tip1 == Tipo.DECIMAL) {
                             tipo = Tipo.DECIMAL;
                             return new Double(val1.toString());
                         } else {
@@ -53,12 +53,12 @@ public class Aritmetica extends Operacion implements Expresion {
                         }
                         return null;
                     case MENOS:
-                        if(tip1 == Tipo.ENTERO){
+                        if (tip1 == Tipo.ENTERO) {
                             tipo = Tipo.ENTERO;
-                            return new Integer(val1.toString())*-1;
-                        } else if(tip1 == Tipo.DECIMAL){
+                            return new Integer(val1.toString()) * -1;
+                        } else if (tip1 == Tipo.DECIMAL) {
                             tipo = Tipo.DECIMAL;
-                            return new Double(val1.toString())*-1;
+                            return new Double(val1.toString()) * -1;
                         } else {
                             System.err.println("Error de tipos, solo los números pueden tener signo. Linea" + linea);
                         }
@@ -73,147 +73,117 @@ public class Aritmetica extends Operacion implements Expresion {
         } else {
             Object val2 = op2.getValor(tabla, salida);
             Tipo tip2 = op2.getTipo(tabla);
-            
+
             if (tip1 != null && tip2 != null) {
-                switch (operador) {
-                    case MAS:
-                        if (tip1 == Tipo.CADENA || tip2 == Tipo.CADENA) {
-                            tipo = Tipo.CADENA;
-                            return val1.toString() + val2.toString();
-                        } else if (tip1 == Tipo.DECIMAL || tip2 == Tipo.DECIMAL) {
-                            if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
-                                if (tip1 != Tipo.NULL && tip2 != Tipo.NULL) {
-                                    tipo = Tipo.DECIMAL;
-                                    return new Double(val1.toString()) + new Double(val2.toString());
-                                } else {
-                                    System.err.println("Error de tipos, no se puede sumar un valor nullo. Linea" + linea);
-                                }
-                            } else {
-                                System.err.println("Error de tipos, no se puede sumar booleanos. Linea" + linea);
-                            }
-                        } else if (tip1 == Tipo.ENTERO || tip2 == Tipo.ENTERO) {
-                            if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
-                                if (tip1 != Tipo.NULL && tip2 != Tipo.NULL) {
-                                    tipo = Tipo.ENTERO;
-                                    return new Integer(val1.toString()) + new Integer(val2.toString());
-                                } else {
-                                    System.err.println("Error de tipos, no se puede sumar un valor nullo. Linea" + linea);
-                                }
-                            } else {
-                                System.err.println("Error de tipos, no se puede sumar booleanos. Linea" + linea);
-                            }
-                        } else {
-                            System.err.println("Error de tipos, la suma no se pudo realizar. " + linea);
-                        }
-                        return null;
-                    case MENOS:
-                        if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
-                            if (tip1 != Tipo.NULL && tip2 != Tipo.NULL) {
-                                if (tip1 != Tipo.CADENA && tip2 != Tipo.CADENA) {
-                                    if (tip1 == tipo.DECIMAL || tip2 == tipo.DECIMAL) {
+                if (tip1 != Tipo.VAR && tip2 != Tipo.VAR) {
+                    if (tip1 != Tipo.NULL && tip2 != Tipo.NULL) {
+                        switch (operador) {
+                            case MAS:
+                                if (tip1 == Tipo.CADENA || tip2 == Tipo.CADENA) {
+                                    tipo = Tipo.CADENA;
+                                    return val1.toString() + val2.toString();
+                                } else if(tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO){
+                                    if (tip1 == Tipo.DECIMAL || tip2 == Tipo.DECIMAL) {
                                         tipo = Tipo.DECIMAL;
-                                        return new Double(val1.toString()) - new Double(val2.toString());
+                                        return new Double(val1.toString()) + new Double(val2.toString());
                                     } else {
                                         tipo = Tipo.ENTERO;
-                                        return new Integer(val1.toString()) - new Integer(val2.toString());
+                                        return new Integer(val1.toString()) + new Integer(val2.toString());
                                     }
-                                } else {
-                                    System.err.println("Error de tipos, no se pueden restar cadenas. Línea:" + linea);
+                                } 
+                                System.err.println("Error de tipos, la suma no se pudo realizar. Línea:" + linea);
+                                return null;
+                            case MENOS:
+                                if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
+                                    if (tip1 != Tipo.CADENA && tip2 != Tipo.CADENA) {
+                                        if (tip1 == tipo.DECIMAL || tip2 == tipo.DECIMAL) {
+                                            tipo = Tipo.DECIMAL;
+                                            return new Double(val1.toString()) - new Double(val2.toString());
+                                        } else {
+                                            tipo = Tipo.ENTERO;
+                                            return new Integer(val1.toString()) - new Integer(val2.toString());
+                                        }
+                                    } 
+                                } 
+                                System.err.println("Error de tipos, la resta no se pudo realizar. Línea:" + linea);
+                                return null;
+                            case ASTERISCO:
+                                if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
+                                    if (tip1 != Tipo.CADENA && tip2 != Tipo.CADENA) {
+                                        if (tip1 == Tipo.DECIMAL || tip2 == Tipo.DECIMAL) {
+                                            tipo = Tipo.DECIMAL;
+                                            return new Double(val1.toString()) * new Double(val2.toString());
+                                        } else {
+                                            tipo = Tipo.ENTERO;
+                                            return new Integer(val1.toString()) * new Integer(val2.toString());
+                                        }
+                                    } 
+                                } 
+                                System.err.println("Error de tipos, la multiplicación no se pudo realizar. Línea:" + linea);
+                                return null;
+                            case BARRA:
+                                if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
+                                    if (tip1 != Tipo.CADENA && tip2 != Tipo.CADENA) {
+                                        if (Double.valueOf(val2.toString()) != 0) {
+                                            tipo = Tipo.DECIMAL;
+                                            return new Double(val1.toString()) / new Double(val2.toString());
+                                        } else {
+                                            System.err.println("Error! División entre 0. Línea:" + linea);
+                                            return null;
+                                        }
+                                    } 
                                 }
-                            } else {
-                                System.err.println("Error de tipos, valor nulo encontrado. Linea:" + linea);
-                            }
-                        } else {
-                            System.err.println("Error de tipos, no se pueden restar booleanos. Línea:" + linea);
-                        }
-                        return null;
-                    case ASTERISCO:
-                        if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
-                            if (tip1 != Tipo.NULL && tip2 != Tipo.NULL) {
+                                System.err.println("Error de tipos, la división no se pudo realizar. Línea:" + linea);
+                                return null;
+                            case INTERCALACION:
                                 if (tip1 != Tipo.CADENA && tip2 != Tipo.CADENA) {
                                     if (tip1 == Tipo.DECIMAL || tip2 == Tipo.DECIMAL) {
                                         tipo = Tipo.DECIMAL;
-                                        return new Double(val1.toString()) * new Double(val2.toString());
-                                    } else {
+                                        if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
+                                            return Math.pow(new Double(val1.toString()), new Double(val2.toString()));
+                                        } else {
+                                            if (tip1 == Tipo.BOOLEANO) {
+                                                int tmp = val1.toString().equals("verdadero") ? 1 : 0;
+                                                return Math.pow(tmp, new Double(val2.toString()));
+                                            } else {
+                                                int tmp = val2.toString().equals("verdadero") ? 1 : 0;
+                                                return Math.pow(new Double(val1.toString()), tmp);
+                                            }
+                                        }
+                                    } else if (tip1 == Tipo.ENTERO || tip2 == Tipo.ENTERO) {
                                         tipo = Tipo.ENTERO;
-                                        return new Integer(val1.toString()) * new Integer(val2.toString());
-                                    }
-                                } else {
-                                    System.err.println("Error de tipos, no se pueden multiplicar cadenas. Línea:" + linea);
-                                }
-                            } else {
-                                System.err.println("Error de tipos, valor nulo encontrado. Linea:" + linea);
-                            }
-                        } else {
-                            System.err.println("Error de tipos, no se pueden multiplicar booleanos. Línea:" + linea);
-                        }
-                        return null;
-                    case BARRA:
-                        if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
-                            if (tip1 != Tipo.NULL && tip2 != Tipo.NULL) {
-                                if (tip1 != Tipo.CADENA && tip2 != Tipo.CADENA) {
-                                    if (Double.valueOf(val2.toString()) != 0) {
-                                        tipo = Tipo.DECIMAL;
-                                        return new Double(val1.toString()) / new Double(val2.toString());
-                                    } else {
-                                        System.err.println("Error! División entre 0. Línea:" + linea);
-
-                                    }
-                                } else {
-                                    System.err.println("Error de tipos, no se pueden dividir cadenas. Lína:" + linea);
-                                }
-                            } else {
-                                System.err.println("Error de tipos, valor nulo encontrado. Linea:" + linea);
-                            }
-                        } else {
-                            System.err.println("Error de tipos, no se pueden dividir booleanos. Línea:" + linea);
-                        }
-                        return null;
-                    case INTERCALACION:
-                        if (tip1 != Tipo.NULL && tip2 != Tipo.NULL) {
-                            if (tip1 != Tipo.CADENA && tip2 != Tipo.CADENA) {
-                                if (tip1 == Tipo.DECIMAL || tip2 == Tipo.DECIMAL) {
-                                    tipo = Tipo.DECIMAL;
-                                    if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
-                                        return Math.pow(new Double(val1.toString()), new Double(val2.toString()));
-                                    } else {
-                                        if (tip1 == Tipo.BOOLEANO) {
-                                            int tmp = val1.toString().equals("verdadero") ? 1 : 0;
-                                            return Math.pow(tmp, new Double(val2.toString()));
+                                        if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
+                                            return (int) Math.pow(new Integer(val1.toString()), new Integer(val2.toString()));
                                         } else {
-                                            int tmp = val2.toString().equals("verdadero") ? 1 : 0;
-                                            return Math.pow(new Double(val1.toString()), tmp);
+                                            if (tip1 == Tipo.BOOLEANO) {
+                                                int tmp = val1.toString().equals("verdadero") ? 1 : 0;
+                                                return (int) Math.pow(tmp, new Double(val2.toString()));
+                                            } else {
+                                                int tmp = val2.toString().equals("verdadero") ? 1 : 0;
+                                                return (int) Math.pow(new Double(val1.toString()), tmp);
+                                            }
                                         }
-                                    }
-                                } else if (tip1 == Tipo.ENTERO || tip2 == Tipo.ENTERO) {
-                                    tipo = Tipo.ENTERO;
-                                    if (tip1 != Tipo.BOOLEANO && tip2 != Tipo.BOOLEANO) {
-                                        return (int) Math.pow(new Integer(val1.toString()), new Integer(val2.toString()));
                                     } else {
-                                        if (tip1 == Tipo.BOOLEANO) {
-                                            int tmp = val1.toString().equals("verdadero") ? 1 : 0;
-                                            return (int) Math.pow(tmp, new Double(val2.toString()));
-                                        } else {
-                                            int tmp = val2.toString().equals("verdadero") ? 1 : 0;
-                                            return (int) Math.pow(new Double(val1.toString()), tmp);
-                                        }
+                                        int tmp1 = val1.equals("verdadero") ? 1 : 0;
+                                        int tmp2 = val2.equals("verdadero") ? 1 : 0;
+                                        return (int) Math.pow(tmp1, tmp2);
                                     }
-                                } else {
-                                    int tmp1 = val1.equals("verdadero") ? 1 : 0;
-                                    int tmp2 = val2.equals("verdadero") ? 1 : 0;
-                                    return (int) Math.pow(tmp1, tmp2);
-                                }
-                            } else {
-                                System.err.println("Error de tipos, no se pueden multiplicar cadenas. Línea:" + linea);
-                            }
-                        } else {
-                            System.err.println("Error de tipos, valor nulo encontrado. Linea:" + linea);
+                                } 
+                                System.err.println("Error de tipos, la potencia no se pudo realizar. Línea:" + linea);
+                                return null;
                         }
-                        return null;
+                    } else {
+                        System.err.println("Error! No se puede realizar la operación aritmética con valor nulo. Línea:" + linea);
+                    }
+                } else {
+                    if (tip1 == Tipo.VAR) {
+                        System.err.println("Error! Variable \"" + val1.toString() + "\" indefinida. Linea:" + linea);
+                    } else {
+                        System.err.println("Error! Variable \"" + val2.toString() + "\" indefinida. Linea:" + linea);
+                    }
                 }
             }
         }
-
         return null;
     }
 

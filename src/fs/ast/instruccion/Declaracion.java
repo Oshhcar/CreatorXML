@@ -29,7 +29,7 @@ public class Declaracion implements Instruccion{
     @Override
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
         for (Asignacion asignacion: getAsignaciones()){
-            Simbolo sim = new Simbolo(Tipo.VAR, asignacion.getId());
+            Simbolo sim = new Simbolo(asignacion.getTipo(), asignacion.getId());
             tabla.add(sim);
             asignacion.ejecutar(tabla, salida);
         }

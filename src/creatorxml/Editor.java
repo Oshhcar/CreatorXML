@@ -380,6 +380,11 @@ public class Editor extends javax.swing.JFrame {
         jMenuItem7.setBackground(java.awt.Color.white);
         jMenuItem7.setIcon(new ImageIcon("iconos/compilar.png"));
         jMenuItem7.setText("Ejecutar");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem7);
 
         jMenuBar1.add(jMenu2);
@@ -505,6 +510,10 @@ public class Editor extends javax.swing.JFrame {
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         cerrarTodo();
     }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        compilarActual();
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     protected Component makeTextPanel(File archivo) {
         //JPanel panel = new JPanel(false);
@@ -648,7 +657,7 @@ public class Editor extends javax.swing.JFrame {
 
     private void abrirArchivo() {
         JFileChooser fileChooser = new JFileChooser();
-        File f = new File("C:/users/Oscar");
+        File f = new File("arbol.png");
         fileChooser.setCurrentDirectory(f);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos FS y GXML", "fs", "gxml", "txt");
         fileChooser.setFileFilter(filter);

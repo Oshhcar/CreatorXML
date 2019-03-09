@@ -12,9 +12,11 @@ import java.util.LinkedList;
  * @author oscar
  */
 public class TablaSimbolo extends LinkedList<Simbolo> {
-
+    private LinkedList<TablaSimbolo> local;
+    
     public TablaSimbolo() {
         super();
+        local = new LinkedList<>();
     }
 
     public FuncionSim getFuncion(String id){
@@ -39,7 +41,26 @@ public class TablaSimbolo extends LinkedList<Simbolo> {
 
             if (s.getId().equals(id)) {
                 Object aux = s.getValor();
+                if(s.getTipo() == Tipo.VAR || s.getTipo() == Tipo.OBJETO){
+                    return id;
+                }
                 return aux;
+            }
+
+        }
+        System.err.println("Error, no existe la variable " + id + ".");
+        return null;
+    }
+    
+    public Object getValorObjeto(String id) {
+        for (int i = this.size() - 1; i >= 0; i--) {
+            Simbolo s = this.get(i);
+
+            if (s.getId().equals(id)) {
+                if(s.getTipo() == Tipo.OBJETO){
+                    return s.getValor();
+                }
+                return null;
             }
 
         }
@@ -58,6 +79,8 @@ public class TablaSimbolo extends LinkedList<Simbolo> {
         System.out.println("Error, no existe la variable " + id + ", "
                 + "no se puede asignar el valor.");
     }
+    
+    
 
     public Tipo getTipo(String id) {
         for (int i = this.size() - 1; i >= 0; i--) {

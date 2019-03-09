@@ -3,6 +3,7 @@ dist/
 lib/
 test/
 iconos/
+entradas/
 arbol.dot
 arbol.png
 Errores.html
