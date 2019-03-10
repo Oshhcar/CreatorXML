@@ -5,6 +5,8 @@
  */
 package fs.ast.simbolos;
 
+import java.util.HashMap;
+
 /**
  *
  * @author oscar
@@ -60,7 +62,7 @@ public class Simbolo {
      * @param valor the valor to set
      */
     public void setValor(Object valor) {
-
+        
         if (valor instanceof Double) {
             tipo = Tipo.DECIMAL;
         } else if (valor instanceof Integer) {
@@ -71,7 +73,9 @@ public class Simbolo {
             tipo = Tipo.NULL;
         } else if (valor instanceof String) {
             tipo = Tipo.CADENA;
-        }
+        } else if(tipo != Tipo.OBJETO){
+            tipo = Tipo.ARREGLO; //para poder asignar un arreglo a un objeto.
+        } 
         //validar cuando valor es null;
         
         this.valor = valor;

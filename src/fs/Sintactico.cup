@@ -55,7 +55,7 @@ terminal var_, imprimir_, importar_, detener_, retornar_, si_, sino_, selecciona
 
 non terminal INICIO, OP_ASIGNACION;
 non terminal IMPORTAR;
-non terminal LLAMADA_METODOS, ACCESO_OBJETO, TIPO_ACCESO;
+non terminal LLAMADA_METODOS;
 
 non terminal LinkedList<NodoAST> INSTRUCCIONES;
 non terminal NodoAST INSTRUCCION;
@@ -115,15 +115,15 @@ INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 				|FUNCION:a {:RESULT = a;:}
 				|LLAMADA_METODO:a puntoycoma{:RESULT = a;:}
 				|LLAMADA_METODOS:a puntoycoma{::};
-
-TIPO_ACCESO ::= ACCESO_OBJETO:a{::}
-				| identificador:a{:RESULT = a;:};
 				
-ASIGNACION ::=TIPO_ACCESO:a OP_ASIGNACION:o E:b{: RESULT = new Asignacion(Tipo.VAR, a.toString(), b, oleft+1, oright+1); :}
-			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{::}
-			| TIPO_ACCESO:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{::}
-			| TIPO_ACCESO:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a.toString(), aleft+1, aright+1);:}
-			| TIPO_ACCESO:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a.toString(), c, aleft+1, aright+1);:};
+ASIGNACION ::=identificador:a OP_ASIGNACION:o E:b{: RESULT = new Asignacion(Tipo.VAR, a, b, oleft+1, oright+1); :}
+			| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, aleft+1, aright+1);:}
+			| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, b, aleft+1, aright+1);:}
+			| identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, aleft+1, aright+1);:}
+			| identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, c, aleft+1, aright+1);:}
+			
+			| identificador:a punto identificador:b OP_ASIGNACION:c E:d{:RESULT = new AsignacionObjeto(Tipo.VAR, a, b, d, aleft+1, aright+1); :}
+			| identificador:a punto identificador:b OP_ASIGNACION:c corcheteIzquierda EXS:d corcheteDerecha{:RESULT = new AsignacionObjeto(Tipo.ARREGLO, a, b, d, aleft+1, aright+1); :};
 				
 DECLARACION ::= var_:x SEMIDECLARACION:a{:RESULT = new Declaracion(a, xleft+1, xright+1);:};
 
@@ -132,9 +132,9 @@ SEMIDECLARACION ::= SEMIDECLARACION:a coma ASIGNA:b{:RESULT = a; RESULT.add(b);:
 				
 ASIGNA ::= identificador:a {:RESULT = new Asignacion(Tipo.VAR, a, aleft+1, aright+1);:}
 		| identificador:a OP_ASIGNACION:o E:b{:RESULT = new Asignacion(Tipo.VAR, a, b, aleft+1, aright+1);:}
-		| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{::}
-		| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{::}
-		| identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{: RESULT = new Asignacion(Tipo.OBJETO, a, aleft+1, aright+1);:}
+		| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, aleft+1, aright+1);:}
+		| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, b, aleft+1, aright+1);:}
+		| identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, aleft+1, aright+1);:}
 		| identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, c, aleft+1, aright+1);:};
 
 OP_ASIGNACION ::= igual {::}
@@ -219,8 +219,6 @@ LLAMADA_METODOS ::=LLAMADA_METODOS:c punto identificador:a parIzquierda PARMS:b 
 
 PARMS ::= {:RESULT=null;:}
 		| EXS:a{:RESULT = a;:};
-
-ACCESO_OBJETO ::= identificador:a punto identificador:b{::};
 				
 E ::= 	  menos:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MENOS, xleft+1, xright+1);:} %prec umenos
 	|     mas:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MAS, xleft+1, xright+1);:} %prec umas
@@ -249,12 +247,12 @@ E ::= 	  menos:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MENOS, xlef
 	| verdadero_:a{:RESULT = new Literal(Tipo.BOOLEANO, "verdadero", aleft+1, aright+1);:}
 	| falso_:a{:RESULT = new Literal(Tipo.BOOLEANO, "falso", aleft+1, aright+1);:}
 	| parIzquierda E:a parDerecha{:RESULT = a;:}
-	| identificador:a corcheteIzquierda E:b corcheteDerecha{::}
-	| identificador:a corcheteIzquierda E:b corcheteDerecha punto identificador:c{::}
+	| identificador:a punto identificador:b{:RESULT = new AccesoObjeto(a, b, aleft+1, aright+1);:}
+	| identificador:a punto identificador:b corcheteIzquierda E:c corcheteDerecha{:RESULT = new AccesoObjeto(a, b, c, aleft+1, aright+1);:}
+	| identificador:a corcheteIzquierda E:b corcheteDerecha{:RESULT = new AccesoArreglo(a, b, aleft+1, aright+1);:}
 	| E:a interrogacion:x E:b dospuntos E:c{:RESULT = new Ternario(a, b, c, xleft+1, xright+1);:}
 	|LLAMADA_METODO:a {:RESULT = a;:}
-	|LLAMADA_METODOS:a {::}
-	|identificador:a punto identificador:b{:RESULT = new AccesoObjeto(a, b, aleft+1, aright+1);:};
+	|LLAMADA_METODOS:a {::};
 		
 		
 		

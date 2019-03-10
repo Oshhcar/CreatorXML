@@ -72,6 +72,13 @@ public enum Tipo {
             return false;
         }
     
+    }, 
+    ARREGLO{
+        @Override
+        public boolean isNumero() {
+            return false;
+        }
+    
     };
     
     public abstract boolean isNumero();

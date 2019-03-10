@@ -52,12 +52,12 @@ public class TablaSimbolo extends LinkedList<Simbolo> {
         return null;
     }
     
-    public Object getValorObjeto(String id) {
+    public Object getValor(String id, Tipo tipo) {
         for (int i = this.size() - 1; i >= 0; i--) {
             Simbolo s = this.get(i);
 
             if (s.getId().equals(id)) {
-                if(s.getTipo() == Tipo.OBJETO){
+                if(s.getTipo() == tipo){
                     return s.getValor();
                 }
                 return null;
