@@ -28,11 +28,19 @@ public class Declaracion implements Instruccion{
     
     @Override
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
-        for (Asignacion asignacion: getAsignaciones()){
-            Simbolo sim = new Simbolo(asignacion.getTipo(), asignacion.getId());
-            tabla.add(sim);
+        getAsignaciones().forEach((asignacion) -> {
+            switch(asignacion.getTipo()){
+                case VAR:
+                    Simbolo sim = new Simbolo(Tipo.VAR, asignacion.getId());
+                    tabla.add(sim);
+                    break;
+                case OBJETO:
+                    Simbolo sim2 = new Simbolo(Tipo.VAR, asignacion.getId());
+                    tabla.add(sim2);
+                    break;
+            }
             asignacion.ejecutar(tabla, salida);
-        }
+        });
         return null;
     }
 

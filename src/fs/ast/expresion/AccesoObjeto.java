@@ -52,9 +52,8 @@ public class AccesoObjeto implements Expresion {
         Tipo tip = tabla.getTipo(id);
         if (tip != null) {
             if (tip == Tipo.OBJETO) {
-                Object val = tabla.getValor(id, Tipo.OBJETO);
-                if (val != null) {
-                    Map<String, Object> valores = (Map<String, Object>) val;
+                Map<String, Object> valores = (Map<String, Object>) tabla.getValor(id, Tipo.OBJETO);
+                if (valores != null) {
                     Object valor = valores.get(clave);
 
                     if (valor != null) {
