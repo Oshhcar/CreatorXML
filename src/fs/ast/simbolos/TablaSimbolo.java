@@ -6,6 +6,7 @@
 package fs.ast.simbolos;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  *
@@ -80,6 +81,18 @@ public class TablaSimbolo extends LinkedList<Simbolo> {
                 + "no se puede asignar el valor.");
     }
     
+    public void setObjeto(String id, Object valor){
+        for (int i = this.size() - 1; i >= 0; i--) {
+                Simbolo s = this.get(i);
+                if (s.getId().equals(id)) {
+                    Objeto obj = new Objeto(id, (Map<String, Object>) valor);
+                    this.set(i, obj);
+                    return;
+                }
+            }
+            System.out.println("Error, no existe la variable " + id + ", "
+                    + "no se puede asignar el valor.");
+    }
     
 
     public Tipo getTipo(String id) {

@@ -67,8 +67,9 @@ public class Asignacion implements Instruccion {
                             valores.put(claveActual, valActual);
                         }
                     });
+                   
                     if (valores.size() > 0) {
-                        tabla.setValor(getId(), valores);
+                        tabla.setObjeto(getId(), valores);
                     }
 
                     break;

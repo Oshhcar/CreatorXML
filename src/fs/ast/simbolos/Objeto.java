@@ -14,7 +14,6 @@ import java.util.Map;
  */
 public class Objeto extends Simbolo{
     
-    
     public Objeto(String id, Map<String, Object> valor) {
         super(Tipo.OBJETO, id);
         super.setValor(valor);
