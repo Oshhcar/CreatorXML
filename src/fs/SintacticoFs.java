@@ -996,7 +996,7 @@ class CUP$SintacticoFs$actions {
 		int dleft = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.peek()).left;
 		int dright = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.peek()).right;
 		Expresion d = (Expresion)((java_cup.runtime.Symbol) CUP$SintacticoFs$stack.peek()).value;
-		RESULT = new AsignacionObjeto(Tipo.VAR, a, b, d, aleft+1, aright+1); 
+		
               CUP$SintacticoFs$result = parser.getSymbolFactory().newSymbol("ASIGNACION",9, ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-4)), ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.peek()), RESULT);
             }
           return CUP$SintacticoFs$result;
@@ -1017,7 +1017,7 @@ class CUP$SintacticoFs$actions {
 		int dleft = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).left;
 		int dright = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).right;
 		LinkedList<Expresion> d = (LinkedList<Expresion>)((java_cup.runtime.Symbol) CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).value;
-		RESULT = new AsignacionObjeto(Tipo.ARREGLO, a, b, d, aleft+1, aright+1); 
+		
               CUP$SintacticoFs$result = parser.getSymbolFactory().newSymbol("ASIGNACION",9, ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-6)), ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.peek()), RESULT);
             }
           return CUP$SintacticoFs$result;
@@ -2262,7 +2262,7 @@ class CUP$SintacticoFs$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.peek()).right;
 		String b = (String)((java_cup.runtime.Symbol) CUP$SintacticoFs$stack.peek()).value;
-		RESULT = new AccesoObjeto(a, b, aleft+1, aright+1);
+		
               CUP$SintacticoFs$result = parser.getSymbolFactory().newSymbol("E",26, ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-2)), ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.peek()), RESULT);
             }
           return CUP$SintacticoFs$result;
@@ -2280,7 +2280,7 @@ class CUP$SintacticoFs$actions {
 		int cleft = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).right;
 		Expresion c = (Expresion)((java_cup.runtime.Symbol) CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).value;
-		RESULT = new AccesoObjeto(a, b, c, aleft+1, aright+1);
+		
               CUP$SintacticoFs$result = parser.getSymbolFactory().newSymbol("E",26, ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-5)), ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.peek()), RESULT);
             }
           return CUP$SintacticoFs$result;
@@ -2295,7 +2295,7 @@ class CUP$SintacticoFs$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).right;
 		Expresion b = (Expresion)((java_cup.runtime.Symbol) CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-1)).value;
-		RESULT = new AccesoArreglo(a, b, aleft+1, aright+1);
+		
               CUP$SintacticoFs$result = parser.getSymbolFactory().newSymbol("E",26, ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.elementAt(CUP$SintacticoFs$top-3)), ((java_cup.runtime.Symbol)CUP$SintacticoFs$stack.peek()), RESULT);
             }
           return CUP$SintacticoFs$result;

@@ -5,7 +5,6 @@
  */
 package fs.ast.instruccion;
 
-import fs.ast.simbolos.Objeto;
 import fs.ast.simbolos.Simbolo;
 import fs.ast.simbolos.TablaSimbolo;
 import fs.ast.simbolos.Tipo;
@@ -34,10 +33,6 @@ public class Declaracion implements Instruccion{
                 case VAR:
                     Simbolo sim = new Simbolo(Tipo.VAR, asignacion.getId());
                     tabla.add(sim);
-                    break;
-                case OBJETO:
-                    Objeto obj = new Objeto(asignacion.getId());
-                    tabla.add(obj);
                     break;
             }
             asignacion.ejecutar(tabla, salida);
