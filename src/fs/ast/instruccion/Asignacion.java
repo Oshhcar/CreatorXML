@@ -22,11 +22,11 @@ public class Asignacion implements Instruccion {
 
     protected final Tipo tipo;
     protected final String id;
-    protected final Object valor;
+    protected final Expresion valor;
     private final int linea;
     private final int columna;
 
-    public Asignacion(Tipo tipo, String id, Object valor, int linea, int columna) {
+    public Asignacion(Tipo tipo, String id, Expresion valor, int linea, int columna) {
         this.tipo = tipo;
         this.id = id;
         this.valor = valor;
@@ -46,61 +46,63 @@ public class Asignacion implements Instruccion {
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
 
         if (null != valor) {
-            switch (tipo) {
-                case VAR:
-                    Expresion exp = (Expresion) valor;
-                    Object val = exp.getValor(tabla, salida);
-                    if (val != null) {
-                        Tipo tip = exp.getTipo(tabla);
-                        if (tip != null) {
-                            tabla.setTipo(getId(), tip);
-                        }
-                        tabla.setValor(getId(), val);
-                    }
-                    break;
-                case OBJETO:
-                    Map<String, Expresion> actual = (Map<String, Expresion>) valor;
-                    Map<String, Object> valores = new Objeto();
+            Object val = valor.getValor(tabla, salida);
+            Tipo tip = valor.getTipo(tabla);
+            if (val != null && tip != null) {
+                switch (tip) {
+                    case OBJETO:
+                        if (!(val instanceof Objeto)) {
+                            Map<String, Expresion> actual = (Map<String, Expresion>) val;
+                            Map<String, Object> valores = new Objeto();
 
-                    actual.keySet().forEach((claveActual) -> {
-                        Expresion expActual = actual.get(claveActual);
-                        Object valActual = expActual.getValor(tabla, salida);
-                        if (valActual != null) {
-                            valores.put(claveActual, valActual);
-                        }
-                    });
+                            actual.keySet().forEach((claveActual) -> {
+                                Expresion expActual = actual.get(claveActual);
+                                Object valActual = expActual.getValor(tabla, salida);
+                                if (valActual != null) {
+                                    valores.put(claveActual, valActual);
+                                }
+                            });
 
-                    if (valores.size() > 0) {
-                        tabla.setValor(getId(), valores);
-                    }
-
-                    break;
-                case ARREGLO:
-                    LinkedList<Expresion> arrActual = (LinkedList<Expresion>) valor;
-                    Map<Integer, Object> valAsignar = new Arreglo();
-                    
-                    for (int i = 0; i < arrActual.size(); i++) {
-                        Expresion expActual = arrActual.get(i);
-                        Object valActual = expActual.getValor(tabla, salida);
-                        Tipo tipActual = expActual.getTipo(tabla);
-
-                        if (valActual != null && tipActual != null) {
-                            if(tipActual != Tipo.VAR){
-                                valAsignar.put(i, valActual);
-                            } else {
-                                System.err.println("Error! Variable indefinida. Linea:" + linea);
-
+                            if (valores.size() > 0) {
+                                tabla.setValor(id, valores);
                             }
+                        } else {
+                            tabla.setValor(id, val);
                         }
-                    }
-                    
-                    if (valAsignar.size() > 0) {
-                        tabla.setValor(getId(), valAsignar);
-                    }
-                    
-                    break;
-                default:
-                    break;
+                        break;
+                    case ARREGLO:
+                        if (!(val instanceof Arreglo)) {
+                            LinkedList<Expresion> arrActual = (LinkedList<Expresion>) val;
+                            Map<Integer, Object> valAsignar = new Arreglo();
+
+                            for (int i = 0; i < arrActual.size(); i++) {
+                                Expresion expActual = arrActual.get(i);
+                                Object valActual = expActual.getValor(tabla, salida);
+                                Tipo tipActual = expActual.getTipo(tabla);
+
+                                if (valActual != null && tipActual != null) {
+                                    if (tipActual != Tipo.VAR) {
+                                        valAsignar.put(i, valActual);
+                                    } else {
+                                        System.err.println("Error! Variable indefinida. Linea:" + linea);
+
+                                    }
+                                }
+                            }
+
+                            if (valAsignar.size() > 0) {
+                                tabla.setValor(id, valAsignar);
+                            }
+                        } else {
+                            tabla.setValor(id, val);
+                        }
+
+                        break;
+                    default:
+                        tabla.setTipo(getId(), tip);
+                        tabla.setValor(getId(), val);
+                        break;
+                }
             }
         }
         return null;

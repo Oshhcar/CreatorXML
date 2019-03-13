@@ -34,9 +34,13 @@ public class Imprimir implements Instruccion {
         if (tipExp != null) {
             if (tipExp != Tipo.VAR) {
                 if (tipExp != Tipo.OBJETO) {
-                    if (valExp != null) {
-                        System.out.println(String.valueOf(valExp));
-                        salida.append(String.valueOf(valExp) + "\n");
+                    if (tipExp != Tipo.ARREGLO) {
+                        if (valExp != null) {
+                            System.out.println(String.valueOf(valExp));
+                            salida.append(String.valueOf(valExp) + "\n");
+                        }
+                    } else {
+                        System.err.println("Error! Variable de tipo arreglo. Linea:" + linea);
                     }
                 } else {
                     System.err.println("Error! Variable de tipo objeto. Linea:" + linea);

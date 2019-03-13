@@ -117,17 +117,18 @@ INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 				|LLAMADA_METODOS:a puntoycoma{::};
 				
 ASIGNACION ::=identificador:a OP_ASIGNACION:o E:b{: RESULT = new Asignacion(Tipo.VAR, a, b, oleft+1, oright+1); :}
+			| identificador:a punto identificador:b OP_ASIGNACION:c E:d{:RESULT = new AsignacionObjeto(Tipo.VAR, a, b, d, aleft+1, aright+1);:};
 
-			| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, aleft+1, aright+1);:}
-			| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, b, aleft+1, aright+1);:}
+			//| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, aleft+1, aright+1);:}
+			//| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, b, aleft+1, aright+1);:}
 			
-			| identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, aleft+1, aright+1);:}
-			| identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, c, aleft+1, aright+1);:}
+			//| identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, aleft+1, aright+1);:}
+			//| identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, c, aleft+1, aright+1);:}
 			
-			| identificador:a punto identificador:b OP_ASIGNACION:c E:d{:RESULT = new AsignacionObjeto(Tipo.VAR, a, b, d, aleft+1, aright+1);:}
-			| identificador:a punto identificador:b OP_ASIGNACION:c corcheteIzquierda EXS:d corcheteDerecha{:RESULT = new AsignacionObjeto(Tipo.ARREGLO, a, b, d, aleft+1, aright+1);:}
+			//
+			//| identificador:a punto identificador:b OP_ASIGNACION:c corcheteIzquierda EXS:d corcheteDerecha{:RESULT = new AsignacionObjeto(Tipo.ARREGLO, a, b, d, aleft+1, aright+1);:}
 			
-			| identificador:a corcheteIzquierda E:b corcheteDerecha OP_ASIGNACION:c E:d{:RESULT = new AsignacionArreglo(Tipo.VAR, a, b, d, aleft+1, aright+1);:};
+			//| identificador:a corcheteIzquierda E:b corcheteDerecha OP_ASIGNACION:c E:d{:RESULT = new AsignacionArreglo(Tipo.VAR, a, b, d, aleft+1, aright+1);:};
 				
 DECLARACION ::= var_:x SEMIDECLARACION:a{:RESULT = new Declaracion(a, xleft+1, xright+1);:};
 
@@ -135,13 +136,13 @@ SEMIDECLARACION ::= SEMIDECLARACION:a coma ASIGNA:b{:RESULT = a; RESULT.add(b);:
 				| ASIGNA:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};
 				
 ASIGNA ::= identificador:a {:RESULT = new Asignacion(Tipo.VAR, a, aleft+1, aright+1);:}
-		| identificador:a OP_ASIGNACION:o E:b{:RESULT = new Asignacion(Tipo.VAR, a, b, aleft+1, aright+1);:}
+		| identificador:a OP_ASIGNACION:o E:b{:RESULT = new Asignacion(Tipo.VAR, a, b, aleft+1, aright+1);:};
 		
-		| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, aleft+1, aright+1);:}
-		| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, b, aleft+1, aright+1);:}
+		//| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, aleft+1, aright+1);:}
+		//| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, b, aleft+1, aright+1);:}
 		
-		| identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, aleft+1, aright+1);:}
-		| identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, c, aleft+1, aright+1);:};
+		//| identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, aleft+1, aright+1);:}
+		//| identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, c, aleft+1, aright+1);:};
 
 OP_ASIGNACION ::= igual {::}
 				| masigual{::}
@@ -257,6 +258,8 @@ E ::= 	  menos:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MENOS, xlef
 	| identificador:a punto identificador:b corcheteIzquierda E:c corcheteDerecha{:RESULT = new AccesoObjeto(a, b, c, aleft+1, aright+1);:}
 	| identificador:a corcheteIzquierda E:b corcheteDerecha{:RESULT = new AccesoArreglo(a, b, aleft+1, aright+1);:}
 	| E:a interrogacion:x E:b dospuntos E:c{:RESULT = new Ternario(a, b, c, xleft+1, xright+1);:}
+	| corcheteIzquierda:x EXS:a corcheteDerecha{:RESULT = new Literal(Tipo.ARREGLO, a, xleft+1, xright+1);:}
+	| llaveIzquierda:x OBJS:a llaveDerecha{:RESULT = new Literal(Tipo.OBJETO, a, xleft+1, xright+1);:}
 	|LLAMADA_METODO:a {:RESULT = a;:}
 	|LLAMADA_METODOS:a {::};
 		

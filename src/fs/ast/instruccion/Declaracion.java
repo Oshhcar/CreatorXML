@@ -39,12 +39,12 @@ public class Declaracion implements Instruccion {
 
     @Override
     public int getLinea() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return linea;
     }
 
     @Override
     public int getColumna() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return columna;
     }
 
     /**

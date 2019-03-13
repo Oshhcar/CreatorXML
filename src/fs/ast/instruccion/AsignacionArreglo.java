@@ -19,7 +19,7 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
 
     private final Expresion posicion;
 
-    public AsignacionArreglo(Tipo tipo, String id, Expresion posicion, Object valor, int linea, int columna) {
+    public AsignacionArreglo(Tipo tipo, String id, Expresion posicion, Expresion valor, int linea, int columna) {
         super(tipo, id, valor, linea, columna);
         this.posicion = posicion;
     }

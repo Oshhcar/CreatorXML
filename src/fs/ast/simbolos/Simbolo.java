@@ -70,10 +70,12 @@ public class Simbolo {
             tipo = Tipo.NULL;
         } else if (valor instanceof String) {
             tipo = Tipo.CADENA;
-        } else if(valor instanceof Objeto) {
+        } else if (valor instanceof Objeto) {
             tipo = Tipo.OBJETO;
+        } else if (valor instanceof Arreglo) {
+            tipo = Tipo.ARREGLO;
         }
-        
+
         this.valor = valor;
 
     }
