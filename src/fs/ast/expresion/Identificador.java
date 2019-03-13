@@ -5,7 +5,6 @@
  */
 package fs.ast.expresion;
 
-import fs.ast.simbolos.Simbolo;
 import fs.ast.simbolos.TablaSimbolo;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;

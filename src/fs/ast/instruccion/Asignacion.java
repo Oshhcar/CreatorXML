@@ -6,8 +6,11 @@
 package fs.ast.instruccion;
 
 import fs.ast.expresion.Expresion;
+import fs.ast.simbolos.Arreglo;
 import fs.ast.simbolos.TablaSimbolo;
 import fs.ast.simbolos.Tipo;
+import fs.ast.simbolos.Objeto;
+import java.util.LinkedList;
 import java.util.Map;
 import javax.swing.JTextArea;
 
@@ -20,7 +23,6 @@ public class Asignacion implements Instruccion {
     protected final Tipo tipo;
     protected final String id;
     protected final Object valor;
-    protected Map<String, Expresion> elementos;
     private final int linea;
     private final int columna;
 
@@ -49,9 +51,53 @@ public class Asignacion implements Instruccion {
                     Expresion exp = (Expresion) valor;
                     Object val = exp.getValor(tabla, salida);
                     if (val != null) {
+                        Tipo tip = exp.getTipo(tabla);
+                        if (tip != null) {
+                            tabla.setTipo(getId(), tip);
+                        }
                         tabla.setValor(getId(), val);
                     }
+                    break;
+                case OBJETO:
+                    Map<String, Expresion> actual = (Map<String, Expresion>) valor;
+                    Map<String, Object> valores = new Objeto();
 
+                    actual.keySet().forEach((claveActual) -> {
+                        Expresion expActual = actual.get(claveActual);
+                        Object valActual = expActual.getValor(tabla, salida);
+                        if (valActual != null) {
+                            valores.put(claveActual, valActual);
+                        }
+                    });
+
+                    if (valores.size() > 0) {
+                        tabla.setValor(getId(), valores);
+                    }
+
+                    break;
+                case ARREGLO:
+                    LinkedList<Expresion> arrActual = (LinkedList<Expresion>) valor;
+                    Map<Integer, Object> valAsignar = new Arreglo();
+                    
+                    for (int i = 0; i < arrActual.size(); i++) {
+                        Expresion expActual = arrActual.get(i);
+                        Object valActual = expActual.getValor(tabla, salida);
+                        Tipo tipActual = expActual.getTipo(tabla);
+
+                        if (valActual != null && tipActual != null) {
+                            if(tipActual != Tipo.VAR){
+                                valAsignar.put(i, valActual);
+                            } else {
+                                System.err.println("Error! Variable indefinida. Linea:" + linea);
+
+                            }
+                        }
+                    }
+                    
+                    if (valAsignar.size() > 0) {
+                        tabla.setValor(getId(), valAsignar);
+                    }
+                    
                     break;
                 default:
                     break;

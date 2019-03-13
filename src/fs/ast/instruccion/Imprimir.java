@@ -39,10 +39,10 @@ public class Imprimir implements Instruccion {
                         salida.append(String.valueOf(valExp) + "\n");
                     }
                 } else {
-                    System.err.println("Error! Variable \"" + valExp + "\" de tipo objeto. Linea:" + linea);
+                    System.err.println("Error! Variable de tipo objeto. Linea:" + linea);
                 }
             } else {
-                System.err.println("Error! Variable \"" + valExp + "\" indefinida. Linea:" + linea);
+                System.err.println("Error! Variable indefinida. Linea:" + linea);
             }
 
         }

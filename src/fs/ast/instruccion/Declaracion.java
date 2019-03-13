@@ -15,7 +15,8 @@ import javax.swing.JTextArea;
  *
  * @author oscar
  */
-public class Declaracion implements Instruccion{
+public class Declaracion implements Instruccion {
+
     private final LinkedList<Asignacion> asignaciones;
     private final int linea;
     private final int columna;
@@ -25,16 +26,12 @@ public class Declaracion implements Instruccion{
         this.linea = linea;
         this.columna = columna;
     }
-    
+
     @Override
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
         getAsignaciones().forEach((asignacion) -> {
-            switch(asignacion.getTipo()){
-                case VAR:
-                    Simbolo sim = new Simbolo(Tipo.VAR, asignacion.getId());
-                    tabla.add(sim);
-                    break;
-            }
+            Simbolo sim = new Simbolo(asignacion.getTipo(), asignacion.getId());
+            tabla.add(sim);
             asignacion.ejecutar(tabla, salida);
         });
         return null;
@@ -56,5 +53,5 @@ public class Declaracion implements Instruccion{
     public LinkedList<Asignacion> getAsignaciones() {
         return asignaciones;
     }
-    
+
 }

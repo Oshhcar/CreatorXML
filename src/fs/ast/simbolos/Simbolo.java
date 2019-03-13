@@ -5,8 +5,6 @@
  */
 package fs.ast.simbolos;
 
-import java.util.HashMap;
-
 /**
  *
  * @author oscar
@@ -72,9 +70,10 @@ public class Simbolo {
             tipo = Tipo.NULL;
         } else if (valor instanceof String) {
             tipo = Tipo.CADENA;
+        } else if(valor instanceof Objeto) {
+            tipo = Tipo.OBJETO;
         }
-
-        //validar cuando valor es null;
+        
         this.valor = valor;
 
     }

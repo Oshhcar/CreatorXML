@@ -12,53 +12,33 @@ import java.util.LinkedList;
  * @author oscar
  */
 public class TablaSimbolo extends LinkedList<Simbolo> {
-    
+
     public TablaSimbolo() {
         super();
     }
 
-    public FuncionSim getFuncion(String id){
-        for(int i = 0; i < this.size(); i++){
+    public FuncionSim getFuncion(String id) {
+        for (int i = 0; i < this.size(); i++) {
             Object s = this.get(i);
-            
-            if(s instanceof FuncionSim){
+
+            if (s instanceof FuncionSim) {
                 FuncionSim fun = (FuncionSim) s;
-                
-                if(fun.getId().equals(id)){
+
+                if (fun.getId().equals(id)) {
                     return fun;
                 }
             }
         }
-        System.err.println("Error, funcion "+id+" no encontrada.");
+        System.err.println("Error, funcion " + id + " no encontrada.");
         return null;
     }
-    
+
     public Object getValor(String id) {
         for (int i = this.size() - 1; i >= 0; i--) {
             Simbolo s = this.get(i);
 
-            if (s.getId().equals(id)) {
-                Object aux = s.getValor();
-                if(s.getTipo() == Tipo.VAR || s.getTipo() == Tipo.OBJETO){
-                    return id;
-                }
-                return aux;
-            }
-
-        }
-        System.err.println("Error, no existe la variable " + id + ".");
-        return null;
-    }
-    
-    public Object getValor(String id, Tipo tipo) {
-        for (int i = this.size() - 1; i >= 0; i--) {
-            Simbolo s = this.get(i);
-
-            if (s.getId().equals(id)) {
-                if(s.getTipo() == tipo){
-                    return s.getValor();
-                }
-                return null;
+            if (s.getId().equals(id)) {                    
+                return s.getValor();
             }
 
         }
