@@ -79,6 +79,7 @@ non terminal LinkedList<Expresion> EXS;
 non terminal LinkedList<Expresion> PARMS;
 non terminal LlamadaFuncion LLAMADA_METODO;
 non terminal Map<String, Expresion> OBJS;
+non terminal Unario UNARIO;
 non terminal Expresion E;
 
 precedence left interrogacion;
@@ -114,7 +115,8 @@ INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 				|SELECCIONA:a {:RESULT = a;:}
 				|FUNCION:a {:RESULT = a;:}
 				|LLAMADA_METODO:a puntoycoma{:RESULT = a;:}
-				|LLAMADA_METODOS:a puntoycoma{::};
+				|LLAMADA_METODOS:a puntoycoma{::}
+				|UNARIO:a puntoycoma{:RESULT = a;:};
 				
 ASIGNACION ::=identificador:a OP_ASIGNACION:o E:b{: RESULT = new Asignacion(a, b, oleft+1, oright+1); :}
 			| identificador:a punto identificador:b OP_ASIGNACION:c E:d{:RESULT = new AsignacionObjeto(a, b, d, aleft+1, aright+1);:}
@@ -161,7 +163,8 @@ BLOQUE ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 		|SI:a {:RESULT = a;:}
 		|SELECCIONA:a {:RESULT = a;:}
 		|LLAMADA_METODO:a puntoycoma{:RESULT = a;:}
-		|LLAMADA_METODOS:a puntoycoma{::};
+		|LLAMADA_METODOS:a puntoycoma{::}
+		|UNARIO:a puntoycoma{:RESULT = a;:};
 
 
 SI ::= si_:x parIzquierda E:a parDerecha llaveIzquierda BLOQUES:b llaveDerecha
@@ -212,7 +215,10 @@ LLAMADA_METODOS ::=LLAMADA_METODOS:c punto identificador:a parIzquierda PARMS:b 
 
 PARMS ::= {:RESULT=null;:}
 		| EXS:a{:RESULT = a;:};
-				
+
+UNARIO ::= E:a masmas{:RESULT = new Unario(a, Operacion.Operador.AUMENTO, aleft+1, aright+1);:}
+		| E:a menosmenos{:RESULT = new Unario(a, Operacion.Operador.DECREMENTO, aleft+1, aright+1);:};
+		
 E ::= 	  menos:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MENOS, xleft+1, xright+1);:} %prec umenos
 	|     mas:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MAS, xleft+1, xright+1);:} %prec umas
 	| E:a mas:x E:b{:RESULT = new Aritmetica(a, b, Operacion.Operador.MAS, xleft+1, xright+1);:}
