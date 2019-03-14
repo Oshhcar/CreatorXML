@@ -50,14 +50,14 @@ public class AccesoObjeto implements Expresion {
 
     @Override
     public Object getValor(TablaSimbolo tabla, JTextArea salida) {
-        Tipo tip = tabla.getTipo(id);
+        Tipo tip = tabla.getTipo(getId());
         if (tip != null) {
             if (tip == Tipo.OBJETO) {
-                Map<String, Object> valores = (Map<String, Object>) tabla.getValor(id);
+                Map<String, Object> valores = (Map<String, Object>) tabla.getValor(getId());
                 if (valores != null) {
-                    Object valor = valores.get(clave);
+                    Object valor = valores.get(getClave());
                     if (valor != null) {
-                        if (null == posicion) {
+                        if (null == getPosicion()) {
                             if (valor instanceof Double) {
                                 tipo = Tipo.DECIMAL;
                             } else if (valor instanceof Integer) {
@@ -75,8 +75,8 @@ public class AccesoObjeto implements Expresion {
                             }
                             return valor;
                         } else {
-                            Object valPosicion = posicion.getValor(tabla, salida);
-                            Tipo tipPosicion = posicion.getTipo(tabla);
+                            Object valPosicion = getPosicion().getValor(tabla, salida);
+                            Tipo tipPosicion = getPosicion().getTipo(tabla);
 
                             if (valPosicion != null && tipPosicion != null) {
                                 if (tipPosicion == Tipo.ENTERO) {
@@ -102,7 +102,7 @@ public class AccesoObjeto implements Expresion {
                                         }
                                         return valor2;
                                     } else {
-                                        System.err.println("Error, La clave \"" + clave + "\" no es un arreglo. Línea:" + linea);
+                                        System.err.println("Error, La clave \"" + getClave() + "\" no es un arreglo. Línea:" + linea);
                                     }
                                 } else {
                                     System.err.println("Error, la posición en el arreglo debe ser entero. Línea:" + linea);
@@ -110,13 +110,13 @@ public class AccesoObjeto implements Expresion {
                             }
                         }
                     } else {
-                        System.err.println("Error, La clave \"" + clave + "\" no está en el objeto. Línea:" + linea);
+                        System.err.println("Error, La clave \"" + getClave() + "\" no está en el objeto. Línea:" + linea);
                     }
                 } else {
-                    System.err.println("Error, objeto \"" + id + "\" indefinido. Línea:" + linea);
+                    System.err.println("Error, objeto \"" + getId() + "\" indefinido. Línea:" + linea);
                 }
             } else {
-                System.err.println("Error, variable \"" + id + "\" no es un objeto. Línea:" + linea);
+                System.err.println("Error, variable \"" + getId() + "\" no es un objeto. Línea:" + linea);
             }
         }
         return null;
@@ -130,6 +130,27 @@ public class AccesoObjeto implements Expresion {
     @Override
     public int getColumna() {
         return columna;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @return the clave
+     */
+    public String getClave() {
+        return clave;
+    }
+
+    /**
+     * @return the posicion
+     */
+    public Expresion getPosicion() {
+        return posicion;
     }
 
 }

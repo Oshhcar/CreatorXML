@@ -14,7 +14,7 @@ import javax.swing.JTextArea;
  * @author oscar
  */
 public class Identificador implements Expresion{
-    private String id;
+    private final String id;
     private final int linea;
     private final int columna;
 

@@ -47,7 +47,7 @@ public class AccesoArreglo implements Expresion {
                     Integer pos = Integer.valueOf(valPosicion.toString());
                     Tipo tip = tabla.getTipo(id);
                     if (tip != null) {
-                        if (tip == tipo.ARREGLO) {
+                        if (tip == Tipo.ARREGLO) {
                             Map<Integer, Object> arreglo = (Map<Integer, Object>) tabla.getValor(id);
                             if (arreglo != null) {
                                 Object valor = arreglo.get(pos);
@@ -77,8 +77,7 @@ public class AccesoArreglo implements Expresion {
                         } else {
                             System.err.println("Error, variable \"" + id + "\" no es un arreglo. Línea:" + linea);
                         }
-                    }
-
+                    } 
                 } else {
                     System.err.println("Error, la posición en el arreglo debe ser entero. Línea:" + linea);
                 }

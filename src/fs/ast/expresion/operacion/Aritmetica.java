@@ -12,6 +12,7 @@ import fs.ast.expresion.Identificador;
 import fs.ast.expresion.Literal;
 import fs.ast.instruccion.Asignacion;
 import fs.ast.instruccion.AsignacionArreglo;
+import fs.ast.instruccion.AsignacionObjeto;
 import fs.ast.simbolos.TablaSimbolo;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
@@ -99,7 +100,9 @@ public class Aritmetica extends Operacion implements Expresion {
                                 AsignacionArreglo asigna = new AsignacionArreglo(ar.getId(), ar.getPosicion(), exp,linea,columna);
                                 asigna.ejecutar(tabla, salida);
                             } else if(op1 instanceof AccesoObjeto){
-                            
+                                AccesoObjeto obj = (AccesoObjeto) op1;
+                                AsignacionObjeto asigna = new AsignacionObjeto(obj.getId(),obj.getClave(),obj.getPosicion(),exp,linea,columna);
+                                asigna.ejecutar(tabla, salida);
                             }
                             
                             switch (tip1) {
