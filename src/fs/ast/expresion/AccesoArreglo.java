@@ -96,5 +96,13 @@ public class AccesoArreglo implements Expresion {
     public int getColumna() {
         return columna;
     }
+    
+    public String getId(){
+        return id;
+    }
+    
+    public Expresion getPosicion(){
+        return posicion;
+    }
 
 }

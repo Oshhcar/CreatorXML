@@ -6,12 +6,9 @@
 package fs.ast.instruccion;
 
 import fs.ast.expresion.Expresion;
-import fs.ast.expresion.Literal;
 import fs.ast.simbolos.Arreglo;
-import fs.ast.simbolos.Objeto;
 import fs.ast.simbolos.TablaSimbolo;
 import fs.ast.simbolos.Tipo;
-import java.util.LinkedList;
 import java.util.Map;
 import javax.swing.JTextArea;
 
@@ -22,104 +19,73 @@ import javax.swing.JTextArea;
 public class AsignacionObjeto extends Asignacion implements Instruccion {
 
     private final String clave;
+    private final Expresion posicion;
 
     public AsignacionObjeto(String id, String clave, Expresion valor, int linea, int columna) {
         super(id, valor, linea, columna);
         this.clave = clave;
+        this.posicion = null;
+    }
+
+    public AsignacionObjeto(String id, String clave, Expresion posicion, Expresion valor, int linea, int columna) {
+        super(id, valor, linea, columna);
+        this.clave = clave;
+        this.posicion = posicion;
     }
 
     @Override
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
         if (null != valor) {
-            Object valorAsignar = valor.getValor(tabla, salida);
-            Tipo tipoAsignar = valor.getTipo(tabla);
-            if (tipoAsignar != null) {
-                Tipo tip = tabla.getTipo(id);
-                if (tip != null) {
-                    if (tip == Tipo.OBJETO) {
-                        Map<String, Object> valores = (Map<String, Object>) tabla.getValor(id);
-                        if (valores != null) {
-                            if (valores.containsKey(clave)) {
-                                switch (tipoAsignar) {
-                                    case OBJETO:
-                                        if (valorAsignar != null) {
-                                            if (!(valorAsignar instanceof Objeto)) {
-                                                Map<String, Expresion> actual = (Map<String, Expresion>) valorAsignar;
-                                                Map<String, Object> valoresAsignar = new Objeto();
-
-                                                actual.keySet().forEach((claveActual) -> {
-                                                    Expresion expActual = actual.get(claveActual);
-                                                    Object valActual = expActual.getValor(tabla, salida);
-                                                    if (valActual != null) {
-                                                        valoresAsignar.put(claveActual, valActual);
-                                                    }
-                                                });
-
-                                                valores.replace(clave, valoresAsignar);
-
-                                            } else {
-                                                valores.replace(clave, valorAsignar);
-                                            }
+            Tipo tip = tabla.getTipo(id);
+            if (tip != null) {
+                if (tip == Tipo.OBJETO) {
+                    //hacer try catch
+                    Map<String, Object> objeto = (Map<String, Object>) tabla.getValor(id);
+                    if (objeto != null) {
+                        if (objeto.containsKey(clave)) {
+                            Object valorAsignar = valor.getValor(tabla, salida);
+                            Tipo tipoAsignar = valor.getTipo(tabla);
+                            if (tipoAsignar != null) {
+                                if (tipoAsignar != Tipo.VAR) {
+                                    if (valorAsignar != null) {
+                                        if (posicion == null) {
+                                            objeto.replace(clave, valorAsignar);
                                         } else {
-                                            if (valor instanceof Literal) {
-                                                valores.replace(clave, new Objeto());
-                                            } else {
-                                                System.err.println("Error, Objeto indefinido. Linea:" + super.getLinea());
-                                            }
-                                        }
-                                        break;
-                                    case ARREGLO:
-                                        if (valorAsignar != null) {
-                                            if (!(valorAsignar instanceof Arreglo)) {
-                                                LinkedList<Expresion> arrActual = (LinkedList<Expresion>) valorAsignar;
-                                                Map<Integer, Object> valAsignar = new Arreglo();
+                                            Object valPosicion = posicion.getValor(tabla, salida);
+                                            Tipo tipPosicion = posicion.getTipo(tabla);
 
-                                                for (int i = 0; i < arrActual.size(); i++) {
-                                                    Expresion expActual = arrActual.get(i);
-                                                    Object valActual = expActual.getValor(tabla, salida);
-                                                    Tipo tipActual = expActual.getTipo(tabla);
-
-                                                    if (valActual != null && tipActual != null) {
-                                                        if (tipActual != Tipo.VAR) {
-                                                            valAsignar.put(i, valActual);
+                                            if (valPosicion != null && tipPosicion != null) {
+                                                if (tipPosicion == Tipo.ENTERO) {
+                                                    Object arr = objeto.get(clave);
+                                                    if (arr instanceof Arreglo) {
+                                                        Integer pos = Integer.valueOf(valPosicion.toString());
+                                                        Map<Integer, Object> arreglo = (Map<Integer, Object>) arr;
+                                                        if (arreglo.containsKey(pos)) {
+                                                            arreglo.replace(pos, valorAsignar);
                                                         } else {
-                                                            System.err.println("Error! Variable indefinida. Linea:" + super.getLinea());
-
+                                                            System.err.println("Error, no se puede asignar el valor en la posicion " + pos + " del arreglo. Línea:" + super.getLinea());
                                                         }
+                                                    } else {
+                                                        System.err.println("Error, La clave \"" + clave + "\" no es un arreglo. Línea:" + super.getLinea());
                                                     }
+                                                } else {
+                                                    System.err.println("Error, la posición en el arreglo debe ser entero. Línea:" + super.getLinea());
                                                 }
-                                                if (valAsignar.size() > 0) {
-                                                    valores.replace(clave, valAsignar);
-                                                }
-                                            } else {
-                                                valores.replace(clave, valorAsignar);
-                                            }
-                                        } else {
-                                            if (valor instanceof Literal) {
-                                                valores.replace(clave, new Arreglo());
-                                            } else {
-                                                System.err.println("Error, Arreglo indefinido. Linea:" + super.getLinea());
                                             }
                                         }
-                                        break;
-                                    case VAR:
-                                        System.err.println("Error, Variable indefinida. Linea:" + super.getLinea());
-                                        break;
-                                    default:
-                                        if (valorAsignar != null) {
-                                            valores.replace(clave, valorAsignar);
-                                        }
-                                        break;
+                                    }
+                                } else {
+                                    System.err.println("Error, Variable indefinida. Linea:" + super.getLinea());
                                 }
-                            } else {
-                                System.err.println("Error, La clave \"" + clave + "\" no está en el objeto. Línea:" + super.getLinea());
                             }
                         } else {
-                            System.err.println("Error, objeto \"" + id + "\" indefinido. Línea:" + super.getLinea());
+                            System.err.println("Error, La clave \"" + clave + "\" no está en el objeto. Línea:" + super.getLinea());
                         }
                     } else {
-                        System.err.println("Error, variable \"" + id + "\" no es un objeto. Línea:" + super.getLinea());
+                        System.err.println("Error, objeto \"" + id + "\" indefinido. Línea:" + super.getLinea());
                     }
+                } else {
+                    System.err.println("Error, variable \"" + id + "\" no es un objeto. Línea:" + super.getLinea());
                 }
             }
         }

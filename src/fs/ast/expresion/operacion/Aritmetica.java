@@ -5,7 +5,13 @@
  */
 package fs.ast.expresion.operacion;
 
+import fs.ast.expresion.AccesoArreglo;
+import fs.ast.expresion.AccesoObjeto;
 import fs.ast.expresion.Expresion;
+import fs.ast.expresion.Identificador;
+import fs.ast.expresion.Literal;
+import fs.ast.instruccion.Asignacion;
+import fs.ast.instruccion.AsignacionArreglo;
 import fs.ast.simbolos.TablaSimbolo;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
@@ -16,7 +22,7 @@ import javax.swing.JTextArea;
  */
 public class Aritmetica extends Operacion implements Expresion {
 
-    private boolean unario;
+    private final boolean unario;
 
     public Aritmetica(Expresion op1, Expresion op2, Operador operador, int linea, int columna) {
         super(op1, op2, operador, linea, columna);
@@ -42,31 +48,76 @@ public class Aritmetica extends Operacion implements Expresion {
             if (tip1 != null) {
                 switch (operador) {
                     case MAS:
-                        if (tip1 == Tipo.ENTERO) {
-                            tipo = Tipo.ENTERO;
-                            return new Integer(val1.toString());
-                        } else if (tip1 == Tipo.DECIMAL) {
-                            tipo = Tipo.DECIMAL;
-                            return new Double(val1.toString());
-                        } else {
-                            System.err.println("Error de tipos, solo los números pueden tener signo. Linea " + linea);
+                        switch (tip1) {
+                            case ENTERO:
+                                tipo = Tipo.ENTERO;
+                                return new Integer(val1.toString());
+                            case DECIMAL:
+                                tipo = Tipo.DECIMAL;
+                                return new Double(val1.toString());
+                            default:
+                                System.err.println("Error de tipos, solo los números pueden tener signo. Linea " + linea);
+                                return null;
                         }
-                        return null;
                     case MENOS:
-                        if (tip1 == Tipo.ENTERO) {
-                            tipo = Tipo.ENTERO;
-                            return new Integer(val1.toString()) * -1;
-                        } else if (tip1 == Tipo.DECIMAL) {
-                            tipo = Tipo.DECIMAL;
-                            return new Double(val1.toString()) * -1;
-                        } else {
-                            System.err.println("Error de tipos, solo los números pueden tener signo. Linea" + linea);
+                        switch (tip1) {
+                            case ENTERO:
+                                tipo = Tipo.ENTERO;
+                                return new Integer(val1.toString()) * -1;
+                            case DECIMAL:
+                                tipo = Tipo.DECIMAL;
+                                return new Double(val1.toString()) * -1;
+                            default:
+                                System.err.println("Error de tipos, solo los números pueden tener signo. Linea" + linea);
+                                return null;
                         }
-                        return null;
                     case AUMENTO:
-                        //Agregar aumento id
-                        return null;
                     case DECREMENTO:
+                        if (tip1.isNumero()) {
+                            
+                            Object val;
+                            if(tip1 == Tipo.ENTERO){
+                                if(operador == Operador.AUMENTO)
+                                    val = new Integer(val1.toString())+1;
+                                else
+                                    val = new Integer(val1.toString())-1;
+                            } else {
+                                if(operador == Operador.AUMENTO)
+                                    val = new Double(val1.toString())+1;
+                                else 
+                                    val = new Double(val1.toString())-1;
+                            }
+                            
+                            Literal exp = new Literal(tip1,val,linea,columna);
+                            
+                            if(op1 instanceof Identificador){
+                                Identificador id = (Identificador) op1;
+                                Asignacion asigna = new Asignacion(id.getId(), exp, linea, columna);
+                                asigna.ejecutar(tabla, salida);
+                            } else if(op1 instanceof AccesoArreglo){
+                                AccesoArreglo ar = (AccesoArreglo) op1;
+                                AsignacionArreglo asigna = new AsignacionArreglo(ar.getId(), ar.getPosicion(), exp,linea,columna);
+                                asigna.ejecutar(tabla, salida);
+                            } else if(op1 instanceof AccesoObjeto){
+                            
+                            }
+                            
+                            switch (tip1) {
+                                case ENTERO:
+                                    tipo = Tipo.ENTERO;
+                                    return new Integer(val1.toString());
+                                case DECIMAL:
+                                    tipo = Tipo.DECIMAL;
+                                    return new Double(val1.toString());
+                            }
+                        } else {
+                            if(operador == Operador.AUMENTO)
+                                System.err.println("Error de tipos, solo los números se pueden aumentar. Línea: " + linea);
+                            else
+                                System.err.println("Error de tipos, solo los números se pueden decrementar. Línea: " + linea);
+                            return null;
+                        }
+                    default:
                         return null;
                 }
             }

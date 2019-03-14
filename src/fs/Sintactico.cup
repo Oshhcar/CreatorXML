@@ -118,6 +118,7 @@ INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 				
 ASIGNACION ::=identificador:a OP_ASIGNACION:o E:b{: RESULT = new Asignacion(a, b, oleft+1, oright+1); :}
 			| identificador:a punto identificador:b OP_ASIGNACION:c E:d{:RESULT = new AsignacionObjeto(a, b, d, aleft+1, aright+1);:}
+			| identificador:a punto identificador:b corcheteIzquierda E:c corcheteDerecha OP_ASIGNACION:d E:e{:RESULT = new AsignacionObjeto(a, b, c, e, aleft+1, aright+1);:}
 			| identificador:a corcheteIzquierda E:b corcheteDerecha OP_ASIGNACION:c E:d{:RESULT = new AsignacionArreglo(a, b, d, aleft+1, aright+1);:};
 
 				

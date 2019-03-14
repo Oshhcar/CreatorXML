@@ -45,4 +45,7 @@ public class Identificador implements Expresion{
         return columna;
     }
     
+    public String getId() {
+        return id;
+    }
 }
