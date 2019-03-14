@@ -49,7 +49,7 @@ public class Aritmetica extends Operacion implements Expresion {
                             tipo = Tipo.DECIMAL;
                             return new Double(val1.toString());
                         } else {
-                            System.err.println("Error de tipos, solo los números pueden tener signo. Linea" + linea);
+                            System.err.println("Error de tipos, solo los números pueden tener signo. Linea " + linea);
                         }
                         return null;
                     case MENOS:
@@ -73,7 +73,6 @@ public class Aritmetica extends Operacion implements Expresion {
         } else {
             Object val2 = op2.getValor(tabla, salida);
             Tipo tip2 = op2.getTipo(tabla);
-
             if (tip1 != null && tip2 != null) {
                 if (tip1 != Tipo.VAR && tip2 != Tipo.VAR) {
                     if (tip1 != Tipo.NULL && tip2 != Tipo.NULL) {
@@ -185,9 +184,9 @@ public class Aritmetica extends Operacion implements Expresion {
                     }
                 } else {
                     if (tip1 == Tipo.VAR) {
-                        System.err.println("Error! Variable \"" + val1.toString() + "\" indefinida. Linea:" + linea);
+                        System.err.println("Error! Variable indefinida. Linea:" + linea);
                     } else {
-                        System.err.println("Error! Variable \"" + val2.toString() + "\" indefinida. Linea:" + linea);
+                        System.err.println("Error! Variable indefinida. Linea:" + linea);
                     }
                 }
             }

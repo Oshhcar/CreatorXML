@@ -67,7 +67,7 @@ public class TablaSimbolo extends LinkedList<Simbolo> {
             }
 
         }
-        System.err.println("Error, no existe la variable " + id + ".");
+        //System.err.println("Error, no existe la variable " + id + ".");
         return null;
     }
 
@@ -81,7 +81,7 @@ public class TablaSimbolo extends LinkedList<Simbolo> {
             }
 
         }
-        System.err.println("Error, no existe la variable " + id + ".");
+        //System.err.println("Error, no existe la variable " + id + ".");
     }
 
 }
