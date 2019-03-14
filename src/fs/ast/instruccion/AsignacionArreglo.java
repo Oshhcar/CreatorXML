@@ -6,6 +6,7 @@
 package fs.ast.instruccion;
 
 import fs.ast.expresion.Expresion;
+import fs.ast.expresion.Literal;
 import fs.ast.simbolos.Arreglo;
 import fs.ast.simbolos.Objeto;
 import fs.ast.simbolos.TablaSimbolo;
@@ -22,8 +23,8 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
 
     private final Expresion posicion;
 
-    public AsignacionArreglo(Tipo tipo, String id, Expresion posicion, Expresion valor, int linea, int columna) {
-        super(tipo, id, valor, linea, columna);
+    public AsignacionArreglo(String id, Expresion posicion, Expresion valor, int linea, int columna) {
+        super(id, valor, linea, columna);
         this.posicion = posicion;
     }
 
@@ -65,7 +66,11 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
                                                         arreglo.replace(pos, valExp);
                                                     }
                                                 } else {
-                                                    System.err.println("Errror, Objeto indefinido. Linea:" + super.getLinea());
+                                                    if (valor instanceof Literal) {
+                                                        arreglo.replace(pos, new Objeto());
+                                                    } else {
+                                                        System.err.println("Error, Objeto indefinido. Linea:" + super.getLinea());
+                                                    }
                                                 }
                                                 break;
                                             case ARREGLO:
@@ -88,14 +93,18 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
                                                                 }
                                                             }
                                                         }
-                                                        
+
                                                         arreglo.replace(pos, valAsignar);
 
                                                     } else {
                                                         arreglo.replace(pos, valExp);
                                                     }
                                                 } else {
-                                                    System.err.println("Errror, Arreglo indefinido. Linea:" + super.getLinea());
+                                                    if (valor instanceof Literal) {
+                                                        arreglo.replace(pos, new Arreglo());
+                                                    } else {
+                                                        System.err.println("Error, Arreglo indefinido. Linea:" + super.getLinea());
+                                                    }
                                                 }
                                                 break;
                                             case VAR:

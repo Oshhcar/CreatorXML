@@ -60,22 +60,23 @@ public class Simbolo {
      * @param valor the valor to set
      */
     public void setValor(Object valor) {
-        if (valor instanceof Double) {
-            tipo = Tipo.DECIMAL;
-        } else if (valor instanceof Integer) {
-            tipo = Tipo.ENTERO;
-        } else if (valor.equals("verdadero") || valor.equals("falso")) {
-            tipo = Tipo.BOOLEANO;
-        } else if (valor.equals("nulo")) {
-            tipo = Tipo.NULL;
-        } else if (valor instanceof String) {
-            tipo = Tipo.CADENA;
-        } else if (valor instanceof Objeto) {
-            tipo = Tipo.OBJETO;
-        } else if (valor instanceof Arreglo) {
-            tipo = Tipo.ARREGLO;
+        if (valor != null) {
+            if (valor instanceof Double) {
+                tipo = Tipo.DECIMAL;
+            } else if (valor instanceof Integer) {
+                tipo = Tipo.ENTERO;
+            } else if (valor.equals("verdadero") || valor.equals("falso")) {
+                tipo = Tipo.BOOLEANO;
+            } else if (valor.equals("nulo")) {
+                tipo = Tipo.NULL;
+            } else if (valor instanceof String) {
+                tipo = Tipo.CADENA;
+            } else if (valor instanceof Objeto) {
+                tipo = Tipo.OBJETO;
+            } else if (valor instanceof Arreglo) {
+                tipo = Tipo.ARREGLO;
+            }
         }
-
         this.valor = valor;
 
     }

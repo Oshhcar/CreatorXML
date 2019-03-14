@@ -6,6 +6,7 @@
 package fs.ast.instruccion;
 
 import fs.ast.expresion.Expresion;
+import fs.ast.expresion.Literal;
 import fs.ast.simbolos.Arreglo;
 import fs.ast.simbolos.TablaSimbolo;
 import fs.ast.simbolos.Tipo;
@@ -20,22 +21,19 @@ import javax.swing.JTextArea;
  */
 public class Asignacion implements Instruccion {
 
-    protected final Tipo tipo;
     protected final String id;
     protected final Expresion valor;
     private final int linea;
     private final int columna;
 
-    public Asignacion(Tipo tipo, String id, Expresion valor, int linea, int columna) {
-        this.tipo = tipo;
+    public Asignacion(String id, Expresion valor, int linea, int columna) {
         this.id = id;
         this.valor = valor;
         this.linea = linea;
         this.columna = columna;
     }
 
-    public Asignacion(Tipo tipo, String id, int linea, int columna) {
-        this.tipo = tipo;
+    public Asignacion(String id, int linea, int columna) {
         this.id = id;
         this.valor = null;
         this.linea = linea;
@@ -71,7 +69,12 @@ public class Asignacion implements Instruccion {
                                 tabla.setValor(id, val);
                             }
                         } else {
-                            System.err.println("Errror, Objeto indefinido. Linea:" + linea);
+                            if (valor instanceof Literal) {
+                                tabla.setTipo(id, tip);
+                                tabla.setValor(id, new Objeto());
+                            } else {
+                                System.err.println("Error, Objeto indefinido. Linea:" + linea);
+                            }
                         }
                         break;
                     case ARREGLO:
@@ -102,11 +105,16 @@ public class Asignacion implements Instruccion {
                                 tabla.setValor(id, val);
                             }
                         } else {
-                            System.err.println("Errror, Arreglo indefinido. Linea:" + linea);
+                            if (valor instanceof Literal) {
+                                tabla.setTipo(id, tip);
+                                tabla.setValor(id, new Arreglo());
+                            } else {
+                                System.err.println("Error, Arreglo indefinido. Linea:" + linea);
+                            }
                         }
                         break;
                     case VAR:
-                        System.err.println("Errror, Variable indefinida. Linea:" + linea);
+                        System.err.println("Error, Variable indefinida. Linea:" + linea);
                         break;
                     default:
                         if (val != null) {
@@ -136,12 +144,4 @@ public class Asignacion implements Instruccion {
     public String getId() {
         return id;
     }
-
-    /**
-     * @return the tipo
-     */
-    public Tipo getTipo() {
-        return tipo;
-    }
-
 }
