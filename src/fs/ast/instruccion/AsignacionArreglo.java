@@ -6,8 +6,11 @@
 package fs.ast.instruccion;
 
 import fs.ast.expresion.Expresion;
+import fs.ast.simbolos.Arreglo;
+import fs.ast.simbolos.Objeto;
 import fs.ast.simbolos.TablaSimbolo;
 import fs.ast.simbolos.Tipo;
+import java.util.LinkedList;
 import java.util.Map;
 import javax.swing.JTextArea;
 
@@ -37,16 +40,76 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
                         if (valPosicion != null && tipPosicion != null) {
                             if (tipPosicion == Tipo.ENTERO) {
                                 Integer pos = Integer.valueOf(valPosicion.toString());
-                                Expresion exp = (Expresion) valor;
-                                Object valExp = exp.getValor(tabla, salida);
-                                Tipo tipExp = exp.getTipo(tabla);
+                                if (arreglo.containsKey(pos)) {
+                                    Object valExp = valor.getValor(tabla, salida);
+                                    Tipo tipExp = valor.getTipo(tabla);
+                                    if (tipExp != null) {
+                                        switch (tipExp) {
+                                            case OBJETO:
+                                                if (valExp != null) {
+                                                    if (!(valExp instanceof Objeto)) {
+                                                        Map<String, Expresion> actual = (Map<String, Expresion>) valExp;
+                                                        Map<String, Object> valoresAsignar = new Objeto();
 
-                                if (valExp != null && tipExp != null) {
-                                    if (tipExp != Tipo.VAR) {
-                                        arreglo.replace(pos, valExp);
-                                    } else {
-                                        System.err.println("Error! Variable indefinida. Linea:" + super.getLinea());
+                                                        actual.keySet().forEach((claveActual) -> {
+                                                            Expresion expActual = actual.get(claveActual);
+                                                            Object valActual = expActual.getValor(tabla, salida);
+                                                            if (valActual != null) {
+                                                                valoresAsignar.put(claveActual, valActual);
+                                                            }
+                                                        });
+
+                                                        arreglo.replace(pos, valoresAsignar);
+
+                                                    } else {
+                                                        arreglo.replace(pos, valExp);
+                                                    }
+                                                } else {
+                                                    System.err.println("Errror, Objeto indefinido. Linea:" + super.getLinea());
+                                                }
+                                                break;
+                                            case ARREGLO:
+                                                if (valExp != null) {
+                                                    if (!(valExp instanceof Arreglo)) {
+                                                        LinkedList<Expresion> arrActual = (LinkedList<Expresion>) valExp;
+                                                        Map<Integer, Object> valAsignar = new Arreglo();
+
+                                                        for (int i = 0; i < arrActual.size(); i++) {
+                                                            Expresion expActual = arrActual.get(i);
+                                                            Object valActual = expActual.getValor(tabla, salida);
+                                                            Tipo tipActual = expActual.getTipo(tabla);
+
+                                                            if (valActual != null && tipActual != null) {
+                                                                if (tipActual != Tipo.VAR) {
+                                                                    valAsignar.put(i, valActual);
+                                                                } else {
+                                                                    System.err.println("Error! Variable indefinida. Linea:" + super.getLinea());
+
+                                                                }
+                                                            }
+                                                        }
+                                                        
+                                                        arreglo.replace(pos, valAsignar);
+
+                                                    } else {
+                                                        arreglo.replace(pos, valExp);
+                                                    }
+                                                } else {
+                                                    System.err.println("Errror, Arreglo indefinido. Linea:" + super.getLinea());
+                                                }
+                                                break;
+                                            case VAR:
+                                                System.err.println("Error! Variable indefinida. Linea:" + super.getLinea());
+                                                break;
+                                            default:
+                                                if (valExp != null) {
+                                                    arreglo.replace(pos, valExp);
+                                                }
+                                                break;
+                                        }
                                     }
+                                } else {
+                                    System.err.println("Error, no se puede asignar el valor en la posicion " + pos + " del arreglo. Línea:" + super.getLinea());
                                 }
                             } else {
                                 System.err.println("Error, la posición en el arreglo debe ser entero. Línea:" + super.getLinea());

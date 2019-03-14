@@ -48,59 +48,71 @@ public class Asignacion implements Instruccion {
         if (null != valor) {
             Object val = valor.getValor(tabla, salida);
             Tipo tip = valor.getTipo(tabla);
-            if (val != null && tip != null) {
+            if (tip != null) {
                 switch (tip) {
                     case OBJETO:
-                        if (!(val instanceof Objeto)) {
-                            Map<String, Expresion> actual = (Map<String, Expresion>) val;
-                            Map<String, Object> valores = new Objeto();
+                        if (val != null) {
+                            if (!(val instanceof Objeto)) {
+                                Map<String, Expresion> actual = (Map<String, Expresion>) val;
+                                Map<String, Object> valores = new Objeto();
 
-                            actual.keySet().forEach((claveActual) -> {
-                                Expresion expActual = actual.get(claveActual);
-                                Object valActual = expActual.getValor(tabla, salida);
-                                if (valActual != null) {
-                                    valores.put(claveActual, valActual);
+                                actual.keySet().forEach((claveActual) -> {
+                                    Expresion expActual = actual.get(claveActual);
+                                    Object valActual = expActual.getValor(tabla, salida);
+                                    if (valActual != null) {
+                                        valores.put(claveActual, valActual);
+                                    }
+                                });
+
+                                if (valores.size() > 0) {
+                                    tabla.setValor(id, valores);
                                 }
-                            });
-
-                            if (valores.size() > 0) {
-                                tabla.setValor(id, valores);
+                            } else {
+                                tabla.setValor(id, val);
                             }
                         } else {
-                            tabla.setValor(id, val);
+                            System.err.println("Errror, Objeto indefinido. Linea:" + linea);
                         }
                         break;
                     case ARREGLO:
-                        if (!(val instanceof Arreglo)) {
-                            LinkedList<Expresion> arrActual = (LinkedList<Expresion>) val;
-                            Map<Integer, Object> valAsignar = new Arreglo();
+                        if (val != null) {
+                            if (!(val instanceof Arreglo)) {
+                                LinkedList<Expresion> arrActual = (LinkedList<Expresion>) val;
+                                Map<Integer, Object> valAsignar = new Arreglo();
 
-                            for (int i = 0; i < arrActual.size(); i++) {
-                                Expresion expActual = arrActual.get(i);
-                                Object valActual = expActual.getValor(tabla, salida);
-                                Tipo tipActual = expActual.getTipo(tabla);
+                                for (int i = 0; i < arrActual.size(); i++) {
+                                    Expresion expActual = arrActual.get(i);
+                                    Object valActual = expActual.getValor(tabla, salida);
+                                    Tipo tipActual = expActual.getTipo(tabla);
 
-                                if (valActual != null && tipActual != null) {
-                                    if (tipActual != Tipo.VAR) {
-                                        valAsignar.put(i, valActual);
-                                    } else {
-                                        System.err.println("Error! Variable indefinida. Linea:" + linea);
+                                    if (valActual != null && tipActual != null) {
+                                        if (tipActual != Tipo.VAR) {
+                                            valAsignar.put(i, valActual);
+                                        } else {
+                                            System.err.println("Error! Variable indefinida. Linea:" + linea);
 
+                                        }
                                     }
                                 }
-                            }
 
-                            if (valAsignar.size() > 0) {
-                                tabla.setValor(id, valAsignar);
+                                if (valAsignar.size() > 0) {
+                                    tabla.setValor(id, valAsignar);
+                                }
+                            } else {
+                                tabla.setValor(id, val);
                             }
                         } else {
-                            tabla.setValor(id, val);
+                            System.err.println("Errror, Arreglo indefinido. Linea:" + linea);
                         }
-
+                        break;
+                    case VAR:
+                        System.err.println("Errror, Variable indefinida. Linea:" + linea);
                         break;
                     default:
-                        tabla.setTipo(getId(), tip);
-                        tabla.setValor(getId(), val);
+                        if (val != null) {
+                            tabla.setTipo(getId(), tip);
+                            tabla.setValor(getId(), val);
+                        }
                         break;
                 }
             }

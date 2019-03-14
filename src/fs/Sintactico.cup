@@ -117,18 +117,17 @@ INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 				|LLAMADA_METODOS:a puntoycoma{::};
 				
 ASIGNACION ::=identificador:a OP_ASIGNACION:o E:b{: RESULT = new Asignacion(Tipo.VAR, a, b, oleft+1, oright+1); :}
-			| identificador:a punto identificador:b OP_ASIGNACION:c E:d{:RESULT = new AsignacionObjeto(Tipo.VAR, a, b, d, aleft+1, aright+1);:};
-
+			| identificador:a punto identificador:b OP_ASIGNACION:c E:d{:RESULT = new AsignacionObjeto(Tipo.VAR, a, b, d, aleft+1, aright+1);:}
+			| identificador:a corcheteIzquierda E:b corcheteDerecha OP_ASIGNACION:c E:d{:RESULT = new AsignacionArreglo(Tipo.VAR, a, b, d, aleft+1, aright+1);:};
+			
 			//| identificador:a OP_ASIGNACION:o corcheteIzquierda corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, aleft+1, aright+1);:}
 			//| identificador:a OP_ASIGNACION:o corcheteIzquierda EXS:b corcheteDerecha{:RESULT = new Asignacion(Tipo.ARREGLO, a, b, aleft+1, aright+1);:}
 			
 			//| identificador:a OP_ASIGNACION:b llaveIzquierda llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, aleft+1, aright+1);:}
 			//| identificador:a OP_ASIGNACION:b llaveIzquierda OBJS:c llaveDerecha{:RESULT = new Asignacion(Tipo.OBJETO, a, c, aleft+1, aright+1);:}
 			
-			//
 			//| identificador:a punto identificador:b OP_ASIGNACION:c corcheteIzquierda EXS:d corcheteDerecha{:RESULT = new AsignacionObjeto(Tipo.ARREGLO, a, b, d, aleft+1, aright+1);:}
-			
-			//| identificador:a corcheteIzquierda E:b corcheteDerecha OP_ASIGNACION:c E:d{:RESULT = new AsignacionArreglo(Tipo.VAR, a, b, d, aleft+1, aright+1);:};
+
 				
 DECLARACION ::= var_:x SEMIDECLARACION:a{:RESULT = new Declaracion(a, xleft+1, xright+1);:};
 
