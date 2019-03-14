@@ -93,15 +93,15 @@ public class Aritmetica extends Operacion implements Expresion {
                             
                             if(op1 instanceof Identificador){
                                 Identificador id = (Identificador) op1;
-                                Asignacion asigna = new Asignacion(id.getId(), exp, linea, columna);
+                                Asignacion asigna = new Asignacion(id.getId(), "=", exp, linea, columna);
                                 asigna.ejecutar(tabla, salida);
                             } else if(op1 instanceof AccesoArreglo){
                                 AccesoArreglo ar = (AccesoArreglo) op1;
-                                AsignacionArreglo asigna = new AsignacionArreglo(ar.getId(), ar.getPosicion(), exp,linea,columna);
+                                AsignacionArreglo asigna = new AsignacionArreglo(ar.getId(), ar.getPosicion(), "=", exp,linea,columna);
                                 asigna.ejecutar(tabla, salida);
                             } else if(op1 instanceof AccesoObjeto){
                                 AccesoObjeto obj = (AccesoObjeto) op1;
-                                AsignacionObjeto asigna = new AsignacionObjeto(obj.getId(),obj.getClave(),obj.getPosicion(),exp,linea,columna);
+                                AsignacionObjeto asigna = new AsignacionObjeto(obj.getId(),obj.getClave(),obj.getPosicion(), "=", exp,linea,columna);
                                 asigna.ejecutar(tabla, salida);
                             }
                             

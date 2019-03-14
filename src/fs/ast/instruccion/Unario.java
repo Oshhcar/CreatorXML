@@ -59,16 +59,16 @@ public class Unario implements Instruccion {
 
                     if (exp instanceof Identificador) {
                         Identificador id = (Identificador) exp;
-                        Asignacion asigna = new Asignacion(id.getId(), valor, linea, columna);
+                        Asignacion asigna = new Asignacion(id.getId(), "=", valor, linea, columna);
                         return asigna.ejecutar(tabla, salida);
                     } else if (exp instanceof AccesoArreglo) {
                         AccesoArreglo ar = (AccesoArreglo) exp;
-                        AsignacionArreglo asigna = new AsignacionArreglo(ar.getId(), ar.getPosicion(), valor, linea, columna);
-                        asigna.ejecutar(tabla, salida);
+                        AsignacionArreglo asigna = new AsignacionArreglo(ar.getId(), ar.getPosicion(), "=", valor, linea, columna);
+                        return asigna.ejecutar(tabla, salida);
                     } else if (exp instanceof AccesoObjeto) {
                         AccesoObjeto obj = (AccesoObjeto) exp;
-                        AsignacionObjeto asigna = new AsignacionObjeto(obj.getId(), obj.getClave(), obj.getPosicion(), valor, linea, columna);
-                        asigna.ejecutar(tabla, salida);
+                        AsignacionObjeto asigna = new AsignacionObjeto(obj.getId(), obj.getClave(), obj.getPosicion(), "=", valor, linea, columna);
+                        return asigna.ejecutar(tabla, salida);
                     } else {
                         if (operador == Operacion.Operador.AUMENTO) {
                             System.err.println("Error, se necesita de una variable para aumentar. Línea: " + linea);
@@ -76,6 +76,7 @@ public class Unario implements Instruccion {
                             System.err.println("Error, se necesita de una variable para decrementar. Línea: " + linea);
 
                         }
+                        return null;
                     }
 
                 } else {

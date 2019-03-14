@@ -53,12 +53,13 @@ terminal and, or, not;
 terminal igual, masigual, menosigual, porigual, diagonaligual;
 terminal var_, imprimir_, importar_, detener_, retornar_, si_, sino_, selecciona_, caso_, defecto_, funcion_;
 
-non terminal INICIO, OP_ASIGNACION;
+non terminal INICIO;
 non terminal IMPORTAR;
 non terminal LLAMADA_METODOS;
 
 non terminal LinkedList<NodoAST> INSTRUCCIONES;
 non terminal NodoAST INSTRUCCION;
+non terminal String OP_ASIGNACION;
 non terminal Declaracion DECLARACION;
 non terminal LinkedList<Asignacion> SEMIDECLARACION;
 non terminal Asignacion ASIGNA;
@@ -118,10 +119,10 @@ INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 				|LLAMADA_METODOS:a puntoycoma{::}
 				|UNARIO:a puntoycoma{:RESULT = a;:};
 				
-ASIGNACION ::=identificador:a OP_ASIGNACION:o E:b{: RESULT = new Asignacion(a, b, oleft+1, oright+1); :}
-			| identificador:a punto identificador:b OP_ASIGNACION:c E:d{:RESULT = new AsignacionObjeto(a, b, d, aleft+1, aright+1);:}
-			| identificador:a punto identificador:b corcheteIzquierda E:c corcheteDerecha OP_ASIGNACION:d E:e{:RESULT = new AsignacionObjeto(a, b, c, e, aleft+1, aright+1);:}
-			| identificador:a corcheteIzquierda E:b corcheteDerecha OP_ASIGNACION:c E:d{:RESULT = new AsignacionArreglo(a, b, d, aleft+1, aright+1);:};
+ASIGNACION ::=identificador:a OP_ASIGNACION:b E:c{: RESULT = new Asignacion(a, b, c, aleft+1, aright+1); :}
+			| identificador:a punto identificador:b OP_ASIGNACION:c E:d{:RESULT = new AsignacionObjeto(a, b, c, d, aleft+1, aright+1);:}
+			| identificador:a punto identificador:b corcheteIzquierda E:c corcheteDerecha OP_ASIGNACION:d E:e{:RESULT = new AsignacionObjeto(a, b, c, d, e, aleft+1, aright+1);:}
+			| identificador:a corcheteIzquierda E:b corcheteDerecha OP_ASIGNACION:c E:d{:RESULT = new AsignacionArreglo(a, b, c, d, aleft+1, aright+1);:};
 
 				
 DECLARACION ::= var_:x SEMIDECLARACION:a{:RESULT = new Declaracion(a, xleft+1, xright+1);:};
@@ -130,13 +131,13 @@ SEMIDECLARACION ::= SEMIDECLARACION:a coma ASIGNA:b{:RESULT = a; RESULT.add(b);:
 				| ASIGNA:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};
 				
 ASIGNA ::= identificador:a {:RESULT = new Asignacion(a, aleft+1, aright+1);:}
-		| identificador:a OP_ASIGNACION:o E:b{:RESULT = new Asignacion(a, b, aleft+1, aright+1);:};
+		| identificador:a OP_ASIGNACION:b E:c{:RESULT = new Asignacion(a, "=", c, aleft+1, aright+1);:};
 
-OP_ASIGNACION ::= igual {::}
-				| masigual{::}
-				| menosigual{::}
-				| porigual{::}
-				| diagonaligual{::};
+OP_ASIGNACION ::= igual {:RESULT="=";:}
+				| masigual {:RESULT="+=";:}
+				| menosigual {:RESULT="-=";:}
+				| porigual {:RESULT="*=";:}
+				| diagonaligual {:RESULT="/=";:};
 
 EXS ::= EXS:a coma E:b {:RESULT = a; RESULT.add(b);:}
 		|E:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};	
