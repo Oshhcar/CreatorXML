@@ -38,58 +38,62 @@ public class Literal implements Expresion {
 
     @Override
     public Object getValor(TablaSimbolo tabla, JTextArea salida) {
-        if (valor != null) {
-            if (tipo == Tipo.ARREGLO) {
-                LinkedList<Expresion> arrActual = (LinkedList<Expresion>) valor;
-                Map<Integer, Object> valAsignar = new Arreglo();
+        switch (tipo) {
+            case ARREGLO:
+                if (valor != null) {
+                    LinkedList<Expresion> arrActual = (LinkedList<Expresion>) valor;
+                    Map<Integer, Object> valAsignar = new Arreglo();
 
-                for (int i = 0; i < arrActual.size(); i++) {
-                    Expresion expActual = arrActual.get(i);
-                    Object valActual = expActual.getValor(tabla, salida);
-                    Tipo tipActual = expActual.getTipo(tabla);
+                    for (int i = 0; i < arrActual.size(); i++) {
+                        Expresion expActual = arrActual.get(i);
+                        Object valActual = expActual.getValor(tabla, salida);
+                        Tipo tipActual = expActual.getTipo(tabla);
 
-                    valAsignar.put(i, "nulo");
+                        valAsignar.put(i, "nulo");
 
-                    if (tipActual != null) {
-                        if (tipActual != Tipo.VAR) {
-                            if (valActual != null) {
-                                valAsignar.put(i, valActual);
+                        if (tipActual != null) {
+                            if (tipActual != Tipo.VAR) {
+                                if (valActual != null) {
+                                    valAsignar.put(i, valActual);
+                                }
+                            } else {
+                                System.err.println("Error! Variable indefinida. Linea:" + linea);
                             }
-                        } else {
-                            System.err.println("Error! Variable indefinida. Linea:" + linea);
                         }
                     }
+
+                    return valAsignar;
                 }
+                return new Arreglo();
+            case OBJETO:
+                if (valor != null) {
+                    Map<String, Expresion> actual = (Map<String, Expresion>) valor;
+                    Map<String, Object> valores = new Objeto();
 
-                return valAsignar;
+                    actual.keySet().forEach((claveActual) -> {
+                        Expresion expActual = actual.get(claveActual);
+                        Object valActual = expActual.getValor(tabla, salida);
+                        Tipo tipActual = expActual.getTipo(tabla);
 
-            } else if (tipo == Tipo.OBJETO) {
-                Map<String, Expresion> actual = (Map<String, Expresion>) valor;
-                Map<String, Object> valores = new Objeto();
+                        valores.put(claveActual, "nulo");
 
-                actual.keySet().forEach((claveActual) -> {
-                    Expresion expActual = actual.get(claveActual);
-                    Object valActual = expActual.getValor(tabla, salida);
-                    Tipo tipActual = expActual.getTipo(tabla);
-
-                    valores.put(claveActual, "nulo");
-
-                    if (tipActual != null) {
-                        if (tipActual != Tipo.VAR) {
-                            if (valActual != null) {
-                                valores.put(claveActual, valActual);
+                        if (tipActual != null) {
+                            if (tipActual != Tipo.VAR) {
+                                if (valActual != null) {
+                                    valores.put(claveActual, valActual);
+                                }
+                            } else {
+                                System.err.println("Error! Variable indefinida. Linea:" + linea);
                             }
-                        } else {
-                            System.err.println("Error! Variable indefinida. Linea:" + linea);
                         }
-                    }
-                });
-                
-                return valores;
-            }
-        }
+                    });
 
-        return valor;
+                    return valores;
+                }
+                return new Objeto();
+            default:
+                return valor;
+        }
     }
 
     @Override
