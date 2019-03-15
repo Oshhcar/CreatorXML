@@ -55,7 +55,6 @@ terminal var_, imprimir_, importar_, detener_, retornar_, si_, sino_, selecciona
 
 non terminal INICIO;
 non terminal IMPORTAR;
-non terminal LLAMADA_METODOS;
 
 non terminal LinkedList<NodoAST> INSTRUCCIONES;
 non terminal NodoAST INSTRUCCION;
@@ -79,7 +78,9 @@ non terminal LinkedList<String> PARAMETROS;
 non terminal LinkedList<String> PARAMETRO;
 non terminal LinkedList<Expresion> EXS;
 non terminal LinkedList<Expresion> PARMS;
-non terminal LlamadaFuncion LLAMADA_METODO;
+non terminal LlamadaFuncion LLAMADA_FUNCION;
+non terminal LlamadaMetodo LLAMADA_METODO;
+non terminal LlamadaMetodos LLAMADA_METODOS;
 non terminal Map<String, Expresion> OBJS;
 non terminal Unario UNARIO;
 non terminal Expresion E;
@@ -117,7 +118,7 @@ INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 				|SELECCIONA:a {:RESULT = a;:}
 				|FUNCION:a {:RESULT = a;:}
 				|LLAMADA_METODO:a puntoycoma{:RESULT = a;:}
-				|LLAMADA_METODOS:a puntoycoma{::}
+				|LLAMADA_METODOS:a puntoycoma{:RESULT = a;:}
 				|UNARIO:a puntoycoma{:RESULT = a;:};
 				
 ASIGNACION ::=identificador:a OP_ASIGNACION:b E:c{: RESULT = new Asignacion(a, b, c, aleft+1, aright+1); :}
@@ -165,7 +166,7 @@ BLOQUE ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 		|SI:a {:RESULT = a;:}
 		|SELECCIONA:a {:RESULT = a;:}
 		|LLAMADA_METODO:a puntoycoma{:RESULT = a;:}
-		|LLAMADA_METODOS:a puntoycoma{::}
+		|LLAMADA_METODOS:a puntoycoma{:RESULT = a;:}
 		|UNARIO:a puntoycoma{:RESULT = a;:};
 
 
@@ -205,17 +206,26 @@ PARAMETROS ::= PARAMETRO:a {:RESULT = a;:};
 PARAMETRO ::= PARAMETRO:a coma var_ identificador:b {:RESULT = a; RESULT.add(b);:}
 			| var_ identificador:a{:RESULT = new LinkedList<>(); RESULT.add(a);:};
 			
-LLAMADA_METODO ::= identificador:a parIzquierda PARMS:b parDerecha
+LLAMADA_FUNCION ::= identificador:a parIzquierda PARMS:b parDerecha
 					{:
 						if(b != null){
 							RESULT = new LlamadaFuncion(a, b, aleft+1, aright+1);
 						} else {
-							RESULT = new LlamadaFuncion(a, b, aleft+1, aright+1);
+							RESULT = new LlamadaFuncion(a, aleft+1, aright+1);
+						}
+					:};
+					
+LLAMADA_METODO ::= identificador:a parIzquierda PARMS:b parDerecha
+					{:
+						if(b != null){
+							RESULT = new LlamadaMetodo(a, b, aleft+1, aright+1);
+						} else {
+							RESULT = new LlamadaMetodo(a, b, aleft+1, aright+1);
 						}
 					:};
 
-LLAMADA_METODOS ::=LLAMADA_METODOS:c punto identificador:a parIzquierda PARMS:b parDerecha{::}
-				|identificador:a punto identificador:b parIzquierda PARMS:c parDerecha{::};
+LLAMADA_METODOS ::=LLAMADA_METODOS:a punto identificador:b parIzquierda PARMS:c parDerecha{:RESULT = a; RESULT.add(b, c);:}
+				|identificador:a punto identificador:b parIzquierda PARMS:c parDerecha{:RESULT = new LlamadaMetodos(a, aleft+1, aright+1); RESULT.add(b, c);:};
 
 PARMS ::= {:RESULT=null;:}
 		| EXS:a{:RESULT = a;:};
@@ -258,7 +268,7 @@ E ::= 	  menos:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MENOS, xlef
 	| llaveIzquierda:x OBJS:a llaveDerecha{:RESULT = new Literal(Tipo.OBJETO, a, xleft+1, xright+1);:}
 	| corcheteIzquierda:x corcheteDerecha{:RESULT = new Literal(Tipo.ARREGLO, null, xleft+1, xright+1);:}
 	| llaveIzquierda:x llaveDerecha{:RESULT = new Literal(Tipo.OBJETO, null, xleft+1, xright+1);:}
-	|LLAMADA_METODO:a {:RESULT = a;:}
+	|LLAMADA_FUNCION:a {:RESULT = a;:}
 	|LLAMADA_METODOS:a {::};
 		
 		
