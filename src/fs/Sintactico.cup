@@ -81,8 +81,10 @@ non terminal LinkedList<Expresion> PARMS;
 non terminal LlamadaFuncion LLAMADA_FUNCION;
 non terminal LlamadaMetodo LLAMADA_METODO;
 non terminal LlamadaMetodos LLAMADA_METODOS;
+non terminal LlamadaFunciones LLAMADA_FUNCIONES;
 non terminal Map<String, Expresion> OBJS;
 non terminal Unario UNARIO;
+non terminal Expresion EXP_UNARIO;
 non terminal Expresion E;
 
 precedence left interrogacion;
@@ -215,6 +217,9 @@ LLAMADA_FUNCION ::= identificador:a parIzquierda PARMS:b parDerecha
 						}
 					:};
 					
+LLAMADA_FUNCIONES ::=LLAMADA_FUNCIONES:a punto identificador:b parIzquierda PARMS:c parDerecha{:RESULT = a; RESULT.add(b, c);:}
+				|identificador:a punto identificador:b parIzquierda PARMS:c parDerecha{:RESULT = new LlamadaFunciones(a, aleft+1, aright+1); RESULT.add(b, c);:};
+				
 LLAMADA_METODO ::= identificador:a parIzquierda PARMS:b parDerecha
 					{:
 						if(b != null){
@@ -230,8 +235,14 @@ LLAMADA_METODOS ::=LLAMADA_METODOS:a punto identificador:b parIzquierda PARMS:c 
 PARMS ::= {:RESULT=null;:}
 		| EXS:a{:RESULT = a;:};
 
-UNARIO ::= E:a masmas{:RESULT = new Unario(a, Operacion.Operador.AUMENTO, aleft+1, aright+1);:}
-		| E:a menosmenos{:RESULT = new Unario(a, Operacion.Operador.DECREMENTO, aleft+1, aright+1);:};
+UNARIO ::= EXP_UNARIO:a masmas{:RESULT = new Unario(a, Operacion.Operador.AUMENTO, aleft+1, aright+1);:}
+		| EXP_UNARIO:a menosmenos{:RESULT = new Unario(a, Operacion.Operador.DECREMENTO, aleft+1, aright+1);:};
+
+EXP_UNARIO ::= identificador:a{:RESULT = new Identificador(a, aleft+1, aright+1);:}
+			| parIzquierda E:a parDerecha{:RESULT = a;:}
+			| identificador:a punto identificador:b{:RESULT = new AccesoObjeto(a, b, aleft+1, aright+1);:}
+			| identificador:a punto identificador:b corcheteIzquierda E:c corcheteDerecha{:RESULT = new AccesoObjeto(a, b, c, aleft+1, aright+1);:}
+			| identificador:a corcheteIzquierda E:b corcheteDerecha{:RESULT = new AccesoArreglo(a, b, aleft+1, aright+1);:};
 		
 E ::= 	  menos:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MENOS, xleft+1, xright+1);:} %prec umenos
 	|     mas:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MAS, xleft+1, xright+1);:} %prec umas
@@ -269,7 +280,7 @@ E ::= 	  menos:x E:a {:RESULT = new Aritmetica(a, Operacion.Operador.MENOS, xlef
 	| corcheteIzquierda:x corcheteDerecha{:RESULT = new Literal(Tipo.ARREGLO, null, xleft+1, xright+1);:}
 	| llaveIzquierda:x llaveDerecha{:RESULT = new Literal(Tipo.OBJETO, null, xleft+1, xright+1);:}
 	|LLAMADA_FUNCION:a {:RESULT = a;:}
-	|LLAMADA_METODOS:a {::};
+	|LLAMADA_FUNCIONES:a {:RESULT = a;:};
 		
 		
 		

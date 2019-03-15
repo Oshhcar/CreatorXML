@@ -21,6 +21,20 @@ import javax.swing.JTextArea;
  */
 public class LlamadaFuncion implements Expresion {
 
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @return the parametros
+     */
+    public LinkedList<Expresion> getParametros() {
+        return parametros;
+    }
+
     private final String id;
     private final LinkedList<Expresion> parametros;
     private Tipo tipo;
@@ -50,18 +64,18 @@ public class LlamadaFuncion implements Expresion {
 
     @Override
     public Object getValor(TablaSimbolo tabla, JTextArea salida) {
-        FuncionSim fun = tabla.getFuncion(id);
+        FuncionSim fun = tabla.getFuncion(getId());
         if (fun != null) {
-            if (this.parametros != null && fun.getParametros() != null) {
-                if (this.parametros.size() == fun.getParametros().size()) {
+            if (this.getParametros() != null && fun.getParametros() != null) {
+                if (this.getParametros().size() == fun.getParametros().size()) {
                     TablaSimbolo local = new TablaSimbolo();
                     local.addAll(tabla);
 
-                    for (int i = 0; i < this.parametros.size(); i++) {
+                    for (int i = 0; i < this.getParametros().size(); i++) {
                         String idActual = fun.getParametros().get(i);
                         Simbolo sim = new Simbolo(Tipo.VAR, idActual);
                         local.add(sim);
-                        Expresion expActual = this.parametros.get(i);
+                        Expresion expActual = this.getParametros().get(i);
                         Object valActual = expActual.getValor(tabla, salida);
                         Tipo tipActual = expActual.getTipo(tabla);
 
