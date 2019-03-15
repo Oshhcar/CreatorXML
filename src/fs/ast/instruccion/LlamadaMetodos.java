@@ -6,6 +6,9 @@
 package fs.ast.instruccion;
 
 import fs.ast.expresion.Expresion;
+import fs.ast.expresion.nativas.Maximo;
+import fs.ast.expresion.nativas.Minimo;
+import fs.ast.instruccion.nativas.Invertir;
 import fs.ast.instruccion.nativas.Ordenamiento;
 import fs.ast.simbolos.TablaSimbolo;
 import java.util.LinkedList;
@@ -51,6 +54,29 @@ public class LlamadaMetodos implements Instruccion {
                         }
                         Ordenamiento asc = new Ordenamiento(id, "asc", linea, columna);
                         arreglo = asc.ejecutar(tabla, salida);
+                        break;
+                    case "invertir":
+                        if (llamada.getParametros() != null) {
+                            System.err.println("Error, la funcion invertir no necesita parámetros. Linea: " + linea);
+                        }
+                        Invertir inv = new Invertir(id, linea, columna);
+                        arreglo = inv.ejecutar(tabla, salida);
+                        break;
+                    case "maximo":
+                        if (llamada.getParametros() != null) {
+                            System.err.println("Error, la funcion maximo no necesita parámetros. Linea: " + linea);
+                        }
+                        Maximo maximo = new Maximo(id, linea, columna);
+                        arreglo = maximo.getValor(tabla, salida);
+                        System.out.println("el max es " + arreglo);
+                        break;
+                    case "minimo":
+                        if (llamada.getParametros() != null) {
+                            System.err.println("Error, la funcion maximo no necesita parámetros. Linea: " + linea);
+                        }
+                        Minimo minimo = new Minimo(id, linea, columna);
+                        arreglo = minimo.getValor(tabla, salida);
+                        System.out.println("el min es " + arreglo);
                         break;
                 }
 
