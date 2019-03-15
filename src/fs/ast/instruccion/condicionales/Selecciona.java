@@ -15,12 +15,14 @@ import javax.swing.JTextArea;
  *
  * @author oscar
  */
-public class Selecciona implements Instruccion{
+public class Selecciona implements Instruccion {
+
     private final Expresion expSiwtch;
     private final LinkedList<Caso> casos;
     private final int linea;
     private final int columna;
     private boolean isContinuar;
+    private boolean ejecutarDefecto;
     
     public Selecciona(Expresion expSiwtch, LinkedList<Caso> casos, int linea, int columna) {
         this.expSiwtch = expSiwtch;
@@ -28,17 +30,27 @@ public class Selecciona implements Instruccion{
         this.linea = linea;
         this.columna = columna;
         this.isContinuar = false;
+        this.ejecutarDefecto = true;
+        
     }
-    
+
     @Override
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
-        for(Caso caso: casos){
+        for (Caso caso : casos) {
             caso.setExpSwitch(expSiwtch);
-            if(isContinuar)
-                caso.setContinuar(isContinuar);
             
+            if (isContinuar) {
+                caso.setContinuar(isContinuar);
+            }
+            
+            if(!ejecutarDefecto){
+                caso.setEjecutarDefecto(ejecutarDefecto);
+            }
+
             caso.ejecutar(tabla, salida);
             isContinuar = caso.isContinuar();
+            ejecutarDefecto = caso.isEjecutarDefecto();
+            
         }
         return null;
     }
@@ -52,6 +64,5 @@ public class Selecciona implements Instruccion{
     public int getColumna() {
         return columna;
     }
-    
-    
+
 }

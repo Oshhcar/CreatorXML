@@ -27,6 +27,7 @@ public class Caso implements Instruccion {
     private final int columna;
     private final boolean isDefecto;
     private boolean continuar;
+    private boolean ejecutarDefecto;
 
     public Caso(LinkedList<NodoAST> bloques, int linea, int columna) {
         this.expresion = null;
@@ -36,6 +37,7 @@ public class Caso implements Instruccion {
         this.columna = columna;
         this.isDefecto = true;
         this.continuar = false;
+        this.ejecutarDefecto = true;
     }
 
     public Caso(Expresion expresion, LinkedList<NodoAST> bloques, int linea, int columna) {
@@ -45,17 +47,20 @@ public class Caso implements Instruccion {
         this.columna = columna;
         this.isDefecto = false;
         this.continuar = false;
+        this.ejecutarDefecto = true;
     }
 
     @Override
     public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
         if (isContinuar()) {
-            for (NodoAST bloque : bloques) {
-                if (bloque instanceof Instruccion) {
-                    if (bloque instanceof Detener) {
-                        this.continuar = false;
-                    } else {
-                        ((Instruccion) bloque).ejecutar(tabla, salida);
+            if (!isDefecto) {
+                for (NodoAST bloque : bloques) {
+                    if (bloque instanceof Instruccion) {
+                        if (bloque instanceof Detener) {
+                            this.continuar = false;
+                        } else {
+                            ((Instruccion) bloque).ejecutar(tabla, salida);
+                        }
                     }
                 }
             }
@@ -71,7 +76,8 @@ public class Caso implements Instruccion {
                         if (tipExpSwitch == tipExpresion) {
                             if (valExpresion.equals(valExpSwitch)) {
                                 this.continuar = true;
-
+                                this.ejecutarDefecto = false;
+                                
                                 for (NodoAST bloque : bloques) {
                                     if (bloque instanceof Instruccion) {
                                         if (bloque instanceof Detener) {
@@ -92,9 +98,11 @@ public class Caso implements Instruccion {
                 }
 
             } else {
-                for (NodoAST bloque : bloques) {
-                    if (bloque instanceof Instruccion) {
-                        ((Instruccion) bloque).ejecutar(tabla, salida);
+                if (ejecutarDefecto) {
+                    for (NodoAST bloque : bloques) {
+                        if (bloque instanceof Instruccion) {
+                            ((Instruccion) bloque).ejecutar(tabla, salida);
+                        }
                     }
                 }
                 return null;
@@ -132,6 +140,20 @@ public class Caso implements Instruccion {
      */
     public boolean isContinuar() {
         return continuar;
+    }
+
+    /**
+     * @return the ejecutarDefecto
+     */
+    public boolean isEjecutarDefecto() {
+        return ejecutarDefecto;
+    }
+
+    /**
+     * @param ejecutarDefecto the ejecutarDefecto to set
+     */
+    public void setEjecutarDefecto(boolean ejecutarDefecto) {
+        this.ejecutarDefecto = ejecutarDefecto;
     }
 
 }

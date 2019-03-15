@@ -73,6 +73,7 @@ non terminal LinkedList<SubSi> SINOSI;
 non terminal Selecciona SELECCIONA;
 non terminal LinkedList<Caso> CASOS;
 non terminal Caso CASO;
+non terminal Caso DEFECTO;
 non terminal Funcion FUNCION;
 non terminal LinkedList<String> PARAMETROS;
 non terminal LinkedList<String> PARAMETRO;
@@ -184,14 +185,16 @@ SINOSI ::= SINOSI:a sino_:x si_ parIzquierda E:b parDerecha llaveIzquierda BLOQU
 		| sino_:x si_ parIzquierda E:a parDerecha llaveIzquierda BLOQUES:b llaveDerecha
 			{:RESULT = new LinkedList<>(); RESULT.add(new SubSi(a, b, xleft+1, xright+1));:};
 
-SELECCIONA ::= selecciona_:x parIzquierda E:a parDerecha llaveIzquierda CASOS:b llaveDerecha{:RESULT = new Selecciona(a, b, xleft+1, xright+1);:};
+SELECCIONA ::= selecciona_:x parIzquierda E:a parDerecha llaveIzquierda CASOS:b llaveDerecha{:RESULT = new Selecciona(a, b, xleft+1, xright+1);:}
+			| selecciona_:x parIzquierda E:a parDerecha llaveIzquierda CASOS:b DEFECTO:c llaveDerecha{:b.add(c); RESULT = new Selecciona(a, b, xleft+1, xright+1);:};
 			
 CASOS ::= CASOS:a CASO:b{:RESULT = a; RESULT.add(b);:}
 		| CASO:a {:RESULT = new LinkedList<>(); RESULT.add(a);:};
 		
-CASO ::= caso_:x E:a dospuntos llaveIzquierda BLOQUES:b llaveDerecha{:RESULT = new Caso(a, b, xleft+1, xright+1);:}
-		|defecto_:x dospuntos llaveIzquierda BLOQUES:a llaveDerecha{:RESULT = new Caso(a, xleft+1, xright+1);:};
+CASO ::= caso_:x E:a dospuntos llaveIzquierda BLOQUES:b llaveDerecha{:RESULT = new Caso(a, b, xleft+1, xright+1);:};
 
+DEFECTO ::= defecto_:x dospuntos llaveIzquierda BLOQUES:a llaveDerecha{:RESULT = new Caso(a, xleft+1, xright+1);:};		
+		
 FUNCION ::= funcion_:x identificador:a parIzquierda PARAMETROS:b parDerecha llaveIzquierda BLOQUES:c llaveDerecha
 			{:RESULT = new Funcion(a, b, c, xleft+1, xright+1);:}
 		| funcion_:x identificador:a parIzquierda parDerecha llaveIzquierda BLOQUES:c llaveDerecha
