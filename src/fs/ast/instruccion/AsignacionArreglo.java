@@ -69,8 +69,8 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
                                                         tip2 = Tipo.ARREGLO;
                                                     }
 
-                                                    Literal exp1 = new Literal(tipExp, valExp, super.getLinea(), super.getColumna());
-                                                    Literal exp2 = new Literal(tip2, val2, super.getLinea(), super.getColumna());
+                                                    Literal exp2 = new Literal(tipExp, valExp, super.getLinea(), super.getColumna());
+                                                    Literal exp1 = new Literal(tip2, val2, super.getLinea(), super.getColumna());
 
                                                     Operacion.Operador op = Operacion.Operador.MAS;
                                                     switch (op_asignacion) {

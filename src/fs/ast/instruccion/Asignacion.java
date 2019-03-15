@@ -54,9 +54,9 @@ public class Asignacion implements Instruccion {
                         } else {
                             Object val2 = tabla.getValor(id);
                             Tipo tip2 = tabla.getTipo(id);
-
-                            Literal exp1 = new Literal(tip, val, linea, columna);
-                            Literal exp2 = new Literal(tip2, val2, linea, columna);
+                            System.out.println(val2+""+tip2);
+                            Literal exp2 = new Literal(tip, val, linea, columna);
+                            Literal exp1 = new Literal(tip2, val2, linea, columna);
                             
                             Operacion.Operador op = Operacion.Operador.MAS;
                             switch(op_asignacion){
