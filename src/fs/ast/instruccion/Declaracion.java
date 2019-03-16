@@ -6,7 +6,7 @@
 package fs.ast.instruccion;
 
 import fs.ast.simbolos.Simbolo;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
@@ -28,10 +28,10 @@ public class Declaracion implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         getAsignaciones().forEach((asignacion) -> {
             Simbolo sim = new Simbolo(Tipo.VAR, asignacion.getId());
-            tabla.add(sim);
+            tabla.addSimbolo(sim);
             asignacion.ejecutar(tabla, salida);
         });
         return null;

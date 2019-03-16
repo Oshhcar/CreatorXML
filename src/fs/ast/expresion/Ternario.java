@@ -5,7 +5,7 @@
  */
 package fs.ast.expresion;
 
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
 
@@ -31,12 +31,12 @@ public class Ternario implements Expresion {
     }
 
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
+    public Tipo getTipo(TablaSimbolos tabla) {
         return tipo;
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         Object condicionVal = condicion.getValor(tabla, salida);
         Object verdaderoVal = verdadero.getValor(tabla, salida);
         Object falsoVal = falso.getValor(tabla, salida);

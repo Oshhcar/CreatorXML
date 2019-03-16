@@ -9,7 +9,7 @@ import fs.ast.NodoAST;
 import fs.ast.expresion.Expresion;
 import fs.ast.instruccion.Detener;
 import fs.ast.instruccion.Instruccion;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
@@ -51,7 +51,7 @@ public class Caso implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         if (isContinuar()) {
             if (!isDefecto) {
                 for (NodoAST bloque : bloques) {

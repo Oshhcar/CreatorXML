@@ -13,7 +13,7 @@ import fs.ast.expresion.Literal;
 import fs.ast.instruccion.Asignacion;
 import fs.ast.instruccion.AsignacionArreglo;
 import fs.ast.instruccion.AsignacionObjeto;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
 
@@ -36,15 +36,15 @@ public class Aritmetica extends Operacion implements Expresion {
     }
 
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
+    public Tipo getTipo(TablaSimbolos tabla) {
         return tipo;
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         Object val1 = op1.getValor(tabla, salida);
         Tipo tip1 = op1.getTipo(tabla);
-
+        
         if (unario) {
             if (tip1 != null) {
                 switch (operador) {

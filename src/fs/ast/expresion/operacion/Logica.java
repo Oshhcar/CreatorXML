@@ -6,7 +6,7 @@
 package fs.ast.expresion.operacion;
 
 import fs.ast.expresion.Expresion;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
 
@@ -25,12 +25,12 @@ public class Logica extends Operacion implements Expresion {
     }
 
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
+    public Tipo getTipo(TablaSimbolos tabla) {
         return tipo;
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         Object val1 = op1.getValor(tabla, salida);
         Object val2 = op2 == null ? null : op2.getValor(tabla, salida);
         Tipo tip1 = op1.getTipo(tabla);

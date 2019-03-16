@@ -7,7 +7,7 @@ package fs.ast.instruccion;
 
 import fs.ast.NodoAST;
 import fs.ast.simbolos.FuncionSim;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
 
@@ -39,9 +39,9 @@ public class Funcion implements Instruccion{
     }
     
     @Override
-    public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         FuncionSim fun = new FuncionSim(parametros, bloques, id);
-        tabla.add(fun);
+        tabla.addSimbolo(fun);
         return null;
     }
 

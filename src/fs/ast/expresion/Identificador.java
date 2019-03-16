@@ -5,7 +5,8 @@
  */
 package fs.ast.expresion;
 
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.Simbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
 
@@ -26,13 +27,15 @@ public class Identificador implements Expresion{
 
     
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
-       return tabla.getTipo(id);
+    public Tipo getTipo(TablaSimbolos tabla) {
+       Simbolo s = tabla.getSimbolo(id);
+       return s.getTipo();
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
-        return tabla.getValor(id);
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
+        Simbolo s = tabla.getSimbolo(id);
+        return s.getValor();
     }
 
     @Override

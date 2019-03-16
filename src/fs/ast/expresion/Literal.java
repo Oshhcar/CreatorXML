@@ -7,7 +7,7 @@ package fs.ast.expresion;
 
 import fs.ast.simbolos.Arreglo;
 import fs.ast.simbolos.Objeto;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
 import java.util.Map;
@@ -32,12 +32,12 @@ public class Literal implements Expresion {
     }
 
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
+    public Tipo getTipo(TablaSimbolos tabla) {
         return tipo;
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         switch (tipo) {
             case ARREGLO:
                 if (valor != null) {

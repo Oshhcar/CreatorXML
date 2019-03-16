@@ -7,7 +7,7 @@ package fs.ast.instruccion.condicionales;
 
 import fs.ast.expresion.Expresion;
 import fs.ast.instruccion.Instruccion;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
 
@@ -35,7 +35,7 @@ public class Selecciona implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         for (Caso caso : casos) {
             caso.setExpSwitch(expSiwtch);
             

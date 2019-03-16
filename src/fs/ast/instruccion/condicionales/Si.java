@@ -9,7 +9,7 @@ import fs.ast.NodoAST;
 import fs.ast.expresion.Expresion;
 import fs.ast.expresion.Retornar;
 import fs.ast.instruccion.Instruccion;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
 
@@ -56,7 +56,7 @@ public class Si implements Instruccion{
     }
     
     @Override
-    public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         for(SubSi si: subSis){
             Object r = si.ejecutar(tabla, salida);
             if(r != null){

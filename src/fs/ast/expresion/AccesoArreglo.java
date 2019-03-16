@@ -7,7 +7,8 @@ package fs.ast.expresion;
 
 import fs.ast.simbolos.Arreglo;
 import fs.ast.simbolos.Objeto;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.Simbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.Map;
 import javax.swing.JTextArea;
@@ -33,22 +34,23 @@ public class AccesoArreglo implements Expresion {
     }
 
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
+    public Tipo getTipo(TablaSimbolos tabla) {
         return tipo;
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         Object valPosicion = posicion.getValor(tabla, salida);
         if (valPosicion != null) {
             Tipo tipPosicion = posicion.getTipo(tabla);
             if (tipPosicion != null) {
                 if (tipPosicion == Tipo.ENTERO) {
                     Integer pos = Integer.valueOf(valPosicion.toString());
-                    Tipo tip = tabla.getTipo(id);
+                    Simbolo s = tabla.getSimbolo(id);
+                    Tipo tip = s.getTipo();
                     if (tip != null) {
                         if (tip == Tipo.ARREGLO) {
-                            Map<Integer, Object> arreglo = (Map<Integer, Object>) tabla.getValor(id);
+                            Map<Integer, Object> arreglo = (Map<Integer, Object>) s.getValor();
                             if (arreglo != null) {
                                 Object valor = arreglo.get(pos);
                                 if (valor != null) {

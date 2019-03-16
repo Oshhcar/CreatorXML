@@ -10,7 +10,8 @@ import fs.ast.expresion.nativas.Maximo;
 import fs.ast.expresion.nativas.Minimo;
 import fs.ast.instruccion.nativas.Invertir;
 import fs.ast.instruccion.nativas.Ordenamiento;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.Simbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
 
@@ -33,8 +34,9 @@ public class LlamadaMetodos implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
-        Object arreglo = tabla.getValor(id);
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+        Simbolo s = tabla.getSimbolo(id);
+        Object arreglo = s.getValor();
 
         if (arreglo != null) {
             for (int i = 0; i < this.metodos.size(); i++) {

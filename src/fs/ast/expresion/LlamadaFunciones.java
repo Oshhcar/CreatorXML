@@ -7,7 +7,8 @@ package fs.ast.expresion;
 
 import fs.ast.expresion.nativas.Maximo;
 import fs.ast.expresion.nativas.Minimo;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.Simbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
@@ -33,13 +34,14 @@ public class LlamadaFunciones implements Expresion {
     }
 
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
+    public Tipo getTipo(TablaSimbolos tabla) {
         return tipo;
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
-        Object arreglo = tabla.getValor(id);
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
+        Simbolo s = tabla.getSimbolo(id);
+        Object arreglo = s.getValor();
         if (arreglo != null) {
             for (int i = 0; i < this.funciones.size(); i++) {
                 LlamadaFuncion llamada = this.funciones.get(i);

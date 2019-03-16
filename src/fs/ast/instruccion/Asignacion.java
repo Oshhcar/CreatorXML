@@ -9,7 +9,8 @@ import fs.ast.expresion.Expresion;
 import fs.ast.expresion.Literal;
 import fs.ast.expresion.operacion.Aritmetica;
 import fs.ast.expresion.operacion.Operacion;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.Simbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
 
@@ -42,7 +43,7 @@ public class Asignacion implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         if (null != valor) {
             Object val = valor.getValor(tabla, salida);
             Tipo tip = valor.getTipo(tabla);
@@ -52,8 +53,9 @@ public class Asignacion implements Instruccion {
                         if ("=".equals(op_asignacion)) {
                             tabla.setValor(id, val);
                         } else {
-                            Object val2 = tabla.getValor(id);
-                            Tipo tip2 = tabla.getTipo(id);
+                            Simbolo s = tabla.getSimbolo(id);
+                            Object val2 = s.getValor();
+                            Tipo tip2 = s.getTipo();
                             System.out.println(val2+""+tip2);
                             Literal exp2 = new Literal(tip, val, linea, columna);
                             Literal exp1 = new Literal(tip2, val2, linea, columna);

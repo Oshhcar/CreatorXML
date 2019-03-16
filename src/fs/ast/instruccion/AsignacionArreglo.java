@@ -11,7 +11,8 @@ import fs.ast.expresion.operacion.Aritmetica;
 import fs.ast.expresion.operacion.Operacion;
 import fs.ast.simbolos.Arreglo;
 import fs.ast.simbolos.Objeto;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.Simbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.Map;
 import javax.swing.JTextArea;
@@ -30,12 +31,13 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         if (null != valor) {
-            Tipo tip = tabla.getTipo(id);
+            Simbolo s = tabla.getSimbolo(id);
+            Tipo tip = s.getTipo();
             if (tip != null) {
                 if (tip == Tipo.ARREGLO) {
-                    Map<Integer, Object> arreglo = (Map<Integer, Object>) tabla.getValor(id);
+                    Map<Integer, Object> arreglo = (Map<Integer, Object>) s.getValor();
                     if (arreglo != null) {
                         Object valPosicion = posicion.getValor(tabla, salida);
                         Tipo tipPosicion = posicion.getTipo(tabla);

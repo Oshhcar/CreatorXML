@@ -10,7 +10,7 @@ import fs.ast.instruccion.Asignacion;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.FuncionSim;
 import fs.ast.simbolos.Simbolo;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
@@ -58,30 +58,30 @@ public class LlamadaFuncion implements Expresion {
     }
 
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
+    public Tipo getTipo(TablaSimbolos tabla) {
         return tipo;
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         FuncionSim fun = tabla.getFuncion(getId());
         if (fun != null) {
             if (this.getParametros() != null && fun.getParametros() != null) {
                 if (this.getParametros().size() == fun.getParametros().size()) {
-                    TablaSimbolo local = new TablaSimbolo();
+                    TablaSimbolos local = new TablaSimbolos();
                     local.addAll(tabla);
 
                     for (int i = 0; i < this.getParametros().size(); i++) {
                         String idActual = fun.getParametros().get(i);
                         Simbolo sim = new Simbolo(Tipo.VAR, idActual);
-                        local.add(sim);
+                        local.addSimbolo(sim);
                         Expresion expActual = this.getParametros().get(i);
                         Object valActual = expActual.getValor(tabla, salida);
                         Tipo tipActual = expActual.getTipo(tabla);
 
                         if (tipActual != null && valActual != null) {
                             sim.setValor(valActual);
-                            local.add(sim);
+                            local.addSimbolo(sim);
                         } else {
                             System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
                             return null;
@@ -108,7 +108,7 @@ public class LlamadaFuncion implements Expresion {
                     System.err.println("Error, los parametros no son los mismos en la funcion. Linea:" + linea);
                 }
             } else {
-                TablaSimbolo local = new TablaSimbolo();
+                TablaSimbolos local = new TablaSimbolos();
                 local.addAll(tabla);
 
                 for (NodoAST bloque : fun.getBloques()) {

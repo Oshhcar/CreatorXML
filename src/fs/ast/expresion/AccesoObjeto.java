@@ -6,9 +6,10 @@
 package fs.ast.expresion;
 
 import fs.ast.simbolos.Arreglo;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import fs.ast.simbolos.Objeto;
+import fs.ast.simbolos.Simbolo;
 import java.util.Map;
 import javax.swing.JTextArea;
 
@@ -44,16 +45,17 @@ public class AccesoObjeto implements Expresion {
     }
 
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
+    public Tipo getTipo(TablaSimbolos tabla) {
         return tipo;
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
-        Tipo tip = tabla.getTipo(getId());
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
+        Simbolo s = tabla.getSimbolo(id);
+        Tipo tip = s.getTipo();
         if (tip != null) {
             if (tip == Tipo.OBJETO) {
-                Map<String, Object> valores = (Map<String, Object>) tabla.getValor(getId());
+                Map<String, Object> valores = (Map<String, Object>) s.getValor();
                 if (valores != null) {
                     Object valor = valores.get(getClave());
                     if (valor != null) {

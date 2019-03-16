@@ -5,7 +5,7 @@
  */
 package fs.ast.expresion;
 
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
 
@@ -25,12 +25,12 @@ public class Retornar implements Expresion{
     }
     
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
+    public Tipo getTipo(TablaSimbolos tabla) {
         return expresion.getTipo(tabla);
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         return expresion.getValor(tabla, salida);
     }
 

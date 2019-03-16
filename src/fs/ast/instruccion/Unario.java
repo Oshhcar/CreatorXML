@@ -11,7 +11,7 @@ import fs.ast.expresion.Expresion;
 import fs.ast.expresion.Identificador;
 import fs.ast.expresion.Literal;
 import fs.ast.expresion.operacion.Operacion;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
 
@@ -34,7 +34,7 @@ public class Unario implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         Object valExp = exp.getValor(tabla, salida);
         if (valExp != null) {
             Tipo tipoExp = exp.getTipo(tabla);

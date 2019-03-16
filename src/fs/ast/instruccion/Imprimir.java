@@ -6,7 +6,7 @@
 package fs.ast.instruccion;
 
 import fs.ast.expresion.Expresion;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
 
@@ -27,7 +27,7 @@ public class Imprimir implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolo tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         Object valExp = exp.getValor(tabla, salida);
         Object tipExp = exp.getTipo(tabla);
 

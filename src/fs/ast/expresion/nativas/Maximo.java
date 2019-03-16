@@ -7,7 +7,8 @@ package fs.ast.expresion.nativas;
 
 import fs.ast.expresion.Expresion;
 import fs.ast.simbolos.Arreglo;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.Simbolo;
+import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.Map;
 import javax.swing.JTextArea;
@@ -31,16 +32,17 @@ public class Maximo implements Expresion {
     }
 
     @Override
-    public Tipo getTipo(TablaSimbolo tabla) {
+    public Tipo getTipo(TablaSimbolos tabla) {
         return tipo;
     }
 
     @Override
-    public Object getValor(TablaSimbolo tabla, JTextArea salida) {
-        Tipo tip = tabla.getTipo(id);
+    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
+        Simbolo s = tabla.getSimbolo(id);
+        Tipo tip = s.getTipo();
         if (tip != null) {
             if (tip == Tipo.ARREGLO) {
-                Map<Integer, Object> arreglo = (Map<Integer, Object>) tabla.getValor(id);
+                Map<Integer, Object> arreglo = (Map<Integer, Object>) s.getValor();
                 if (arreglo != null) {
                     Object exp0 = arreglo.get(0);
                     if (exp0 instanceof Integer) {

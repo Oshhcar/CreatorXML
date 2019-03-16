@@ -6,7 +6,8 @@
 package fs.ast;
 
 import fs.ast.instruccion.Instruccion;
-import fs.ast.simbolos.TablaSimbolo;
+import fs.ast.simbolos.Simbolos;
+import fs.ast.simbolos.TablaSimbolos;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
 
@@ -22,7 +23,8 @@ public class AST {
     }
     
     public void ejecutar(JTextArea salida){
-        TablaSimbolo global = new TablaSimbolo();
+        TablaSimbolos global = new TablaSimbolos();
+        global.add(new Simbolos());
         //hacer varias pasadas por las funciones
         
         for(NodoAST nodo: nodos){
