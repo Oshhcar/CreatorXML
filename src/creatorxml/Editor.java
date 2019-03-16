@@ -967,6 +967,8 @@ public class Editor extends javax.swing.JFrame {
                 
                 if(ast != null) {
                     ast.ejecutar(this.jTextArea1);
+                    this.jTextArea1.append("-------------------------------------------------------------\n");
+
                 } else {
                     System.out.println("No se genero el ast.");
                 }

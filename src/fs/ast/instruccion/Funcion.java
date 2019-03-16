@@ -15,13 +15,14 @@ import javax.swing.JTextArea;
  *
  * @author oscar
  */
-public class Funcion implements Instruccion{
+public class Funcion implements Instruccion {
+
     private final String id;
     private final LinkedList<String> parametros;
     private final LinkedList<NodoAST> bloques;
     private final int linea;
     private final int columna;
-    
+
     public Funcion(String id, LinkedList<NodoAST> bloques, int linea, int columna) {
         this.id = id;
         this.parametros = null;
@@ -37,11 +38,25 @@ public class Funcion implements Instruccion{
         this.linea = linea;
         this.columna = columna;
     }
-    
+
     @Override
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+        FuncionSim tmp;
+        
+        if(this.parametros != null){
+            tmp = tabla.getFuncion(id, this.parametros.size());
+        } else {
+            tmp = tabla.getFuncion(id);
+        }
+
+        if (tmp != null) {
+            System.err.println("Error, Ya existe una funcion definida con el nombre de \"" + id + "\". Línea: " + linea);
+            return null;
+        }
+
         FuncionSim fun = new FuncionSim(parametros, bloques, id);
         tabla.addSimbolo(fun);
+
         return null;
     }
 

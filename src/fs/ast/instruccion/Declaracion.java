@@ -30,9 +30,13 @@ public class Declaracion implements Instruccion {
     @Override
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         getAsignaciones().forEach((asignacion) -> {
-            Simbolo sim = new Simbolo(Tipo.VAR, asignacion.getId());
-            tabla.addSimbolo(sim);
-            asignacion.ejecutar(tabla, salida);
+            if (!tabla.existeLocal(asignacion.getId())) {
+                Simbolo sim = new Simbolo(Tipo.VAR, asignacion.getId());
+                tabla.addSimbolo(sim);
+                asignacion.ejecutar(tabla, salida);
+            } else {
+                System.err.println("Error, Ya existe una variable con el nombre de \"" + asignacion.getId() + "\". Línea: " + linea);
+            }
         });
         return null;
     }

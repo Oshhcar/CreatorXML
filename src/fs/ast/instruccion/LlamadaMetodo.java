@@ -43,52 +43,53 @@ public class LlamadaMetodo implements Instruccion {
 
     @Override
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
-        FuncionSim fun = tabla.getFuncion(getId());
+        FuncionSim fun;
+
+        if (this.parametros != null) {
+            fun = tabla.getFuncion(id, this.parametros.size());
+        } else {
+            fun = tabla.getFuncion(id);
+        }
+
         if (fun != null) {
             if (this.getParametros() != null && fun.getParametros() != null) {
-                if (this.getParametros().size() == fun.getParametros().size()) {
-                    TablaSimbolos local = new TablaSimbolos();
-                    local.addAll(tabla);
+                tabla.nuevoAmbito();
 
-                    for (int i = 0; i < this.getParametros().size(); i++) {
-                        String idActual = fun.getParametros().get(i);
-                        Simbolo sim = new Simbolo(Tipo.VAR, idActual);
-                        local.addSimbolo(sim);
-                        Expresion expActual = this.getParametros().get(i);
-                        Object valActual = expActual.getValor(tabla, salida);
-                        Tipo tipActual = expActual.getTipo(tabla);
+                for (int i = 0; i < this.getParametros().size(); i++) {
+                    String idActual = fun.getParametros().get(i);
+                    Simbolo sim = new Simbolo(Tipo.VAR, idActual);
+                    tabla.addSimbolo(sim);
+                    Expresion expActual = this.getParametros().get(i);
+                    Object valActual = expActual.getValor(tabla, salida);
+                    Tipo tipActual = expActual.getTipo(tabla);
 
-                        if (tipActual != null && valActual != null) {
-                            sim.setValor(valActual);
-                            local.addSimbolo(sim);
-                        } else {
-                            System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
-                            return null;
-                        }
-
+                    if (tipActual != null && valActual != null) {
+                        sim.setValor(valActual);
+                        tabla.addSimbolo(sim);
+                    } else {
+                        System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
+                        return null;
                     }
 
-                    for (NodoAST bloque : fun.getBloques()) {
-                        if (bloque instanceof Instruccion) {
-                            Object o = ((Instruccion) bloque).ejecutar(local, salida);
-                            
-                        } else {
-                            if (bloque instanceof Retornar) {
-                                return null;
-                            }
-                        }
-                    }
-
-                } else {
-                    System.err.println("Error, los parametros no son los mismos en la funcion. Linea:" + linea);
                 }
-            } else {
-                TablaSimbolos local = new TablaSimbolos();
-                local.addAll(tabla);
 
                 for (NodoAST bloque : fun.getBloques()) {
                     if (bloque instanceof Instruccion) {
-                        Object o = ((Instruccion) bloque).ejecutar(local, salida);
+                        Object o = ((Instruccion) bloque).ejecutar(tabla, salida);
+
+                    } else {
+                        if (bloque instanceof Retornar) {
+                            return null;
+                        }
+                    }
+                }
+                tabla.salirAmbito();
+            } else {
+                tabla.nuevoAmbito();
+                
+                for (NodoAST bloque : fun.getBloques()) {
+                    if (bloque instanceof Instruccion) {
+                        Object o = ((Instruccion) bloque).ejecutar(tabla, salida);
                         if (o != null) {
                         }
                     } else {
@@ -97,6 +98,7 @@ public class LlamadaMetodo implements Instruccion {
                         }
                     }
                 }
+                tabla.salirAmbito();
             }
         }
         return null;

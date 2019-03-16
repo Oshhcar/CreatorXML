@@ -58,7 +58,9 @@ public class Si implements Instruccion{
     @Override
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         for(SubSi si: subSis){
+            tabla.nuevoAmbito();
             Object r = si.ejecutar(tabla, salida);
+            tabla.salirAmbito();
             if(r != null){
                 if(r instanceof Boolean){
                     if((boolean)r){

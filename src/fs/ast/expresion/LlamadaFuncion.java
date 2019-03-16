@@ -64,7 +64,7 @@ public class LlamadaFuncion implements Expresion {
 
     @Override
     public Object getValor(TablaSimbolos tabla, JTextArea salida) {
-        FuncionSim fun = tabla.getFuncion(getId());
+        FuncionSim fun = (FuncionSim) tabla.getSimbolo(getId());
         if (fun != null) {
             if (this.getParametros() != null && fun.getParametros() != null) {
                 if (this.getParametros().size() == fun.getParametros().size()) {

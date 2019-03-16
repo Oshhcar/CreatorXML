@@ -54,6 +54,7 @@ public class SubSi implements Instruccion {
                     boolean cond = valorCondicion.equals("verdadero");
 
                     if (cond) {
+                        tabla.nuevoAmbito();
                         for (NodoAST bloque : bloques) {
                             if (bloque instanceof Instruccion) {
                                 ((Instruccion) bloque).ejecutar(tabla, salida);
@@ -67,6 +68,7 @@ public class SubSi implements Instruccion {
                                 } 
                             }
                         }
+                        tabla.salirAmbito();
                         return true;
                     } else {
                         return false;

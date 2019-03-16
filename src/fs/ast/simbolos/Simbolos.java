@@ -12,16 +12,17 @@ import java.util.LinkedList;
  * @author oscar
  */
 public class Simbolos extends LinkedList<Simbolo> {
-    
-    public Simbolos(){
+
+    public Simbolos() {
         super();
     }
-    
-    public Simbolo getSimbolo(String id){
-        for(int i = this.size() -1; i >= 0; i--){
+
+    public Simbolo getSimbolo(String id) {
+        for (int i = this.size() - 1; i >= 0; i--) {
             Simbolo s = this.get(i);
-            if(s.getId().equals(id)){
-                return s;
+            if (s.getId().equals(id)) {
+                if(!(s instanceof FuncionSim))
+                    return s;
             }
         }
         return null;
