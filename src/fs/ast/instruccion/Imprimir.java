@@ -36,7 +36,7 @@ public class Imprimir implements Instruccion {
                 if (tipExp != Tipo.OBJETO) {
                     if (tipExp != Tipo.ARREGLO) {
                         if (valExp != null) {
-                            System.out.println(String.valueOf(valExp));
+                            //System.out.println(String.valueOf(valExp));
                             salida.append(String.valueOf(valExp) + "\n");
                         }
                     } else {

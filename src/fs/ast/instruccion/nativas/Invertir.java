@@ -17,7 +17,8 @@ import javax.swing.JTextArea;
  *
  * @author oscar
  */
-public class Invertir implements Instruccion{
+public class Invertir implements Instruccion {
+
     private final String id;
     private final int linea;
     private final int columna;
@@ -27,30 +28,35 @@ public class Invertir implements Instruccion{
         this.linea = linea;
         this.columna = columna;
     }
-    
+
     @Override
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         Simbolo s = tabla.getSimbolo(id);
-        Tipo tip = s.getTipo();
-        if (tip != null) {
-            if (tip == Tipo.ARREGLO) {
-                Map<Integer, Object> arreglo = (Map<Integer, Object>) s.getValor();
-                if (arreglo != null) {
-                    Map<Integer, Object> invertido = new Arreglo();
-                    
-                    int j = arreglo.size()-1;
-                    for (int i = 0; i < arreglo.size(); i++) {
-                        invertido.put(j--, arreglo.get(i));
+        if (s != null) {
+            Tipo tip = s.getTipo();
+            if (tip != null) {
+                if (tip == Tipo.ARREGLO) {
+                    Map<Integer, Object> arreglo = (Map<Integer, Object>) s.getValor();
+                    if (arreglo != null) {
+                        Map<Integer, Object> invertido = new Arreglo();
+
+                        int j = arreglo.size() - 1;
+                        for (int i = 0; i < arreglo.size(); i++) {
+                            invertido.put(j--, arreglo.get(i));
+                        }
+
+                        s.setValor(invertido);
+
+                    } else {
+                        System.err.println("Error, arreglo \"" + id + "\" indefinido. Línea:" + linea);
                     }
-                    
-                    tabla.setValor(id, invertido);
-                    
-                }else {
-                    System.err.println("Error, arreglo \"" + id + "\" indefinido. Línea:" + linea);
+                } else {
+                    System.err.println("Error, variable \"" + id + "\" no es un arreglo. Línea:" + linea);
                 }
-            }else {
-                System.err.println("Error, variable \"" + id + "\" no es un arreglo. Línea:" + linea);
             }
+        } else {
+            System.err.println("Error, Variable \"" + id + "\" no encontrada. Línea: " + linea);
+
         }
         return null;
     }
@@ -64,5 +70,5 @@ public class Invertir implements Instruccion{
     public int getColumna() {
         return columna;
     }
-    
+
 }

@@ -34,87 +34,92 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         if (null != valor) {
             Simbolo s = tabla.getSimbolo(id);
-            Tipo tip = s.getTipo();
-            if (tip != null) {
-                if (tip == Tipo.ARREGLO) {
-                    Map<Integer, Object> arreglo = (Map<Integer, Object>) s.getValor();
-                    if (arreglo != null) {
-                        Object valPosicion = posicion.getValor(tabla, salida);
-                        Tipo tipPosicion = posicion.getTipo(tabla);
-                        if (valPosicion != null && tipPosicion != null) {
-                            if (tipPosicion == Tipo.ENTERO) {
-                                Integer pos = Integer.valueOf(valPosicion.toString());
-                                if (arreglo.containsKey(pos)) {
-                                    Object valExp = valor.getValor(tabla, salida);
-                                    Tipo tipExp = valor.getTipo(tabla);
-                                    if (tipExp != null) {
-                                        if (tipExp != Tipo.VAR) {
-                                            if (valExp != null) {
-                                                if ("=".equals(op_asignacion)) {
-                                                    arreglo.replace(pos, valExp);
-                                                } else {
-                                                    Object val2 = arreglo.get(pos);
-                                                    Tipo tip2 = null;
-                                                    if (val2 instanceof Double) {
-                                                        tip2 = Tipo.DECIMAL;
-                                                    } else if (val2 instanceof Integer) {
-                                                        tip2 = Tipo.ENTERO;
-                                                    } else if (val2.equals("verdadero") || val2.equals("falso")) {
-                                                        tip2 = Tipo.BOOLEANO;
-                                                    } else if (val2.equals("nulo")) {
-                                                        tip2 = Tipo.NULL;
-                                                    } else if (val2 instanceof String) {
-                                                        tip2 = Tipo.CADENA;
-                                                    } else if (val2 instanceof Objeto) {
-                                                        tip2 = Tipo.OBJETO;
-                                                    } else if (val2 instanceof Arreglo) {
-                                                        tip2 = Tipo.ARREGLO;
-                                                    }
+            if (s != null) {
+                Tipo tip = s.getTipo();
+                if (tip != null) {
+                    if (tip == Tipo.ARREGLO) {
+                        Map<Integer, Object> arreglo = (Map<Integer, Object>) s.getValor();
+                        if (arreglo != null) {
+                            Object valPosicion = posicion.getValor(tabla, salida);
+                            Tipo tipPosicion = posicion.getTipo(tabla);
+                            if (valPosicion != null && tipPosicion != null) {
+                                if (tipPosicion == Tipo.ENTERO) {
+                                    Integer pos = Integer.valueOf(valPosicion.toString());
+                                    if (arreglo.containsKey(pos)) {
+                                        Object valExp = valor.getValor(tabla, salida);
+                                        Tipo tipExp = valor.getTipo(tabla);
+                                        if (tipExp != null) {
+                                            if (tipExp != Tipo.VAR) {
+                                                if (valExp != null) {
+                                                    if ("=".equals(op_asignacion)) {
+                                                        arreglo.replace(pos, valExp);
+                                                    } else {
+                                                        Object val2 = arreglo.get(pos);
+                                                        Tipo tip2 = null;
+                                                        if (val2 instanceof Double) {
+                                                            tip2 = Tipo.DECIMAL;
+                                                        } else if (val2 instanceof Integer) {
+                                                            tip2 = Tipo.ENTERO;
+                                                        } else if (val2.equals("verdadero") || val2.equals("falso")) {
+                                                            tip2 = Tipo.BOOLEANO;
+                                                        } else if (val2.equals("nulo")) {
+                                                            tip2 = Tipo.NULL;
+                                                        } else if (val2 instanceof String) {
+                                                            tip2 = Tipo.CADENA;
+                                                        } else if (val2 instanceof Objeto) {
+                                                            tip2 = Tipo.OBJETO;
+                                                        } else if (val2 instanceof Arreglo) {
+                                                            tip2 = Tipo.ARREGLO;
+                                                        }
 
-                                                    Literal exp2 = new Literal(tipExp, valExp, super.getLinea(), super.getColumna());
-                                                    Literal exp1 = new Literal(tip2, val2, super.getLinea(), super.getColumna());
+                                                        Literal exp2 = new Literal(tipExp, valExp, super.getLinea(), super.getColumna());
+                                                        Literal exp1 = new Literal(tip2, val2, super.getLinea(), super.getColumna());
 
-                                                    Operacion.Operador op = Operacion.Operador.MAS;
-                                                    switch (op_asignacion) {
-                                                        case "+=":
-                                                            op = Operacion.Operador.MAS;
-                                                            break;
-                                                        case "-=":
-                                                            op = Operacion.Operador.MENOS;
-                                                            break;
-                                                        case "*=":
-                                                            op = Operacion.Operador.ASTERISCO;
-                                                            break;
-                                                        case "/=":
-                                                            op = Operacion.Operador.BARRA;
-                                                            break;
-                                                    }
-                                                    Aritmetica operacion = new Aritmetica(exp1, exp2, op, super.getLinea(), super.getColumna());
+                                                        Operacion.Operador op = Operacion.Operador.MAS;
+                                                        switch (op_asignacion) {
+                                                            case "+=":
+                                                                op = Operacion.Operador.MAS;
+                                                                break;
+                                                            case "-=":
+                                                                op = Operacion.Operador.MENOS;
+                                                                break;
+                                                            case "*=":
+                                                                op = Operacion.Operador.ASTERISCO;
+                                                                break;
+                                                            case "/=":
+                                                                op = Operacion.Operador.BARRA;
+                                                                break;
+                                                        }
+                                                        Aritmetica operacion = new Aritmetica(exp1, exp2, op, super.getLinea(), super.getColumna());
 
-                                                    Object valAsignar = operacion.getValor(tabla, salida);
-                                                    if (valAsignar != null) {
-                                                        arreglo.replace(pos, valAsignar);
+                                                        Object valAsignar = operacion.getValor(tabla, salida);
+                                                        if (valAsignar != null) {
+                                                            arreglo.replace(pos, valAsignar);
+                                                        }
                                                     }
                                                 }
+                                            } else {
+                                                System.err.println("Error, Variable indefinida. Linea:" + super.getLinea());
                                             }
-                                        } else {
-                                            System.err.println("Error, Variable indefinida. Linea:" + super.getLinea());
                                         }
+                                    } else {
+                                        System.err.println("Error, no se puede asignar el valor en la posicion " + pos + " del arreglo. Línea:" + super.getLinea());
                                     }
                                 } else {
-                                    System.err.println("Error, no se puede asignar el valor en la posicion " + pos + " del arreglo. Línea:" + super.getLinea());
+                                    System.err.println("Error, la posición en el arreglo debe ser entero. Línea:" + super.getLinea());
                                 }
-                            } else {
-                                System.err.println("Error, la posición en el arreglo debe ser entero. Línea:" + super.getLinea());
                             }
+                        } else {
+                            System.err.println("Error, arreglo \"" + id + "\" indefinido. Línea:" + super.getLinea());
                         }
-                    } else {
-                        System.err.println("Error, arreglo \"" + id + "\" indefinido. Línea:" + super.getLinea());
-                    }
 
-                } else {
-                    System.err.println("Error, variable \"" + id + "\" no es un arreglo. Línea:" + super.getLinea());
+                    } else {
+                        System.err.println("Error, variable \"" + id + "\" no es un arreglo. Línea:" + super.getLinea());
+                    }
                 }
+            } else {
+                System.err.println("Error, Variable \"" + id + "\" no encontrada. Línea: " + super.getLinea());
+
             }
         }
         return null;

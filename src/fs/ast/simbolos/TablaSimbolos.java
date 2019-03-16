@@ -42,16 +42,6 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
         return null;
     }
 
-    public void setValor(String id, Object valor) {
-        for (int i = this.size() - 1; i >= 0; i--) {
-            Simbolos sims = this.get(i);
-            Simbolo s = sims.getSimbolo(id);
-            if (s != null) {
-                s.setValor(valor);
-            }
-        }
-    }
-
     public FuncionSim getFuncion(String id) {
         Simbolos sims = this.get(0);
         for (int i = sims.size() - 1; i >= 0; i--) {

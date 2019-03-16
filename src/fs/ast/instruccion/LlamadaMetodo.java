@@ -63,8 +63,14 @@ public class LlamadaMetodo implements Instruccion {
                     Object valActual = expActual.getValor(tabla, salida);
                     Tipo tipActual = expActual.getTipo(tabla);
 
-                    if (tipActual != null && valActual != null) {
-                        sim.setValor(valActual);
+                    if (tipActual != null) {
+                        if (valActual != null) {
+                            sim.setValor(valActual);
+                            tabla.addSimbolo(sim);
+                        } else {
+                            sim.setTipo(tipActual);
+                            sim.setValor(valActual);
+                        }
                         tabla.addSimbolo(sim);
                     } else {
                         System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
@@ -86,7 +92,7 @@ public class LlamadaMetodo implements Instruccion {
                 tabla.salirAmbito();
             } else {
                 tabla.nuevoAmbito();
-                
+
                 for (NodoAST bloque : fun.getBloques()) {
                     if (bloque instanceof Instruccion) {
                         Object o = ((Instruccion) bloque).ejecutar(tabla, salida);
@@ -100,6 +106,8 @@ public class LlamadaMetodo implements Instruccion {
                 }
                 tabla.salirAmbito();
             }
+        } else {
+            System.err.println("Error, Funcion \"" + id + "\" no encontrada. Línea: " + linea);
         }
         return null;
     }

@@ -16,8 +16,8 @@ import javax.swing.JTextArea;
  * @author oscar
  */
 public class Detener implements Instruccion{
-    private int linea;
-    private int columna;
+    private final int linea;
+    private final int columna;
 
     public Detener(int linea, int columna) {
         this.linea = linea;

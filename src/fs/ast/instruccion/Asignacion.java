@@ -45,48 +45,51 @@ public class Asignacion implements Instruccion {
     @Override
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         if (null != valor) {
-            Object val = valor.getValor(tabla, salida);
-            Tipo tip = valor.getTipo(tabla);
-            if (tip != null) {
-                if (tip != Tipo.VAR) {
-                    if (val != null) {
-                        if ("=".equals(op_asignacion)) {
-                            tabla.setValor(id, val);
-                        } else {
-                            Simbolo s = tabla.getSimbolo(id);
-                            Object val2 = s.getValor();
-                            Tipo tip2 = s.getTipo();
-                            System.out.println(val2+""+tip2);
-                            Literal exp2 = new Literal(tip, val, linea, columna);
-                            Literal exp1 = new Literal(tip2, val2, linea, columna);
-                            
-                            Operacion.Operador op = Operacion.Operador.MAS;
-                            switch(op_asignacion){
-                                case "+=":
-                                    op = Operacion.Operador.MAS;
-                                    break;
-                                case "-=":
-                                    op = Operacion.Operador.MENOS;
-                                    break;
-                                case "*=":
-                                    op = Operacion.Operador.ASTERISCO;
-                                    break;
-                                case "/=":
-                                    op = Operacion.Operador.BARRA;
-                                    break;
-                            }
-                            
-                            Aritmetica operacion = new Aritmetica(exp1, exp2, op, linea, columna);
+            Simbolo s = tabla.getSimbolo(id);
+            if (s != null) {
+                Object val = valor.getValor(tabla, salida);
+                Tipo tip = valor.getTipo(tabla);
+                if (tip != null) {
+                    if (tip != Tipo.VAR) {
+                        if (val != null) {
+                            if ("=".equals(op_asignacion)) {
+                                s.setValor(val);
+                            } else {
+                                Object val2 = s.getValor();
+                                Tipo tip2 = s.getTipo();
+                                Literal exp2 = new Literal(tip, val, linea, columna);
+                                Literal exp1 = new Literal(tip2, val2, linea, columna);
 
-                            Object valAsignar = operacion.getValor(tabla, salida);
-                            if (valAsignar != null) {
-                                tabla.setValor(id, valAsignar);
+                                Operacion.Operador op = Operacion.Operador.MAS;
+                                switch (op_asignacion) {
+                                    case "+=":
+                                        op = Operacion.Operador.MAS;
+                                        break;
+                                    case "-=":
+                                        op = Operacion.Operador.MENOS;
+                                        break;
+                                    case "*=":
+                                        op = Operacion.Operador.ASTERISCO;
+                                        break;
+                                    case "/=":
+                                        op = Operacion.Operador.BARRA;
+                                        break;
+                                }
+
+                                Aritmetica operacion = new Aritmetica(exp1, exp2, op, linea, columna);
+
+                                Object valAsignar = operacion.getValor(tabla, salida);
+                                if (valAsignar != null) {
+                                    s.setValor(valAsignar);
+                                }
                             }
                         }
+                    } else {
+                        System.err.println("Error, Variable indefinida. Linea:" + linea);
                     }
-                } else {
-                    System.err.println("Error, Variable indefinida. Linea:" + linea);
                 }
+            } else {
+                System.err.println("Error, Variable \"" + id + "\" no encontrada. Línea: " + linea);
             }
         }
         return null;

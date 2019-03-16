@@ -38,119 +38,120 @@ public class Ordenamiento implements Instruccion {
     @Override
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
         Simbolo s = tabla.getSimbolo(id);
-        Tipo tip = s.getTipo();
-        if (tip != null) {
-            if (tip == Tipo.ARREGLO) {
-                Map<Integer, Object> arreglo = (Map<Integer, Object>) s.getValor();
-                if (arreglo != null) {
+        if (s != null) {
+            Tipo tip = s.getTipo();
+            if (tip != null) {
+                if (tip == Tipo.ARREGLO) {
+                    Map<Integer, Object> arreglo = (Map<Integer, Object>) s.getValor();
+                    if (arreglo != null) {
 
-                    Object exp0 = arreglo.get(0);
+                        Object exp0 = arreglo.get(0);
 
-                    if (exp0 instanceof Integer) {
-                        Map<Integer, Integer> arregloInt = new HashMap<>();
+                        if (exp0 instanceof Integer) {
+                            Map<Integer, Integer> arregloInt = new HashMap<>();
 
-                        for (int i = 0; i < arreglo.size(); i++) {
-                            Object exp = arreglo.get(i);
-                            if (!(exp instanceof Integer)) {
-                                System.err.println("Error, los valores deben ser del mismo tipo para ordenar. Línea: " + linea);
-                                return null;
+                            for (int i = 0; i < arreglo.size(); i++) {
+                                Object exp = arreglo.get(i);
+                                if (!(exp instanceof Integer)) {
+                                    System.err.println("Error, los valores deben ser del mismo tipo para ordenar. Línea: " + linea);
+                                    return null;
+                                }
+                                arregloInt.put(i, (Integer) exp);
                             }
-                            arregloInt.put(i, (Integer) exp);
-                        }
 
-                        List<Map.Entry<Integer, Integer>> list
-                                = new LinkedList<>(arregloInt.entrySet());
+                            List<Map.Entry<Integer, Integer>> list
+                                    = new LinkedList<>(arregloInt.entrySet());
 
-                        Collections.sort(list, (Map.Entry<Integer, Integer> t, Map.Entry<Integer, Integer> t1) -> {
-                            if(ord.equals("desc")){
-                                return (t1.getValue()).compareTo(t.getValue());
-                            } else {
-                                return (t.getValue()).compareTo(t1.getValue());
+                            Collections.sort(list, (Map.Entry<Integer, Integer> t, Map.Entry<Integer, Integer> t1) -> {
+                                if (ord.equals("desc")) {
+                                    return (t1.getValue()).compareTo(t.getValue());
+                                } else {
+                                    return (t.getValue()).compareTo(t1.getValue());
+                                }
+                            });
+
+                            Map<Integer, Integer> sortedMap = new Arreglo();
+                            int i = 0;
+                            for (Map.Entry<Integer, Integer> entry : list) {
+                                sortedMap.put(i, entry.getValue());
+                                i++;
                             }
-                        });
+                            s.setValor(sortedMap);
 
-                        Map<Integer, Integer> sortedMap = new Arreglo();
-                        int i = 0;
-                        for (Map.Entry<Integer, Integer> entry : list) {
-                            sortedMap.put(i, entry.getValue());
-                            i++;
-                        }
+                        } else if (exp0 instanceof Double) {
+                            Map<Integer, Double> arregloInt = new HashMap<>();
 
-                        tabla.setValor(id, sortedMap);
-
-                    } else if (exp0 instanceof Double) {
-                        Map<Integer, Double> arregloInt = new HashMap<>();
-
-                        for (int i = 0; i < arreglo.size(); i++) {
-                            Object exp = arreglo.get(i);
-                            if (!(exp instanceof Double)) {
-                                System.err.println("Error, los valores deben ser del mismo tipo para ordenar. Línea: " + linea);
-                                return null;
+                            for (int i = 0; i < arreglo.size(); i++) {
+                                Object exp = arreglo.get(i);
+                                if (!(exp instanceof Double)) {
+                                    System.err.println("Error, los valores deben ser del mismo tipo para ordenar. Línea: " + linea);
+                                    return null;
+                                }
+                                arregloInt.put(i, (Double) exp);
                             }
-                            arregloInt.put(i, (Double) exp);
-                        }
 
-                        List<Map.Entry<Integer, Double>> list
-                                = new LinkedList<>(arregloInt.entrySet());
+                            List<Map.Entry<Integer, Double>> list
+                                    = new LinkedList<>(arregloInt.entrySet());
 
-                        Collections.sort(list, (Map.Entry<Integer, Double> t, Map.Entry<Integer, Double> t1) -> {
-                            if(ord.equals("desc")){
-                                return (t1.getValue()).compareTo(t.getValue());
-                            } else {
-                                return (t.getValue()).compareTo(t1.getValue());
+                            Collections.sort(list, (Map.Entry<Integer, Double> t, Map.Entry<Integer, Double> t1) -> {
+                                if (ord.equals("desc")) {
+                                    return (t1.getValue()).compareTo(t.getValue());
+                                } else {
+                                    return (t.getValue()).compareTo(t1.getValue());
+                                }
+                            });
+
+                            Map<Integer, Double> sortedMap = new Arreglo();
+                            int i = 0;
+                            for (Map.Entry<Integer, Double> entry : list) {
+                                sortedMap.put(i, entry.getValue());
+                                i++;
                             }
-                        });
+                            s.setValor(sortedMap);
+                        } else if (exp0 instanceof String) {
+                            Map<Integer, String> arregloInt = new HashMap<>();
 
-                        Map<Integer, Double> sortedMap = new Arreglo();
-                        int i = 0;
-                        for (Map.Entry<Integer, Double> entry : list) {
-                            sortedMap.put(i, entry.getValue());
-                            i++;
-                        }
-
-                        tabla.setValor(id, sortedMap);
-                    } else if (exp0 instanceof String) {
-                        Map<Integer, String> arregloInt = new HashMap<>();
-
-                        for (int i = 0; i < arreglo.size(); i++) {
-                            Object exp = arreglo.get(i);
-                            if (!(exp instanceof String)) {
-                                System.err.println("Error, los valores deben ser del mismo tipo para ordenar. Línea: " + linea);
-                                return null;
+                            for (int i = 0; i < arreglo.size(); i++) {
+                                Object exp = arreglo.get(i);
+                                if (!(exp instanceof String)) {
+                                    System.err.println("Error, los valores deben ser del mismo tipo para ordenar. Línea: " + linea);
+                                    return null;
+                                }
+                                arregloInt.put(i, (String) exp);
                             }
-                            arregloInt.put(i, (String) exp);
-                        }
 
-                        List<Map.Entry<Integer, String>> list
-                                = new LinkedList<>(arregloInt.entrySet());
+                            List<Map.Entry<Integer, String>> list
+                                    = new LinkedList<>(arregloInt.entrySet());
 
-                        Collections.sort(list, (Map.Entry<Integer, String> t, Map.Entry<Integer, String> t1) -> {
-                            if(ord.equals("desc")){
-                                return (t1.getValue()).compareTo(t.getValue());
-                            } else {
-                                return (t.getValue()).compareTo(t1.getValue());
+                            Collections.sort(list, (Map.Entry<Integer, String> t, Map.Entry<Integer, String> t1) -> {
+                                if (ord.equals("desc")) {
+                                    return (t1.getValue()).compareTo(t.getValue());
+                                } else {
+                                    return (t.getValue()).compareTo(t1.getValue());
+                                }
+                            });
+
+                            Map<Integer, String> sortedMap = new Arreglo();
+                            int i = 0;
+                            for (Map.Entry<Integer, String> entry : list) {
+                                sortedMap.put(i, entry.getValue());
+                                i++;
                             }
-                        });
-
-                        Map<Integer, String> sortedMap = new Arreglo();
-                        int i = 0;
-                        for (Map.Entry<Integer, String> entry : list) {
-                            sortedMap.put(i, entry.getValue());
-                            i++;
+                            s.setValor(sortedMap);
+                        } else {
+                            System.err.println("Error, no se puede ordenar el arreglo. Línea: " + linea);
                         }
-
-                        tabla.setValor(id, sortedMap);
                     } else {
-                        System.err.println("Error, no se puede ordenar el arreglo. Línea: " + linea);
+                        System.err.println("Error, arreglo \"" + id + "\" indefinido. Línea:" + linea);
                     }
                 } else {
-                    System.err.println("Error, arreglo \"" + id + "\" indefinido. Línea:" + linea);
+                    System.err.println("Error, variable \"" + id + "\" no es un arreglo. Línea:" + linea);
                 }
-            } else {
-                System.err.println("Error, variable \"" + id + "\" no es un arreglo. Línea:" + linea);
             }
-        }
+        } else {
+            System.err.println("Error, Variable \"" + id + "\" no encontrada. Línea: " + linea);
 
+        }
         return null;
     }
 
