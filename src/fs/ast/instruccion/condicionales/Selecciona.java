@@ -35,7 +35,7 @@ public class Selecciona implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
         for (Caso caso : casos) {
             caso.setExpSwitch(expSiwtch);
             
@@ -47,7 +47,7 @@ public class Selecciona implements Instruccion {
                 caso.setEjecutarDefecto(ejecutarDefecto);
             }
 
-            caso.ejecutar(tabla, salida);
+            caso.ejecutar(tabla, salida, fun, sel);
             isContinuar = caso.isContinuar();
             ejecutarDefecto = caso.isEjecutarDefecto();
             

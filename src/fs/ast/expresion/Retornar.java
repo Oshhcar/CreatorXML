@@ -13,7 +13,8 @@ import javax.swing.JTextArea;
  *
  * @author oscar
  */
-public class Retornar implements Expresion{
+public class Retornar implements Expresion {
+
     private final Expresion expresion;
     private final int linea;
     private final int columna;
@@ -23,15 +24,21 @@ public class Retornar implements Expresion{
         this.linea = linea;
         this.columna = columna;
     }
-    
+
+    public Retornar(int linea, int columna) {
+        this.expresion = null;
+        this.linea = linea;
+        this.columna = columna;
+    }
+
     @Override
     public Tipo getTipo(TablaSimbolos tabla) {
-        return expresion.getTipo(tabla);
+        return expresion != null ? expresion.getTipo(tabla) : null;
     }
 
     @Override
     public Object getValor(TablaSimbolos tabla, JTextArea salida) {
-        return expresion.getValor(tabla, salida);
+        return expresion != null ? expresion.getValor(tabla, salida) : null;
     }
 
     @Override
@@ -43,5 +50,5 @@ public class Retornar implements Expresion{
     public int getColumna() {
         return columna;
     }
-    
+
 }

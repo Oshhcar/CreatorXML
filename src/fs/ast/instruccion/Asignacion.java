@@ -43,7 +43,7 @@ public class Asignacion implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
         if (null != valor) {
             Simbolo s = tabla.getSimbolo(id);
             if (s != null) {

@@ -5,10 +5,8 @@
  */
 package fs.ast.instruccion;
 
-import fs.ast.expresion.Expresion;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.TablaSimbolos;
-import fs.ast.simbolos.Tipo;
 import javax.swing.JTextArea;
 
 /**
@@ -25,7 +23,10 @@ public class Detener implements Instruccion{
     }
     
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+        if(!sel){
+            System.err.println("Error, Detener no esta dentro de una sentencia Selecciona. Línea:"+linea);
+        }
         return null;
     }
     

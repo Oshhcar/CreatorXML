@@ -7,7 +7,6 @@ package fs.ast.instruccion.condicionales;
 
 import fs.ast.NodoAST;
 import fs.ast.expresion.Expresion;
-import fs.ast.expresion.Retornar;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.TablaSimbolos;
 import java.util.LinkedList;
@@ -56,9 +55,9 @@ public class Si implements Instruccion{
     }
     
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
         for(SubSi si: subSis){
-            Object r = si.ejecutar(tabla, salida);
+            Object r = si.ejecutar(tabla, salida, fun, sel);
             if(r != null){
                 if(r instanceof Boolean){
                     if((boolean)r){

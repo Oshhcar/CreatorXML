@@ -42,23 +42,22 @@ public class LlamadaMetodo implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
-        FuncionSim fun;
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+        FuncionSim funcion;
 
         if (this.parametros != null) {
-            fun = tabla.getFuncion(id, this.parametros.size());
+            funcion = tabla.getFuncion(id, this.parametros.size());
         } else {
-            fun = tabla.getFuncion(id);
+            funcion = tabla.getFuncion(id);
         }
 
-        if (fun != null) {
-            if (this.getParametros() != null && fun.getParametros() != null) {
-                tabla.nuevoAmbito();
-
+        if (funcion != null) {
+            tabla.nuevoAmbito();
+            if (this.getParametros() != null && funcion.getParametros() != null) {
                 for (int i = 0; i < this.getParametros().size(); i++) {
-                    String idActual = fun.getParametros().get(i);
+                    String idActual = funcion.getParametros().get(i);
                     Simbolo sim = new Simbolo(Tipo.VAR, idActual);
-                    tabla.addSimbolo(sim);
+
                     Expresion expActual = this.getParametros().get(i);
                     Object valActual = expActual.getValor(tabla, salida);
                     Tipo tipActual = expActual.getTipo(tabla);
@@ -66,48 +65,35 @@ public class LlamadaMetodo implements Instruccion {
                     if (tipActual != null) {
                         if (valActual != null) {
                             sim.setValor(valActual);
-                            tabla.addSimbolo(sim);
                         } else {
                             sim.setTipo(tipActual);
                             sim.setValor(valActual);
                         }
-                        tabla.addSimbolo(sim);
                     } else {
                         System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
                         return null;
                     }
-
+                    tabla.addSimbolo(sim);
                 }
-
-                for (NodoAST bloque : fun.getBloques()) {
-                    if (bloque instanceof Instruccion) {
-                        Object o = ((Instruccion) bloque).ejecutar(tabla, salida);
-
-                    } else {
-                        if (bloque instanceof Retornar) {
-                            return null;
-                        }
-                    }
-                }
-                tabla.salirAmbito();
-            } else {
-                tabla.nuevoAmbito();
-
-                for (NodoAST bloque : fun.getBloques()) {
-                    if (bloque instanceof Instruccion) {
-                        Object o = ((Instruccion) bloque).ejecutar(tabla, salida);
-                        if (o != null) {
-                        }
-                    } else {
-                        if (bloque instanceof Retornar) {
-                            return null;
-                        }
-                    }
-                }
-                tabla.salirAmbito();
             }
-        } else {
-            System.err.println("Error, Funcion \"" + id + "\" no encontrada. Línea: " + linea);
+
+            for (NodoAST bloque : funcion.getBloques()) {
+                if (bloque instanceof Instruccion) {
+                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, true, false);
+                    if (o != null) {
+                        if (o instanceof Literal) {
+                            tabla.salirAmbito();
+                            return null;
+                        }
+                    }
+                } else {
+                    if (bloque instanceof Retornar) {
+                        tabla.salirAmbito();
+                        return null;
+                    }
+                }
+            }
+            tabla.salirAmbito();
         }
         return null;
     }

@@ -51,7 +51,7 @@ public class Caso implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
         if (isContinuar()) {
             if (!isDefecto) {
                 for (NodoAST bloque : bloques) {
@@ -59,7 +59,7 @@ public class Caso implements Instruccion {
                         if (bloque instanceof Detener) {
                             this.continuar = false;
                         } else {
-                            ((Instruccion) bloque).ejecutar(tabla, salida);
+                            ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
                         }
                     }
                 }
@@ -83,7 +83,7 @@ public class Caso implements Instruccion {
                                         if (bloque instanceof Detener) {
                                             this.continuar = false;
                                         } else {
-                                            ((Instruccion) bloque).ejecutar(tabla, salida);
+                                            ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
                                         }
                                     }
                                 }
@@ -101,7 +101,7 @@ public class Caso implements Instruccion {
                 if (ejecutarDefecto) {
                     for (NodoAST bloque : bloques) {
                         if (bloque instanceof Instruccion) {
-                            ((Instruccion) bloque).ejecutar(tabla, salida);
+                            ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
                         }
                     }
                 }

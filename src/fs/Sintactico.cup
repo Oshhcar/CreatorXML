@@ -165,6 +165,7 @@ BLOQUE ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 		|IMPORTAR:a puntoycoma{::}
 		| detener_:x puntoycoma{:RESULT = new Detener(xleft+1, xright+1);:}
 		| retornar_:x E:a puntoycoma{:RESULT = new Retornar(a, xleft+1, xright+1);:}
+		| retornar_:x puntoycoma {:RESULT = new Retornar(xleft+1, xright+1);:}
 		|SI:a {:RESULT = a;:}
 		|SELECCIONA:a {:RESULT = a;:}
 		|LLAMADA_METODO:a puntoycoma{:RESULT = a;:}

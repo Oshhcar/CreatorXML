@@ -44,7 +44,7 @@ public class SubSi implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
         if (!isSino) {
             Object valorCondicion = condicion.getValor(tabla, salida);
             Object tipoCondicion = condicion.getTipo(tabla);
@@ -57,15 +57,21 @@ public class SubSi implements Instruccion {
                         tabla.nuevoAmbito();
                         for (NodoAST bloque : bloques) {
                             if (bloque instanceof Instruccion) {
-                                ((Instruccion) bloque).ejecutar(tabla, salida);
+                                ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
                             } else {
                                 if (bloque instanceof Retornar) {
-                                    Object valor = ((Retornar) bloque).getValor(tabla, salida);
-                                    Tipo tipo = ((Retornar) bloque).getTipo(tabla);
+                                    Retornar ret = (Retornar) bloque;
+                                    if (fun) {
+                                        Object valor = ret.getValor(tabla, salida);
+                                        Tipo tipo = ret.getTipo(tabla);
 
-                                    Literal l = new Literal(tipo, valor, linea, columna);
-                                    return l;
-                                } 
+                                        Literal l = new Literal(tipo, valor, linea, columna);
+                                        tabla.salirAmbito();
+                                        return l;
+                                    } else {
+                                        System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + ret.getLinea());
+                                    }
+                                }
                             }
                         }
                         tabla.salirAmbito();
@@ -78,16 +84,23 @@ public class SubSi implements Instruccion {
                 }
             }
         } else {
+            tabla.nuevoAmbito();
             for (NodoAST bloque : bloques) {
                 if (bloque instanceof Instruccion) {
-                    ((Instruccion) bloque).ejecutar(tabla, salida);
+                    ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
                 } else {
                     if (bloque instanceof Retornar) {
-                        Object valor = ((Retornar) bloque).getValor(tabla, salida);
-                        Tipo tipo = ((Retornar) bloque).getTipo(tabla);
+                        Retornar ret = (Retornar) bloque;
+                        if (fun) {
+                            Object valor = ret.getValor(tabla, salida);
+                            Tipo tipo = ret.getTipo(tabla);
 
-                        Literal l = new Literal(tipo, valor, linea, columna);
-                        return l;
+                            Literal l = new Literal(tipo, valor, linea, columna);
+                            tabla.salirAmbito();
+                            return l;
+                        } else {
+                            System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + ret.getLinea());
+                        }
                     }
                 }
             }

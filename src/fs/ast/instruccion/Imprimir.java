@@ -27,7 +27,7 @@ public class Imprimir implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
         Object valExp = exp.getValor(tabla, salida);
         Object tipExp = exp.getTipo(tabla);
 

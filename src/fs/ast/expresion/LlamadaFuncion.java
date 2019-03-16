@@ -6,7 +6,6 @@
 package fs.ast.expresion;
 
 import fs.ast.NodoAST;
-import fs.ast.instruccion.Asignacion;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.FuncionSim;
 import fs.ast.simbolos.Simbolo;
@@ -64,68 +63,70 @@ public class LlamadaFuncion implements Expresion {
 
     @Override
     public Object getValor(TablaSimbolos tabla, JTextArea salida) {
-        FuncionSim fun = (FuncionSim) tabla.getSimbolo(getId());
+        FuncionSim fun;
+
+        if (this.parametros != null) {
+            fun = tabla.getFuncion(id, this.parametros.size());
+        } else {
+            fun = tabla.getFuncion(id);
+        }
+
         if (fun != null) {
+            tabla.nuevoAmbito();
             if (this.getParametros() != null && fun.getParametros() != null) {
-                if (this.getParametros().size() == fun.getParametros().size()) {
-                    TablaSimbolos local = new TablaSimbolos();
-                    local.addAll(tabla);
+                for (int i = 0; i < this.getParametros().size(); i++) {
+                    String idActual = fun.getParametros().get(i);
+                    Simbolo sim = new Simbolo(Tipo.VAR, idActual);
 
-                    for (int i = 0; i < this.getParametros().size(); i++) {
-                        String idActual = fun.getParametros().get(i);
-                        Simbolo sim = new Simbolo(Tipo.VAR, idActual);
-                        local.addSimbolo(sim);
-                        Expresion expActual = this.getParametros().get(i);
-                        Object valActual = expActual.getValor(tabla, salida);
-                        Tipo tipActual = expActual.getTipo(tabla);
+                    Expresion expActual = this.getParametros().get(i);
+                    Object valActual = expActual.getValor(tabla, salida);
+                    Tipo tipActual = expActual.getTipo(tabla);
 
-                        if (tipActual != null && valActual != null) {
+                    if (tipActual != null) {
+                        if (valActual != null) {
                             sim.setValor(valActual);
-                            local.addSimbolo(sim);
                         } else {
-                            System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
-                            return null;
-                        }
-
-                    }
-
-                    for (NodoAST bloque : fun.getBloques()) {
-                        if (bloque instanceof Instruccion) {
-                            Object o = ((Instruccion) bloque).ejecutar(local, salida);
-                            if (o != null) {
-                                tipo = ((Literal) o).getTipo(tabla);
-                                return ((Literal) o).getValor(tabla, salida);
-                            }
-                        } else {
-                            if (bloque instanceof Retornar) {
-                                tipo = ((Retornar) bloque).getTipo(tabla);
-                                return ((Retornar) bloque).getValor(local, salida);
-                            }
-                        }
-                    }
-
-                } else {
-                    System.err.println("Error, los parametros no son los mismos en la funcion. Linea:" + linea);
-                }
-            } else {
-                TablaSimbolos local = new TablaSimbolos();
-                local.addAll(tabla);
-
-                for (NodoAST bloque : fun.getBloques()) {
-                    if (bloque instanceof Instruccion) {
-                        Object o = ((Instruccion) bloque).ejecutar(local, salida);
-                        if (o != null) {
-                            tipo = ((Literal) o).getTipo(tabla);
-                            return ((Literal) o).getValor(tabla, salida);
+                            sim.setTipo(tipActual);
+                            sim.setValor(valActual);
                         }
                     } else {
-                        if (bloque instanceof Retornar) {
-                            tipo = ((Retornar) bloque).getTipo(tabla);
-                            return ((Retornar) bloque).getValor(local, salida);
+                        System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
+                        return null;
+                    }
+                    tabla.addSimbolo(sim);
+                }
+            }
+
+            for (NodoAST bloque : fun.getBloques()) {
+                if (bloque instanceof Instruccion) {
+                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, true, false);
+                    if (o != null) {
+                        if (o instanceof Literal) {
+                            Literal lit = (Literal) o;
+                            Object litVal = ((Literal) o).getValor(tabla, salida);
+                            tipo = lit.getTipo(tabla);
+                            tabla.salirAmbito();
+                            if (litVal == null) {
+                                System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
+
+                            }
+                            return litVal;
                         }
+                    }
+                } else {
+                    if (bloque instanceof Retornar) {
+                        Retornar ret = (Retornar) bloque;
+                        Object valRet = ret.getValor(tabla, salida);
+                        tipo = ret.getTipo(tabla);
+                        tabla.salirAmbito();
+                        if (valRet == null) {
+                            System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
+                        }
+                        return valRet;
                     }
                 }
             }
+            tabla.salirAmbito();
         }
         return null;
     }

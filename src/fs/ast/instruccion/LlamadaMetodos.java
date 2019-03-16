@@ -22,7 +22,7 @@ import javax.swing.JTextArea;
 public class LlamadaMetodos implements Instruccion {
 
     private final String id;
-    private LinkedList<LlamadaMetodo> metodos;
+    private final LinkedList<LlamadaMetodo> metodos;
     private final int linea;
     private final int columna;
 
@@ -34,7 +34,7 @@ public class LlamadaMetodos implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
         Simbolo s = tabla.getSimbolo(id);
         Object arreglo = s.getValor();
 
@@ -48,21 +48,21 @@ public class LlamadaMetodos implements Instruccion {
                             System.err.println("Error, la funcion descendente no necesita parámetros. Linea: " + linea);
                         }
                         Ordenamiento desc = new Ordenamiento(id, "desc", linea, columna);
-                        arreglo = desc.ejecutar(tabla, salida);
+                        arreglo = desc.ejecutar(tabla, salida, fun, sel);
                         break;
                     case "ascendente":
                         if (llamada.getParametros() != null) {
                             System.err.println("Error, la funcion ascendente no necesita parámetros. Linea: " + linea);
                         }
                         Ordenamiento asc = new Ordenamiento(id, "asc", linea, columna);
-                        arreglo = asc.ejecutar(tabla, salida);
+                        arreglo = asc.ejecutar(tabla, salida, fun, sel);
                         break;
                     case "invertir":
                         if (llamada.getParametros() != null) {
                             System.err.println("Error, la funcion invertir no necesita parámetros. Linea: " + linea);
                         }
                         Invertir inv = new Invertir(id, linea, columna);
-                        arreglo = inv.ejecutar(tabla, salida);
+                        arreglo = inv.ejecutar(tabla, salida, fun, sel);
                         break;
                     case "maximo":
                         if (llamada.getParametros() != null) {

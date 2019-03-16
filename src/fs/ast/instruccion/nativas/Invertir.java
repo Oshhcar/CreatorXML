@@ -30,7 +30,7 @@ public class Invertir implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
         Simbolo s = tabla.getSimbolo(id);
         if (s != null) {
             Tipo tip = s.getTipo();

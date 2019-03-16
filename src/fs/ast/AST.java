@@ -28,7 +28,7 @@ public class AST {
         
         for(NodoAST nodo: nodos){
             if(nodo instanceof Instruccion){
-                ((Instruccion) nodo).ejecutar(global, salida);
+                ((Instruccion) nodo).ejecutar(global, salida, false, false);
             }
         }
     }

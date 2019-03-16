@@ -44,7 +44,7 @@ public class Aritmetica extends Operacion implements Expresion {
     public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         Object val1 = op1.getValor(tabla, salida);
         Tipo tip1 = op1.getTipo(tabla);
-        
+
         if (unario) {
             if (tip1 != null) {
                 switch (operador) {
@@ -75,36 +75,38 @@ public class Aritmetica extends Operacion implements Expresion {
                     case AUMENTO:
                     case DECREMENTO:
                         if (tip1.isNumero()) {
-                            
+
                             Object val;
-                            if(tip1 == Tipo.ENTERO){
-                                if(operador == Operador.AUMENTO)
-                                    val = new Integer(val1.toString())+1;
-                                else
-                                    val = new Integer(val1.toString())-1;
+                            if (tip1 == Tipo.ENTERO) {
+                                if (operador == Operador.AUMENTO) {
+                                    val = new Integer(val1.toString()) + 1;
+                                } else {
+                                    val = new Integer(val1.toString()) - 1;
+                                }
                             } else {
-                                if(operador == Operador.AUMENTO)
-                                    val = new Double(val1.toString())+1;
-                                else 
-                                    val = new Double(val1.toString())-1;
+                                if (operador == Operador.AUMENTO) {
+                                    val = new Double(val1.toString()) + 1;
+                                } else {
+                                    val = new Double(val1.toString()) - 1;
+                                }
                             }
-                            
-                            Literal exp = new Literal(tip1,val,linea,columna);
-                            
-                            if(op1 instanceof Identificador){
+
+                            Literal exp = new Literal(tip1, val, linea, columna);
+
+                            if (op1 instanceof Identificador) {
                                 Identificador id = (Identificador) op1;
                                 Asignacion asigna = new Asignacion(id.getId(), "=", exp, linea, columna);
-                                asigna.ejecutar(tabla, salida);
-                            } else if(op1 instanceof AccesoArreglo){
+                                asigna.ejecutar(tabla, salida, false, false);
+                            } else if (op1 instanceof AccesoArreglo) {
                                 AccesoArreglo ar = (AccesoArreglo) op1;
-                                AsignacionArreglo asigna = new AsignacionArreglo(ar.getId(), ar.getPosicion(), "=", exp,linea,columna);
-                                asigna.ejecutar(tabla, salida);
-                            } else if(op1 instanceof AccesoObjeto){
+                                AsignacionArreglo asigna = new AsignacionArreglo(ar.getId(), ar.getPosicion(), "=", exp, linea, columna);
+                                asigna.ejecutar(tabla, salida, false, false);
+                            } else if (op1 instanceof AccesoObjeto) {
                                 AccesoObjeto obj = (AccesoObjeto) op1;
-                                AsignacionObjeto asigna = new AsignacionObjeto(obj.getId(),obj.getClave(),obj.getPosicion(), "=", exp,linea,columna);
-                                asigna.ejecutar(tabla, salida);
+                                AsignacionObjeto asigna = new AsignacionObjeto(obj.getId(), obj.getClave(), obj.getPosicion(), "=", exp, linea, columna);
+                                asigna.ejecutar(tabla, salida, false, false);
                             }
-                            
+
                             switch (tip1) {
                                 case ENTERO:
                                     tipo = Tipo.ENTERO;
@@ -114,10 +116,11 @@ public class Aritmetica extends Operacion implements Expresion {
                                     return new Double(val1.toString());
                             }
                         } else {
-                            if(operador == Operador.AUMENTO)
+                            if (operador == Operador.AUMENTO) {
                                 System.err.println("Error de tipos, solo los números se pueden aumentar. Línea: " + linea);
-                            else
+                            } else {
                                 System.err.println("Error de tipos, solo los números se pueden decrementar. Línea: " + linea);
+                            }
                             return null;
                         }
                     default:
