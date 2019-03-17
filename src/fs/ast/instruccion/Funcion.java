@@ -54,7 +54,7 @@ public class Funcion implements Instruccion {
             return null;
         }
 
-        FuncionSim funcion = new FuncionSim(parametros, bloques, id);
+        FuncionSim funcion = new FuncionSim(parametros, bloques, id.toLowerCase());
         tabla.addSimbolo(funcion);
 
         return null;

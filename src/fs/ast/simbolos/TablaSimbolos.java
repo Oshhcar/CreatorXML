@@ -20,7 +20,7 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
 
     public boolean existeLocal(String id) {
         Simbolos sims = this.peekLast();
-        return null != sims.getSimbolo(id);
+        return null != sims.getSimbolo(id.toLowerCase());
     }
 
     public void addSimbolo(Simbolo s) {
@@ -31,7 +31,7 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
     public Simbolo getSimbolo(String id) {
         for (int i = this.size() - 1; i >= 0; i--) {
             Simbolos sims = this.get(i);
-            Simbolo s = sims.getSimbolo(id);
+            Simbolo s = sims.getSimbolo(id.toLowerCase());
             if (s != null) {
                 return s;
 
@@ -44,7 +44,7 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
         Simbolos sims = this.peekFirst();
         for (int i = sims.size() - 1; i >= 0; i--) {
             Simbolo s = sims.get(i);
-            if (s.getId().equals(id)) {
+            if (s.getId().equals(id.toLowerCase())) {
                 if (s instanceof FuncionSim) {
                     FuncionSim f = (FuncionSim) s;
                     if(f.getParametros() == null)
@@ -59,7 +59,7 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
         Simbolos sims = this.peekFirst();
         for (int i = sims.size() - 1; i >= 0; i--) {
             Simbolo s = sims.get(i);
-            if (s.getId().equals(id)) {
+            if (s.getId().equals(id.toLowerCase())) {
                 if (s instanceof FuncionSim) {
                     FuncionSim f = (FuncionSim) s;
                     if (f.getParametros() != null) {

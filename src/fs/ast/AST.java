@@ -5,6 +5,7 @@
  */
 package fs.ast;
 
+import fs.ast.instruccion.Funcion;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.Simbolos;
 import fs.ast.simbolos.TablaSimbolos;
@@ -28,7 +29,19 @@ public class AST {
         
         for(NodoAST nodo: nodos){
             if(nodo instanceof Instruccion){
-                ((Instruccion) nodo).ejecutar(global, salida, false, false);
+                if(nodo instanceof Funcion){
+                ((Funcion) nodo).ejecutar(global, salida, false, false);
+                }
+            }
+        }
+        
+        //ejecutar importar
+        
+        for(NodoAST nodo: nodos){
+            if(nodo instanceof Instruccion ){
+                if(!(nodo instanceof Funcion)){
+                    ((Instruccion) nodo).ejecutar(global, salida, false, false);
+                }
             }
         }
     }
