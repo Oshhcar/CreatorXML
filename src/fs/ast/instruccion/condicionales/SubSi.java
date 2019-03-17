@@ -9,6 +9,7 @@ import fs.ast.NodoAST;
 import fs.ast.expresion.Expresion;
 import fs.ast.expresion.Literal;
 import fs.ast.expresion.Retornar;
+import fs.ast.instruccion.Detener;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.Simbolos;
 import fs.ast.simbolos.TablaSimbolos;
@@ -58,17 +59,22 @@ public class SubSi implements Instruccion {
                         tabla.add(new Simbolos());
                         for (NodoAST bloque : bloques) {
                             if (bloque instanceof Instruccion) {
-                                Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                                if (bloque instanceof Detener) {
+                                    Detener det = (Detener) bloque;
+                                    if (sel) {
+                                        tabla.pollLast();
+                                        return det;
+                                    } else {
+                                        System.err.println("Error, Sentencia Detener no se encuentra dentro de un Seleccionar. Línea :" + det.getLinea());
 
-                                if (o != null) {
-                                    if (o instanceof Literal) {
-                                        Literal lit = (Literal) o;
-                                        if (fun) {
+                                    }
+                                } else {
+                                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+
+                                    if (o != null) {
+                                        if (o instanceof Literal || o instanceof Detener) {
                                             tabla.pollLast();
-                                            return lit;
-                                        } else {
-                                            System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + lit.getLinea());
-
+                                            return o;
                                         }
                                     }
                                 }
@@ -106,17 +112,22 @@ public class SubSi implements Instruccion {
             tabla.add(new Simbolos());
             for (NodoAST bloque : bloques) {
                 if (bloque instanceof Instruccion) {
-                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
-                    
-                    if (o != null) {
-                        if (o instanceof Literal) {
-                            Literal lit = (Literal) o;
-                            if (fun) {
-                                tabla.pollLast();
-                                return lit;
-                            } else {
-                                System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + lit.getLinea());
+                    if (bloque instanceof Detener) {
+                        Detener det = (Detener) bloque;
+                        if (sel) {
+                            tabla.pollLast();
+                            return det;
+                        } else {
+                            System.err.println("Error, Sentencia Detener no se encuentra dentro de un Seleccionar. Línea :" + det.getLinea());
 
+                        }
+                    } else {
+                        Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+
+                        if (o != null) {
+                            if (o instanceof Literal || o instanceof Detener) {
+                                tabla.pollLast();
+                                return o;
                             }
                         }
                     }

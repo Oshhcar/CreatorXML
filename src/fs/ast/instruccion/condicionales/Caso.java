@@ -9,8 +9,8 @@ import fs.ast.NodoAST;
 import fs.ast.expresion.Expresion;
 import fs.ast.instruccion.Detener;
 import fs.ast.instruccion.Instruccion;
+import fs.ast.simbolos.Simbolos;
 import fs.ast.simbolos.TablaSimbolos;
-import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
 
@@ -54,15 +54,23 @@ public class Caso implements Instruccion {
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
         if (isContinuar()) {
             if (!isDefecto) {
+                tabla.add(new Simbolos());
                 for (NodoAST bloque : bloques) {
                     if (bloque instanceof Instruccion) {
                         if (bloque instanceof Detener) {
                             this.continuar = false;
                         } else {
-                            ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                            Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+
+                            if (o != null) {
+                                if (o instanceof Detener) {
+                                    this.continuar = false;
+                                }
+                            }
                         }
-                    }
+                    } 
                 }
+                tabla.pollLast();
             }
         } else {
             if (!isDefecto) {
@@ -77,17 +85,23 @@ public class Caso implements Instruccion {
                             if (valExpresion.equals(valExpSwitch)) {
                                 this.continuar = true;
                                 this.ejecutarDefecto = false;
-                                
+                                tabla.add(new Simbolos());
                                 for (NodoAST bloque : bloques) {
                                     if (bloque instanceof Instruccion) {
                                         if (bloque instanceof Detener) {
                                             this.continuar = false;
                                         } else {
-                                            ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                                            Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                                            
+                                            if (o != null) {
+                                                if (o instanceof Detener) {
+                                                    this.continuar = false;
+                                                }
+                                            }
                                         }
                                     }
                                 }
-
+                                tabla.pollLast();
                                 return null;
                             }
                         } else {
@@ -99,11 +113,13 @@ public class Caso implements Instruccion {
 
             } else {
                 if (ejecutarDefecto) {
+                    tabla.add(new Simbolos());
                     for (NodoAST bloque : bloques) {
                         if (bloque instanceof Instruccion) {
                             ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
                         }
                     }
+                    tabla.pollLast();
                 }
                 return null;
             }

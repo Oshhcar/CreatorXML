@@ -24,9 +24,6 @@ public class Detener implements Instruccion{
     
     @Override
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
-        if(!sel){
-            System.err.println("Error, Detener no esta dentro de una sentencia Selecciona. Línea:"+linea);
-        }
         return null;
     }
     
