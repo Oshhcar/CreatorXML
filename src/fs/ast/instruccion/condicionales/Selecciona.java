@@ -47,7 +47,10 @@ public class Selecciona implements Instruccion {
                 caso.setEjecutarDefecto(ejecutarDefecto);
             }
 
-            caso.ejecutar(tabla, salida, fun, true);
+            Object o = caso.ejecutar(tabla, salida, fun, true);
+            if(o != null){
+                return o;
+            }
             isContinuar = caso.isContinuar();
             ejecutarDefecto = caso.isEjecutarDefecto();
             

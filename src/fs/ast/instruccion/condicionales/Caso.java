@@ -7,10 +7,13 @@ package fs.ast.instruccion.condicionales;
 
 import fs.ast.NodoAST;
 import fs.ast.expresion.Expresion;
+import fs.ast.expresion.Literal;
+import fs.ast.expresion.Retornar;
 import fs.ast.instruccion.Detener;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.Simbolos;
 import fs.ast.simbolos.TablaSimbolos;
+import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
 import javax.swing.JTextArea;
 
@@ -65,10 +68,32 @@ public class Caso implements Instruccion {
                             if (o != null) {
                                 if (o instanceof Detener) {
                                     this.continuar = false;
+                                } else if (o instanceof Literal) {
+                                    tabla.pollLast();
+                                    return o;
                                 }
                             }
                         }
-                    } 
+                    } else {
+                        if (bloque instanceof Retornar) {
+                            Retornar ret = (Retornar) bloque;
+                            if (fun) {
+                                Object valor = ret.getValor(tabla, salida);
+                                Tipo tipo = ret.getTipo(tabla);
+
+                                if (valor == null) {
+                                    tipo = Tipo.NULL;
+                                    valor = "nulo";
+                                }
+
+                                Literal l = new Literal(tipo, valor, linea, columna);
+                                tabla.pollLast();
+                                return l;
+                            } else {
+                                System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + ret.getLinea());
+                            }
+                        }
+                    }
                 }
                 tabla.pollLast();
             }
@@ -92,11 +117,33 @@ public class Caso implements Instruccion {
                                             this.continuar = false;
                                         } else {
                                             Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
-                                            
+
                                             if (o != null) {
                                                 if (o instanceof Detener) {
                                                     this.continuar = false;
+                                                } else if (o instanceof Literal) {
+                                                    tabla.pollLast();
+                                                    return o;
                                                 }
+                                            }
+                                        }
+                                    } else {
+                                        if (bloque instanceof Retornar) {
+                                            Retornar ret = (Retornar) bloque;
+                                            if (fun) {
+                                                Object valor = ret.getValor(tabla, salida);
+                                                Tipo tipo = ret.getTipo(tabla);
+
+                                                if (valor == null) {
+                                                    tipo = Tipo.NULL;
+                                                    valor = "nulo";
+                                                }
+
+                                                Literal l = new Literal(tipo, valor, linea, columna);
+                                                tabla.pollLast();
+                                                return l;
+                                            } else {
+                                                System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + ret.getLinea());
                                             }
                                         }
                                     }
@@ -116,7 +163,33 @@ public class Caso implements Instruccion {
                     tabla.add(new Simbolos());
                     for (NodoAST bloque : bloques) {
                         if (bloque instanceof Instruccion) {
-                            ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                            Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                            
+                            if(o != null){
+                                if(o instanceof Literal){
+                                    tabla.pollLast();
+                                    return o;
+                                }
+                            }
+                        } else {
+                            if (bloque instanceof Retornar) {
+                                Retornar ret = (Retornar) bloque;
+                                if (fun) {
+                                    Object valor = ret.getValor(tabla, salida);
+                                    Tipo tipo = ret.getTipo(tabla);
+
+                                    if (valor == null) {
+                                        tipo = Tipo.NULL;
+                                        valor = "nulo";
+                                    }
+
+                                    Literal l = new Literal(tipo, valor, linea, columna);
+                                    tabla.pollLast();
+                                    return l;
+                                } else {
+                                    System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + ret.getLinea());
+                                }
+                            }
                         }
                     }
                     tabla.pollLast();
