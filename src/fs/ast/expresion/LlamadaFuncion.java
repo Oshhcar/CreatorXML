@@ -9,6 +9,7 @@ import fs.ast.NodoAST;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.FuncionSim;
 import fs.ast.simbolos.Simbolo;
+import fs.ast.simbolos.Simbolos;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
@@ -64,7 +65,7 @@ public class LlamadaFuncion implements Expresion {
     @Override
     public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         FuncionSim fun;
-        
+
         if (this.parametros != null) {
             fun = tabla.getFuncion(id, this.parametros.size());
         } else {
@@ -72,8 +73,7 @@ public class LlamadaFuncion implements Expresion {
         }
 
         if (fun != null) {
-            TablaSimbolos local = new TablaSimbolos();
-            local.nuevoAmbito(tabla);
+            Simbolos local = new Simbolos();
             if (this.getParametros() != null && fun.getParametros() != null) {
                 for (int i = 0; i < this.getParametros().size(); i++) {
                     String idActual = fun.getParametros().get(i);
@@ -86,41 +86,49 @@ public class LlamadaFuncion implements Expresion {
                         if (valActual != null) {
                             sim.setValor(valActual);
                         } else {
-                            System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
-                            return null;
-                        }
-                    }
-                    local.addSimbolo(sim);
-                }
-
-                for (NodoAST bloque : fun.getBloques()) {
-                    if (bloque instanceof Instruccion) {
-                        Object o = ((Instruccion) bloque).ejecutar(local, salida, true, false);
-                        if (o != null) {
-                            if (o instanceof Literal) {
-                                Literal lit = (Literal) o;
-                                Object litVal = ((Literal) o).getValor(local, salida);
-                                tipo = lit.getTipo(local);
-                                if (litVal == null) {
-                                    System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
-
-                                }
-                                return litVal;
-                            }
+                            sim.setTipo(tipActual);
+                            sim.setValor(valActual);
                         }
                     } else {
-                        if (bloque instanceof Retornar) {
-                            Retornar ret = (Retornar) bloque;
-                            Object valRet = ret.getValor(local, salida);
-                            tipo = ret.getTipo(local);
-                            if (valRet == null) {
+                        System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
+                        return null;
+                    }
+                    local.add(sim);
+                }
+            }
+            tabla.add(local);
+
+            for (NodoAST bloque : fun.getBloques()) {
+                if (bloque instanceof Instruccion) {
+                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, true, false);
+                    if (o != null) {
+                        if (o instanceof Literal) {
+                            Literal lit = (Literal) o;
+                            Object litVal = ((Literal) o).getValor(tabla, salida);
+                            tipo = lit.getTipo(tabla);
+                            if (litVal == null) {
                                 System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
+
                             }
-                            return valRet;
+                            tabla.pollLast();
+                            return litVal;
                         }
+                    }
+                } else {
+                    if (bloque instanceof Retornar) {
+                        Retornar ret = (Retornar) bloque;
+                        Object valRet = ret.getValor(tabla, salida);
+                        tipo = ret.getTipo(tabla);
+                        if (valRet == null) {
+                            System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
+                        }
+                        tabla.pollLast();
+                        return valRet;
                     }
                 }
             }
+            tabla.pollLast();
+            System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
         }
         return null;
     }

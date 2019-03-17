@@ -10,6 +10,7 @@ import fs.ast.expresion.Expresion;
 import fs.ast.expresion.Literal;
 import fs.ast.expresion.Retornar;
 import fs.ast.instruccion.Instruccion;
+import fs.ast.simbolos.Simbolos;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
@@ -54,19 +55,37 @@ public class SubSi implements Instruccion {
                     boolean cond = valorCondicion.equals("verdadero");
 
                     if (cond) {
-                        TablaSimbolos local = new TablaSimbolos();
-                        local.nuevoAmbito(tabla);
+                        tabla.add(new Simbolos());
                         for (NodoAST bloque : bloques) {
                             if (bloque instanceof Instruccion) {
-                                ((Instruccion) bloque).ejecutar(local, salida, fun, sel);
+                                Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+
+                                if (o != null) {
+                                    if (o instanceof Literal) {
+                                        Literal lit = (Literal) o;
+                                        if (fun) {
+                                            tabla.pollLast();
+                                            return lit;
+                                        } else {
+                                            System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + lit.getLinea());
+
+                                        }
+                                    }
+                                }
                             } else {
                                 if (bloque instanceof Retornar) {
                                     Retornar ret = (Retornar) bloque;
                                     if (fun) {
-                                        Object valor = ret.getValor(local, salida);
-                                        Tipo tipo = ret.getTipo(local);
+                                        Object valor = ret.getValor(tabla, salida);
+                                        Tipo tipo = ret.getTipo(tabla);
+
+                                        if (valor == null) {
+                                            tipo = Tipo.NULL;
+                                            valor = "nulo";
+                                        }
 
                                         Literal l = new Literal(tipo, valor, linea, columna);
+                                        tabla.pollLast();
                                         return l;
                                     } else {
                                         System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + ret.getLinea());
@@ -74,6 +93,7 @@ public class SubSi implements Instruccion {
                                 }
                             }
                         }
+                        tabla.pollLast();
                         return true;
                     } else {
                         return false;
@@ -83,19 +103,37 @@ public class SubSi implements Instruccion {
                 }
             }
         } else {
-            TablaSimbolos local = new TablaSimbolos();
-            local.nuevoAmbito(tabla);
+            tabla.add(new Simbolos());
             for (NodoAST bloque : bloques) {
                 if (bloque instanceof Instruccion) {
-                    ((Instruccion) bloque).ejecutar(local, salida, fun, sel);
+                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                    
+                    if (o != null) {
+                        if (o instanceof Literal) {
+                            Literal lit = (Literal) o;
+                            if (fun) {
+                                tabla.pollLast();
+                                return lit;
+                            } else {
+                                System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + lit.getLinea());
+
+                            }
+                        }
+                    }
                 } else {
                     if (bloque instanceof Retornar) {
                         Retornar ret = (Retornar) bloque;
                         if (fun) {
-                            Object valor = ret.getValor(local, salida);
-                            Tipo tipo = ret.getTipo(local);
+                            Object valor = ret.getValor(tabla, salida);
+                            Tipo tipo = ret.getTipo(tabla);
+
+                            if (valor == null) {
+                                tipo = Tipo.NULL;
+                                valor = "nulo";
+                            }
 
                             Literal l = new Literal(tipo, valor, linea, columna);
+                            tabla.pollLast();
                             return l;
                         } else {
                             System.err.println("Error, Sentencia Retornar no se encuentra dentro de un método o función. Línea :" + ret.getLinea());
@@ -103,6 +141,7 @@ public class SubSi implements Instruccion {
                     }
                 }
             }
+            tabla.pollLast();
         }
         return null;
     }

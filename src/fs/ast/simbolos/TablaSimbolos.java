@@ -15,17 +15,16 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
 
     public TablaSimbolos() {
         super();
+        this.add(new Simbolos());
     }
 
     public boolean existeLocal(String id) {
-        int i = this.size() - 1;
-        Simbolos sims = this.get(i);
+        Simbolos sims = this.peekLast();
         return null != sims.getSimbolo(id);
     }
 
     public void addSimbolo(Simbolo s) {
-        int i = this.size() - 1;
-        Simbolos sims = this.get(i);
+        Simbolos sims = this.peekLast();
         sims.add(s);
     }
 
@@ -42,7 +41,7 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
     }
 
     public FuncionSim getFuncion(String id) {
-        Simbolos sims = this.get(0);
+        Simbolos sims = this.peekFirst();
         for (int i = sims.size() - 1; i >= 0; i--) {
             Simbolo s = sims.get(i);
             if (s.getId().equals(id)) {
@@ -57,7 +56,7 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
     }
 
     public FuncionSim getFuncion(String id, int p) {
-        Simbolos sims = this.get(0);
+        Simbolos sims = this.peekFirst();
         for (int i = sims.size() - 1; i >= 0; i--) {
             Simbolo s = sims.get(i);
             if (s.getId().equals(id)) {
@@ -74,12 +73,4 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
         return null;
     }
     
-    public void nuevoAmbito(TablaSimbolos ant){
-        for(int i=0; i < ant.size(); i++){
-            Simbolos sims = new Simbolos();
-            sims.addAll(ant.get(i));
-            this.add(sims);
-        }
-        this.add(new Simbolos());
-    }
 }

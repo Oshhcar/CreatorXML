@@ -24,7 +24,6 @@ public class AST {
     
     public void ejecutar(JTextArea salida){
         TablaSimbolos global = new TablaSimbolos();
-        global.add(new Simbolos());
         //hacer varias pasadas por las funciones
         
         for(NodoAST nodo: nodos){
