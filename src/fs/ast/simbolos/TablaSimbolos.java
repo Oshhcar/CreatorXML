@@ -15,7 +15,6 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
 
     public TablaSimbolos() {
         super();
-        this.add(new Simbolos());
     }
 
     public boolean existeLocal(String id) {
@@ -75,11 +74,12 @@ public class TablaSimbolos extends LinkedList<Simbolos> {
         return null;
     }
     
-    public void nuevoAmbito(){
+    public void nuevoAmbito(TablaSimbolos ant){
+        for(int i=0; i < ant.size(); i++){
+            Simbolos sims = new Simbolos();
+            sims.addAll(ant.get(i));
+            this.add(sims);
+        }
         this.add(new Simbolos());
-    }
-    
-    public void salirAmbito(){
-        this.removeLast();
     }
 }

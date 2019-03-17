@@ -52,7 +52,7 @@ public class LlamadaMetodo implements Instruccion {
         }
 
         if (funcion != null) {
-            tabla.nuevoAmbito();
+            tabla.nuevoAmbito(tabla);
             if (this.getParametros() != null && funcion.getParametros() != null) {
                 for (int i = 0; i < this.getParametros().size(); i++) {
                     String idActual = funcion.getParametros().get(i);
@@ -82,18 +82,15 @@ public class LlamadaMetodo implements Instruccion {
                     Object o = ((Instruccion) bloque).ejecutar(tabla, salida, true, false);
                     if (o != null) {
                         if (o instanceof Literal) {
-                            tabla.salirAmbito();
                             return null;
                         }
                     }
                 } else {
                     if (bloque instanceof Retornar) {
-                        tabla.salirAmbito();
                         return null;
                     }
                 }
             }
-            tabla.salirAmbito();
         }
         return null;
     }

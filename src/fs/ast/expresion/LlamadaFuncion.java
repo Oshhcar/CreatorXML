@@ -64,7 +64,7 @@ public class LlamadaFuncion implements Expresion {
     @Override
     public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         FuncionSim fun;
-
+        
         if (this.parametros != null) {
             fun = tabla.getFuncion(id, this.parametros.size());
         } else {
@@ -72,12 +72,12 @@ public class LlamadaFuncion implements Expresion {
         }
 
         if (fun != null) {
-            tabla.nuevoAmbito();
+            TablaSimbolos local = new TablaSimbolos();
+            local.nuevoAmbito(tabla);
             if (this.getParametros() != null && fun.getParametros() != null) {
                 for (int i = 0; i < this.getParametros().size(); i++) {
                     String idActual = fun.getParametros().get(i);
                     Simbolo sim = new Simbolo(Tipo.VAR, idActual);
-
                     Expresion expActual = this.getParametros().get(i);
                     Object valActual = expActual.getValor(tabla, salida);
                     Tipo tipActual = expActual.getTipo(tabla);
@@ -86,47 +86,41 @@ public class LlamadaFuncion implements Expresion {
                         if (valActual != null) {
                             sim.setValor(valActual);
                         } else {
-                            sim.setTipo(tipActual);
-                            sim.setValor(valActual);
+                            System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
+                            return null;
+                        }
+                    }
+                    local.addSimbolo(sim);
+                }
+
+                for (NodoAST bloque : fun.getBloques()) {
+                    if (bloque instanceof Instruccion) {
+                        Object o = ((Instruccion) bloque).ejecutar(local, salida, true, false);
+                        if (o != null) {
+                            if (o instanceof Literal) {
+                                Literal lit = (Literal) o;
+                                Object litVal = ((Literal) o).getValor(local, salida);
+                                tipo = lit.getTipo(local);
+                                if (litVal == null) {
+                                    System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
+
+                                }
+                                return litVal;
+                            }
                         }
                     } else {
-                        System.err.println("Error, no se puede asignar el parametro. Linea:" + linea);
-                        return null;
-                    }
-                    tabla.addSimbolo(sim);
-                }
-            }
-
-            for (NodoAST bloque : fun.getBloques()) {
-                if (bloque instanceof Instruccion) {
-                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, true, false);
-                    if (o != null) {
-                        if (o instanceof Literal) {
-                            Literal lit = (Literal) o;
-                            Object litVal = ((Literal) o).getValor(tabla, salida);
-                            tipo = lit.getTipo(tabla);
-                            tabla.salirAmbito();
-                            if (litVal == null) {
+                        if (bloque instanceof Retornar) {
+                            Retornar ret = (Retornar) bloque;
+                            Object valRet = ret.getValor(local, salida);
+                            tipo = ret.getTipo(local);
+                            if (valRet == null) {
                                 System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
-
                             }
-                            return litVal;
+                            return valRet;
                         }
-                    }
-                } else {
-                    if (bloque instanceof Retornar) {
-                        Retornar ret = (Retornar) bloque;
-                        Object valRet = ret.getValor(tabla, salida);
-                        tipo = ret.getTipo(tabla);
-                        tabla.salirAmbito();
-                        if (valRet == null) {
-                            System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
-                        }
-                        return valRet;
                     }
                 }
             }
-            tabla.salirAmbito();
         }
         return null;
     }
