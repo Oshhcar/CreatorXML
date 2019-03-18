@@ -659,7 +659,7 @@ public class Editor extends javax.swing.JFrame {
         JFileChooser fileChooser = new JFileChooser();
         File f = new File("arbol.png");
         fileChooser.setCurrentDirectory(f);
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos FS y GXML", "fs", "gxml", "txt");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos fs y gxml", "fs", "gxml", "txt");
         fileChooser.setFileFilter(filter);
         int seleccion = fileChooser.showOpenDialog(this);
 
@@ -801,9 +801,9 @@ public class Editor extends javax.swing.JFrame {
             JTextArea text = (JTextArea) view.getComponent(0);
 
             JFileChooser fileChooser = new JFileChooser();
-            File f = new File("C:/users/Oscar");
+            File f = new File("arbol.png");
             fileChooser.setCurrentDirectory(f);
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos lz", "lz", "txt");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos fs y gxml", "fs", "gxml", "txt");
             fileChooser.setFileFilter(filter);
             int seleccion = fileChooser.showSaveDialog(this);
 

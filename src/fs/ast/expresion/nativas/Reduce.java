@@ -15,14 +15,13 @@ import fs.ast.simbolos.Objeto;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
-import java.util.Map;
 import javax.swing.JTextArea;
 
 /**
  *
  * @author oscar
  */
-public class Buscar implements Expresion {
+public class Reduce implements Expresion {
 
     private final Object array;
     private final LinkedList<Expresion> parametros;
@@ -30,7 +29,7 @@ public class Buscar implements Expresion {
     private final int linea;
     private final int columna;
 
-    public Buscar(Object array, LinkedList<Expresion> parametros, int linea, int columna) {
+    public Reduce(Object array, LinkedList<Expresion> parametros, int linea, int columna) {
         this.array = array;
         this.parametros = parametros;
         this.tipo = null;
@@ -50,10 +49,39 @@ public class Buscar implements Expresion {
                 Expresion ident = parametros.getFirst();
                 if (ident instanceof Identificador) {
                     String id = ((Identificador) ident).getId();
-                    FuncionSim fun = tabla.getFuncion(id, 1);
+                    FuncionSim fun = tabla.getFuncion(id, 2);
                     if (fun != null) {
-                        Map<Integer, Object> arreglo = (Map<Integer, Object>) array;
+                        java.util.Map<Integer, Object> arreglo = (java.util.Map<Integer, Object>) array;
                         if (arreglo != null) {
+                            tipo = Tipo.NULL;
+                            Object reduce = "nulo";
+
+                            Object exp0 = arreglo.get(0);
+                            if (exp0 != null) {
+                                if (exp0 instanceof Double) {
+                                    tipo = Tipo.DECIMAL;
+                                    reduce = 0.0;
+                                } else if (exp0 instanceof Integer) {
+                                    tipo = Tipo.ENTERO;
+                                    reduce = 0;
+                                } else if (exp0.equals("verdadero") || exp0.equals("falso")) {
+                                    tipo = Tipo.BOOLEANO;
+                                    reduce = "falso";
+                                } else if (exp0.equals("nulo")) {
+                                    tipo = Tipo.NULL;
+                                    reduce = "nulo";
+                                } else if (exp0 instanceof String) {
+                                    tipo = Tipo.CADENA;
+                                    reduce = "";
+                                } else if (exp0 instanceof Objeto) {
+                                    tipo = Tipo.OBJETO;
+                                    reduce = new Objeto();
+                                } else if (exp0 instanceof Arreglo) {
+                                    tipo = Tipo.ARREGLO;
+                                    reduce = new Arreglo();
+                                }
+                            }
+
                             for (int i = 0; i < arreglo.size(); i++) {
                                 Object exp = arreglo.get(i);
                                 Tipo tipExp = null;
@@ -73,8 +101,10 @@ public class Buscar implements Expresion {
                                 } else if (exp instanceof Arreglo) {
                                     tipExp = Tipo.ARREGLO;
                                 }
+                                Literal total = new Literal(tipo, reduce, linea, columna);
                                 Literal lit = new Literal(tipExp, exp, linea, columna);
                                 LinkedList<Expresion> parms = new LinkedList<>();
+                                parms.add(total);
                                 parms.add(lit);
 
                                 LlamadaFuncion llamada = new LlamadaFuncion(id, parms, linea, columna);
@@ -83,15 +113,14 @@ public class Buscar implements Expresion {
                                 Tipo tipRet = llamada.getTipo(tabla);
 
                                 if (tipRet != null) {
-                                    if (tipRet == Tipo.BOOLEANO) {
-                                        if (ret.toString().equals("verdadero")) {
-                                            tipo = tipExp;
-                                            return exp;
-                                        }
+                                    if (ret != null) {
+                                        tipo = tipRet;
+                                        reduce = ret;
                                     }
                                 }
 
                             }
+                            return reduce;
                         } else {
                             System.err.println("Error, arreglo indefinido. Línea:" + linea);
                         }
@@ -103,10 +132,10 @@ public class Buscar implements Expresion {
                     System.err.println("Error, el parametro debe ser el id de la funcion. Linea: " + linea);
                 }
             } else {
-                System.err.println("Error, la funcion buscar solo recibe un parametro. Linea: " + linea);
+                System.err.println("Error, la funcion reduce solo recibe un parametro. Linea: " + linea);
             }
         } else {
-            System.err.println("Error, se necesita un arreglo para ejecutar buscar. Línea:" + linea);
+            System.err.println("Error, se necesita un arreglo para ejecutar reduce. Línea:" + linea);
         }
         return null;
     }
@@ -120,5 +149,4 @@ public class Buscar implements Expresion {
     public int getColumna() {
         return columna;
     }
-
 }

@@ -5,11 +5,14 @@
  */
 package fs.ast.expresion;
 
+import fs.ast.expresion.nativas.Alguno;
 import fs.ast.expresion.nativas.Buscar;
 import fs.ast.expresion.nativas.Filtrar;
 import fs.ast.expresion.nativas.Maximo;
 import fs.ast.expresion.nativas.Minimo;
-import fs.ast.simbolos.Arreglo;
+import fs.ast.expresion.nativas.Map;
+import fs.ast.expresion.nativas.Reduce;
+import fs.ast.expresion.nativas.Todos;
 import fs.ast.simbolos.Simbolo;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
@@ -86,6 +89,46 @@ public class LlamadaFunciones implements Expresion {
                             tipo = buscar.getTipo(tabla);
                         }
                         break;
+                    case "map":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Map map = new Map(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = map.getValor(tabla, salida);
+                            tipo = map.getTipo(tabla);
+                        }
+                        break;
+                    case "reduce":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Reduce reduce = new Reduce(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = reduce.getValor(tabla, salida);
+                            tipo = reduce.getTipo(tabla);
+                        }
+                    break;
+                    case "todos":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Todos todos = new Todos(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = todos.getValor(tabla, salida);
+                            tipo = todos.getTipo(tabla);
+                        }
+                    break;
+                    case "alguno":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Alguno alguno = new Alguno(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = alguno.getValor(tabla, salida);
+                            tipo = alguno.getTipo(tabla);
+                        }
+                    break;
                 }
             }
             return arreglo;

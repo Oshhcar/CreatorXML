@@ -81,6 +81,7 @@ public class Filtrar implements Expresion {
                                 parms.add(lit);
 
                                 LlamadaFuncion llamada = new LlamadaFuncion(id, parms, linea, columna);
+                                llamada.setMostrarError(false);
                                 Object ret = llamada.getValor(tabla, salida);
                                 Tipo tipRet = llamada.getTipo(tabla);
 

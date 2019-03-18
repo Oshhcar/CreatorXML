@@ -40,6 +40,7 @@ public class LlamadaFuncion implements Expresion {
     private Tipo tipo;
     private final int linea;
     private final int columna;
+    private boolean mostrarError;
 
     public LlamadaFuncion(String id, LinkedList<Expresion> parametros, int linea, int columna) {
         this.id = id;
@@ -47,6 +48,7 @@ public class LlamadaFuncion implements Expresion {
         this.linea = linea;
         this.columna = columna;
         this.tipo = null;
+        this.mostrarError = true;
     }
 
     public LlamadaFuncion(String id, int linea, int columna) {
@@ -55,6 +57,7 @@ public class LlamadaFuncion implements Expresion {
         this.linea = linea;
         this.columna = columna;
         this.tipo = null;
+        this.mostrarError = true;
     }
 
     @Override
@@ -128,7 +131,9 @@ public class LlamadaFuncion implements Expresion {
                 }
             }
             tabla.pollLast();
-            System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
+            if (mostrarError) {
+                System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
+            }
         } else {
             System.err.println("Error, la funcion \"" + id + "\" no está declarada. Línea: " + linea);
         }
@@ -143,6 +148,13 @@ public class LlamadaFuncion implements Expresion {
     @Override
     public int getColumna() {
         return columna;
+    }
+
+    /**
+     * @param mostrarError the mostrarError to set
+     */
+    public void setMostrarError(boolean mostrarError) {
+        this.mostrarError = mostrarError;
     }
 
 }

@@ -15,22 +15,20 @@ import fs.ast.simbolos.Objeto;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.util.LinkedList;
-import java.util.Map;
 import javax.swing.JTextArea;
 
 /**
  *
  * @author oscar
  */
-public class Buscar implements Expresion {
-
+public class Todos implements Expresion{
     private final Object array;
     private final LinkedList<Expresion> parametros;
     private Tipo tipo;
     private final int linea;
     private final int columna;
 
-    public Buscar(Object array, LinkedList<Expresion> parametros, int linea, int columna) {
+    public Todos(Object array, LinkedList<Expresion> parametros, int linea, int columna) {
         this.array = array;
         this.parametros = parametros;
         this.tipo = null;
@@ -52,7 +50,7 @@ public class Buscar implements Expresion {
                     String id = ((Identificador) ident).getId();
                     FuncionSim fun = tabla.getFuncion(id, 1);
                     if (fun != null) {
-                        Map<Integer, Object> arreglo = (Map<Integer, Object>) array;
+                        java.util.Map<Integer, Object> arreglo = (java.util.Map<Integer, Object>) array;
                         if (arreglo != null) {
                             for (int i = 0; i < arreglo.size(); i++) {
                                 Object exp = arreglo.get(i);
@@ -84,14 +82,17 @@ public class Buscar implements Expresion {
 
                                 if (tipRet != null) {
                                     if (tipRet == Tipo.BOOLEANO) {
-                                        if (ret.toString().equals("verdadero")) {
-                                            tipo = tipExp;
-                                            return exp;
+                                        if (ret.toString().equals("falso")) {
+                                            tipo = Tipo.BOOLEANO;
+                                            return "falso";
                                         }
                                     }
                                 }
 
                             }
+                            tipo = Tipo.BOOLEANO;
+                            return "verdadero";
+                            
                         } else {
                             System.err.println("Error, arreglo indefinido. Línea:" + linea);
                         }
@@ -103,10 +104,10 @@ public class Buscar implements Expresion {
                     System.err.println("Error, el parametro debe ser el id de la funcion. Linea: " + linea);
                 }
             } else {
-                System.err.println("Error, la funcion buscar solo recibe un parametro. Linea: " + linea);
+                System.err.println("Error, la funcion todos solo recibe un parametro. Linea: " + linea);
             }
         } else {
-            System.err.println("Error, se necesita un arreglo para ejecutar buscar. Línea:" + linea);
+            System.err.println("Error, se necesita un arreglo para ejecutar todos. Línea:" + linea);
         }
         return null;
     }
@@ -120,5 +121,4 @@ public class Buscar implements Expresion {
     public int getColumna() {
         return columna;
     }
-
 }
