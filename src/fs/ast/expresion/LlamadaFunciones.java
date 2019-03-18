@@ -7,6 +7,7 @@ package fs.ast.expresion;
 
 import fs.ast.expresion.nativas.Maximo;
 import fs.ast.expresion.nativas.Minimo;
+import fs.ast.simbolos.Arreglo;
 import fs.ast.simbolos.Simbolo;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
@@ -51,7 +52,7 @@ public class LlamadaFunciones implements Expresion {
                         if (llamada.getParametros() != null) {
                             System.err.println("Error, la funcion maximo no necesita parámetros. Linea: " + linea);
                         }
-                        Maximo maximo = new Maximo(id, linea, columna);
+                        Maximo maximo = new Maximo(arreglo, linea, columna);
                         arreglo = maximo.getValor(tabla, salida);
                         tipo = maximo.getTipo(tabla);
                         break;
@@ -59,9 +60,22 @@ public class LlamadaFunciones implements Expresion {
                         if (llamada.getParametros() != null) {
                             System.err.println("Error, la funcion maximo no necesita parámetros. Linea: " + linea);
                         }
-                        Minimo minimo = new Minimo(id, linea, columna);
+                        Minimo minimo = new Minimo(arreglo, linea, columna);
                         arreglo = minimo.getValor(tabla, salida);
                         tipo = minimo.getTipo(tabla);
+                        break;
+                    case "filtrar":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                        } else {
+                            if (llamada.getParametros().size() == 1) {
+                                Expresion parm = llamada.getParametros().getFirst();
+                                
+                            } else {
+                                System.err.println("Error, la funcion filtrar solo recibe un parametro. Linea: " + linea);
+
+                            }
+                        }
                         break;
                 }
             }
