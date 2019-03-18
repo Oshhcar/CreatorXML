@@ -5,6 +5,7 @@
  */
 package fs.ast.expresion;
 
+import fs.ast.expresion.nativas.Filtrar;
 import fs.ast.expresion.nativas.Maximo;
 import fs.ast.expresion.nativas.Minimo;
 import fs.ast.simbolos.Arreglo;
@@ -67,14 +68,11 @@ public class LlamadaFunciones implements Expresion {
                     case "filtrar":
                         if (llamada.getParametros() == null) {
                             System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
                         } else {
-                            if (llamada.getParametros().size() == 1) {
-                                Expresion parm = llamada.getParametros().getFirst();
-                                
-                            } else {
-                                System.err.println("Error, la funcion filtrar solo recibe un parametro. Linea: " + linea);
-
-                            }
+                            Filtrar filtrar = new Filtrar(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = filtrar.getValor(tabla, salida);
+                            tipo = filtrar.getTipo(tabla);
                         }
                         break;
                 }
