@@ -40,7 +40,7 @@ public class Funcion implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
         FuncionSim tmp;
         
         if(this.parametros != null){

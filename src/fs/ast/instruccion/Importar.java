@@ -47,10 +47,10 @@ public class Importar implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
         if (dirActual != null) {
             if (ruta != null) {
-                Object valRuta = ruta.getValor(tabla, salida);
+                Object valRuta = ruta.getValor(tabla, salida, dirActual);
                 if (valRuta != null) {
                     String rutaImport = valRuta.toString();
                     Tipo tipRuta = ruta.getTipo(tabla);
@@ -95,7 +95,7 @@ public class Importar implements Instruccion {
                                         for (NodoAST nodo : ast.getNodos()) {
                                             if (nodo instanceof Instruccion) {
                                                 if (nodo instanceof Funcion) {
-                                                    ((Funcion) nodo).ejecutar(tabla, salida, false, false);
+                                                    ((Funcion) nodo).ejecutar(tabla, salida, false, false, dirActual);
                                                 }
                                             }
                                         }
@@ -105,7 +105,7 @@ public class Importar implements Instruccion {
                                                 if (nodo instanceof Importar) {
                                                     Importar imp = (Importar) nodo;
                                                     imp.setDirActual(dirActual);
-                                                    imp.ejecutar(tabla, salida, false, false);
+                                                    imp.ejecutar(tabla, salida, false, false, dirActual);
                                                 }
                                             }
                                         }

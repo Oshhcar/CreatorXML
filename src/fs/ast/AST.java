@@ -16,10 +16,9 @@ import javax.swing.JTextArea;
  *
  * @author oscar
  */
-public class AST {
-
+public class AST {    
     private LinkedList<NodoAST> nodos;
-
+    
     public AST(LinkedList<NodoAST> nodos) {
         this.nodos = nodos;
     }
@@ -31,7 +30,7 @@ public class AST {
         for (NodoAST nodo : getNodos()) {
             if (nodo instanceof Instruccion) {
                 if (nodo instanceof Funcion) {
-                    ((Funcion) nodo).ejecutar(global, salida, false, false);
+                    ((Funcion) nodo).ejecutar(global, salida, false, false, dirActual);
                 }
             }
         }
@@ -41,7 +40,7 @@ public class AST {
                 if (nodo instanceof Importar) {
                     Importar imp = (Importar) nodo;
                     imp.setDirActual(dirActual);
-                    imp.ejecutar(global, salida, false, false);
+                    imp.ejecutar(global, salida, false, false, dirActual);
                 }
             }
         }
@@ -49,7 +48,7 @@ public class AST {
         for (NodoAST nodo : getNodos()) {
             if (nodo instanceof Instruccion) {
                 if (!(nodo instanceof Funcion) && !(nodo instanceof Importar)) {
-                    ((Instruccion) nodo).ejecutar(global, salida, false, false);
+                    ((Instruccion) nodo).ejecutar(global, salida, false, false, dirActual);
                 }
             }
         }

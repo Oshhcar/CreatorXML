@@ -16,5 +16,5 @@ import javax.swing.JTextArea;
  */
 public interface Expresion extends NodoAST{
     public Tipo getTipo(TablaSimbolos tabla);
-    public Object getValor(TablaSimbolos tabla, JTextArea salida);
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual);
 }

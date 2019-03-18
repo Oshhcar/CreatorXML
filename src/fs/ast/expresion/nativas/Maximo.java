@@ -36,7 +36,7 @@ public class Maximo implements Expresion {
     }
 
     @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
         if (array instanceof Arreglo) {
             Map<Integer, Object> arreglo = (Map<Integer, Object>) array;
             if (arreglo != null) {

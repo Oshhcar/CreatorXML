@@ -41,8 +41,8 @@ public class Aritmetica extends Operacion implements Expresion {
     }
 
     @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
-        Object val1 = op1.getValor(tabla, salida);
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
+        Object val1 = op1.getValor(tabla, salida, dirActual);
         Tipo tip1 = op1.getTipo(tabla);
 
         if (unario) {
@@ -96,15 +96,15 @@ public class Aritmetica extends Operacion implements Expresion {
                             if (op1 instanceof Identificador) {
                                 Identificador id = (Identificador) op1;
                                 Asignacion asigna = new Asignacion(id.getId(), "=", exp, linea, columna);
-                                asigna.ejecutar(tabla, salida, false, false);
+                                asigna.ejecutar(tabla, salida, false, false, dirActual);
                             } else if (op1 instanceof AccesoArreglo) {
                                 AccesoArreglo ar = (AccesoArreglo) op1;
                                 AsignacionArreglo asigna = new AsignacionArreglo(ar.getId(), ar.getPosicion(), "=", exp, linea, columna);
-                                asigna.ejecutar(tabla, salida, false, false);
+                                asigna.ejecutar(tabla, salida, false, false, dirActual);
                             } else if (op1 instanceof AccesoObjeto) {
                                 AccesoObjeto obj = (AccesoObjeto) op1;
                                 AsignacionObjeto asigna = new AsignacionObjeto(obj.getId(), obj.getClave(), obj.getPosicion(), "=", exp, linea, columna);
-                                asigna.ejecutar(tabla, salida, false, false);
+                                asigna.ejecutar(tabla, salida, false, false, dirActual);
                             }
 
                             switch (tip1) {
@@ -128,7 +128,7 @@ public class Aritmetica extends Operacion implements Expresion {
                 }
             }
         } else {
-            Object val2 = op2.getValor(tabla, salida);
+            Object val2 = op2.getValor(tabla, salida, dirActual);
             Tipo tip2 = op2.getTipo(tabla);
             if (tip1 != null && tip2 != null) {
                 if (tip1 != Tipo.VAR && tip2 != Tipo.VAR) {

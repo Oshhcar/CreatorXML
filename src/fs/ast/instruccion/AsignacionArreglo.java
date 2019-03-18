@@ -31,7 +31,7 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
         if (null != valor) {
             Simbolo s = tabla.getSimbolo(id);
             if (s != null) {
@@ -40,13 +40,13 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
                     if (tip == Tipo.ARREGLO) {
                         Map<Integer, Object> arreglo = (Map<Integer, Object>) s.getValor();
                         if (arreglo != null) {
-                            Object valPosicion = posicion.getValor(tabla, salida);
+                            Object valPosicion = posicion.getValor(tabla, salida, dirActual);
                             Tipo tipPosicion = posicion.getTipo(tabla);
                             if (valPosicion != null && tipPosicion != null) {
                                 if (tipPosicion == Tipo.ENTERO) {
                                     Integer pos = Integer.valueOf(valPosicion.toString());
                                     if (arreglo.containsKey(pos)) {
-                                        Object valExp = valor.getValor(tabla, salida);
+                                        Object valExp = valor.getValor(tabla, salida, dirActual);
                                         Tipo tipExp = valor.getTipo(tabla);
                                         if (tipExp != null) {
                                             if (tipExp != Tipo.VAR) {
@@ -92,7 +92,7 @@ public class AsignacionArreglo extends Asignacion implements Instruccion {
                                                         }
                                                         Aritmetica operacion = new Aritmetica(exp1, exp2, op, super.getLinea(), super.getColumna());
 
-                                                        Object valAsignar = operacion.getValor(tabla, salida);
+                                                        Object valAsignar = operacion.getValor(tabla, salida, dirActual);
                                                         if (valAsignar != null) {
                                                             arreglo.replace(pos, valAsignar);
                                                         }

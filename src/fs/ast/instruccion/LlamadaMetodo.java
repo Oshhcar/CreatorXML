@@ -43,7 +43,7 @@ public class LlamadaMetodo implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
         FuncionSim funcion;
 
         if (this.parametros != null) {
@@ -59,7 +59,7 @@ public class LlamadaMetodo implements Instruccion {
                     String idActual = funcion.getParametros().get(i);
                     Simbolo sim = new Simbolo(Tipo.VAR, idActual);
                     Expresion expActual = this.getParametros().get(i);
-                    Object valActual = expActual.getValor(tabla, salida);
+                    Object valActual = expActual.getValor(tabla, salida, dirActual);
                     Tipo tipActual = expActual.getTipo(tabla);
 
                     if (tipActual != null) {
@@ -80,11 +80,11 @@ public class LlamadaMetodo implements Instruccion {
 
             for (NodoAST bloque : funcion.getBloques()) {
                 if (bloque instanceof Instruccion) {
-                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, true, false);
+                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, true, false, dirActual);
                     if (o != null) {
                         if (o instanceof Literal) {
                             Literal lit = (Literal) o;
-                            Object litVal = ((Literal) o).getValor(tabla, salida);
+                            Object litVal = ((Literal) o).getValor(tabla, salida, dirActual);
                             if (litVal != null) {
                                 //System.err.println("Error, El método \"" + id + "\" retorna valor. Línea: " + linea);
 
@@ -96,7 +96,7 @@ public class LlamadaMetodo implements Instruccion {
                 } else {
                     if (bloque instanceof Retornar) {
                         Retornar ret = (Retornar) bloque;
-                        Object valRet = ret.getValor(tabla, salida);
+                        Object valRet = ret.getValor(tabla, salida, dirActual);
                         if (valRet != null) {
                             //System.err.println("Error, El método \"" + id + "\" retorna valor. Línea: " + linea);
                         }

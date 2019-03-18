@@ -39,8 +39,8 @@ public class AccesoArreglo implements Expresion {
     }
 
     @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
-        Object valPosicion = posicion.getValor(tabla, salida);
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
+        Object valPosicion = posicion.getValor(tabla, salida, dirActual);
         if (valPosicion != null) {
             Tipo tipPosicion = posicion.getTipo(tabla);
             if (tipPosicion != null) {

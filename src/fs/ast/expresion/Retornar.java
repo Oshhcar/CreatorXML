@@ -37,8 +37,8 @@ public class Retornar implements Expresion {
     }
 
     @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
-        return expresion != null ? expresion.getValor(tabla, salida) : null;
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
+        return expresion != null ? expresion.getValor(tabla, salida, dirActual) : null;
     }
 
     @Override

@@ -55,9 +55,9 @@ public class Si implements Instruccion{
     }
     
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
         for(SubSi si: subSis){
-            Object r = si.ejecutar(tabla, salida, fun, sel);
+            Object r = si.ejecutar(tabla, salida, fun, sel, dirActual);
             if(r != null){
                 if(r instanceof Boolean){
                     if((boolean)r){

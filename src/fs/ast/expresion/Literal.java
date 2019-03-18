@@ -39,7 +39,7 @@ public class Literal implements Expresion {
     }
 
     @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
         switch (tipo) {
             case ARREGLO:
                 if(!setearValor){
@@ -51,7 +51,7 @@ public class Literal implements Expresion {
 
                     for (int i = 0; i < arrActual.size(); i++) {
                         Expresion expActual = arrActual.get(i);
-                        Object valActual = expActual.getValor(tabla, salida);
+                        Object valActual = expActual.getValor(tabla, salida, dirActual);
                         Tipo tipActual = expActual.getTipo(tabla);
 
                         valAsignar.put(i, "nulo");
@@ -80,7 +80,7 @@ public class Literal implements Expresion {
 
                     actual.keySet().forEach((claveActual) -> {
                         Expresion expActual = actual.get(claveActual);
-                        Object valActual = expActual.getValor(tabla, salida);
+                        Object valActual = expActual.getValor(tabla, salida, dirActual);
                         Tipo tipActual = expActual.getTipo(tabla);
 
                         valores.put(claveActual, "nulo");

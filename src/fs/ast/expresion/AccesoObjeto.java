@@ -50,7 +50,7 @@ public class AccesoObjeto implements Expresion {
     }
 
     @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
         Simbolo s = tabla.getSimbolo(id);
         Tipo tip = s.getTipo();
         if (tip != null) {
@@ -77,7 +77,7 @@ public class AccesoObjeto implements Expresion {
                             }
                             return valor;
                         } else {
-                            Object valPosicion = getPosicion().getValor(tabla, salida);
+                            Object valPosicion = getPosicion().getValor(tabla, salida, dirActual);
                             Tipo tipPosicion = getPosicion().getTipo(tabla);
 
                             if (valPosicion != null && tipPosicion != null) {

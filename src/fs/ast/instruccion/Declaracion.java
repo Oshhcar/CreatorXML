@@ -28,12 +28,12 @@ public class Declaracion implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
         getAsignaciones().forEach((asignacion) -> {
             if (!tabla.existeLocal(asignacion.getId())) {
                 Simbolo sim = new Simbolo(Tipo.VAR, asignacion.getId().toLowerCase());
                 tabla.addSimbolo(sim);
-                asignacion.ejecutar(tabla, salida, fun, sel);
+                asignacion.ejecutar(tabla, salida, fun, sel, dirActual);
             } else {
                 System.err.println("Error, Ya existe una variable con el nombre de \"" + asignacion.getId() + "\". Línea: " + linea);
             }

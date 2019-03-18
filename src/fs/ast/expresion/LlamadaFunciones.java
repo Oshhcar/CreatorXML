@@ -47,7 +47,7 @@ public class LlamadaFunciones implements Expresion {
     }
 
     @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
         Simbolo s = tabla.getSimbolo(id);
         Object arreglo = s.getValor();
         if (arreglo != null) {
@@ -60,28 +60,28 @@ public class LlamadaFunciones implements Expresion {
                             System.err.println("Error, la funcion descendente no necesita parámetros. Linea: " + linea);
                         }
                         Ordenamiento desc = new Ordenamiento(id, "desc", linea, columna);
-                        arreglo = desc.ejecutar(tabla, salida, false, false);
+                        arreglo = desc.ejecutar(tabla, salida, false, false, dirActual);
                         break;
                     case "ascendente":
                         if (llamada.getParametros() != null) {
                             System.err.println("Error, la funcion ascendente no necesita parámetros. Linea: " + linea);
                         }
                         Ordenamiento asc = new Ordenamiento(id, "asc", linea, columna);
-                        arreglo = asc.ejecutar(tabla, salida, false, false);
+                        arreglo = asc.ejecutar(tabla, salida, false, false, dirActual);
                         break;
                     case "invertir":
                         if (llamada.getParametros() != null) {
                             System.err.println("Error, la funcion invertir no necesita parámetros. Linea: " + linea);
                         }
                         Invertir inv = new Invertir(id, linea, columna);
-                        arreglo = inv.ejecutar(tabla, salida, false, false);
+                        arreglo = inv.ejecutar(tabla, salida, false, false, dirActual);
                         break;
                     case "maximo":
                         if (llamada.getParametros() != null) {
                             System.err.println("Error, la funcion maximo no necesita parámetros. Linea: " + linea);
                         }
                         Maximo maximo = new Maximo(arreglo, linea, columna);
-                        arreglo = maximo.getValor(tabla, salida);
+                        arreglo = maximo.getValor(tabla, salida, dirActual);
                         tipo = maximo.getTipo(tabla);
                         break;
                     case "minimo":
@@ -89,7 +89,7 @@ public class LlamadaFunciones implements Expresion {
                             System.err.println("Error, la funcion maximo no necesita parámetros. Linea: " + linea);
                         }
                         Minimo minimo = new Minimo(arreglo, linea, columna);
-                        arreglo = minimo.getValor(tabla, salida);
+                        arreglo = minimo.getValor(tabla, salida, dirActual);
                         tipo = minimo.getTipo(tabla);
                         break;
                     case "filtrar":
@@ -98,7 +98,7 @@ public class LlamadaFunciones implements Expresion {
                             //retornar
                         } else {
                             Filtrar filtrar = new Filtrar(arreglo, llamada.getParametros(), linea, columna);
-                            arreglo = filtrar.getValor(tabla, salida);
+                            arreglo = filtrar.getValor(tabla, salida, dirActual);
                             tipo = filtrar.getTipo(tabla);
                         }
                         break;
@@ -108,7 +108,7 @@ public class LlamadaFunciones implements Expresion {
                             //retornar
                         } else {
                             Buscar buscar = new Buscar(arreglo, llamada.getParametros(), linea, columna);
-                            arreglo = buscar.getValor(tabla, salida);
+                            arreglo = buscar.getValor(tabla, salida, dirActual);
                             tipo = buscar.getTipo(tabla);
                         }
                         break;
@@ -118,7 +118,7 @@ public class LlamadaFunciones implements Expresion {
                             //retornar
                         } else {
                             Map map = new Map(arreglo, llamada.getParametros(), linea, columna);
-                            arreglo = map.getValor(tabla, salida);
+                            arreglo = map.getValor(tabla, salida, dirActual);
                             tipo = map.getTipo(tabla);
                         }
                         break;
@@ -128,7 +128,7 @@ public class LlamadaFunciones implements Expresion {
                             //retornar
                         } else {
                             Reduce reduce = new Reduce(arreglo, llamada.getParametros(), linea, columna);
-                            arreglo = reduce.getValor(tabla, salida);
+                            arreglo = reduce.getValor(tabla, salida, dirActual);
                             tipo = reduce.getTipo(tabla);
                         }
                         break;
@@ -138,7 +138,7 @@ public class LlamadaFunciones implements Expresion {
                             //retornar
                         } else {
                             Todos todos = new Todos(arreglo, llamada.getParametros(), linea, columna);
-                            arreglo = todos.getValor(tabla, salida);
+                            arreglo = todos.getValor(tabla, salida, dirActual);
                             tipo = todos.getTipo(tabla);
                         }
                         break;
@@ -148,7 +148,7 @@ public class LlamadaFunciones implements Expresion {
                             //retornar
                         } else {
                             Alguno alguno = new Alguno(arreglo, llamada.getParametros(), linea, columna);
-                            arreglo = alguno.getValor(tabla, salida);
+                            arreglo = alguno.getValor(tabla, salida, dirActual);
                             tipo = alguno.getTipo(tabla);
                         }
                         break;

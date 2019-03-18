@@ -46,9 +46,9 @@ public class SubSi implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
         if (!isSino) {
-            Object valorCondicion = condicion.getValor(tabla, salida);
+            Object valorCondicion = condicion.getValor(tabla, salida, dirActual);
             Object tipoCondicion = condicion.getTipo(tabla);
 
             if (tipoCondicion != null) {
@@ -69,7 +69,7 @@ public class SubSi implements Instruccion {
 
                                     }
                                 } else {
-                                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                                    Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel, dirActual);
 
                                     if (o != null) {
                                         if (o instanceof Literal || o instanceof Detener) {
@@ -82,7 +82,7 @@ public class SubSi implements Instruccion {
                                 if (bloque instanceof Retornar) {
                                     Retornar ret = (Retornar) bloque;
                                     if (fun) {
-                                        Object valor = ret.getValor(tabla, salida);
+                                        Object valor = ret.getValor(tabla, salida, dirActual);
                                         Tipo tipo = ret.getTipo(tabla);
 
                                         if (valor == null) {
@@ -122,7 +122,7 @@ public class SubSi implements Instruccion {
 
                         }
                     } else {
-                        Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                        Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel, dirActual);
 
                         if (o != null) {
                             if (o instanceof Literal || o instanceof Detener) {
@@ -135,7 +135,7 @@ public class SubSi implements Instruccion {
                     if (bloque instanceof Retornar) {
                         Retornar ret = (Retornar) bloque;
                         if (fun) {
-                            Object valor = ret.getValor(tabla, salida);
+                            Object valor = ret.getValor(tabla, salida, dirActual);
                             Tipo tipo = ret.getTipo(tabla);
 
                             if (valor == null) {

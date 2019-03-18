@@ -3,43 +3,46 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fs.ast.expresion;
+package fs.ast.expresion.nativas;
 
-import fs.ast.simbolos.Simbolo;
+import fs.ast.AST;
+import fs.ast.expresion.Expresion;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
+import gdato.LexicoGDato;
+import gdato.SintacticoGDato;
+import java.util.LinkedList;
 import javax.swing.JTextArea;
 
 /**
  *
  * @author oscar
  */
-public class Identificador implements Expresion {
-
-    private final String id;
+public class CrearArray implements Expresion{
+    private LexicoGDato lexicoGDato;
+    private SintacticoGDato sintacticoGDato;
+    
+    private final LinkedList<Expresion> parametros;
+    private Tipo tipo;
     private final int linea;
     private final int columna;
 
-    public Identificador(String id, int linea, int columna) {
-        this.id = id;
+    public CrearArray(LinkedList<Expresion> parametros, int linea, int columna) {
+        this.parametros = parametros;
+        this.tipo = null;
         this.linea = linea;
         this.columna = columna;
     }
-
+    
     @Override
     public Tipo getTipo(TablaSimbolos tabla) {
-        Simbolo s = tabla.getSimbolo(id);
-        return s != null ? s.getTipo() : null;
+        return tipo;
     }
 
     @Override
     public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
-        Simbolo s = tabla.getSimbolo(id);
-        if(s == null){
-            System.err.println("Error, variable \""+id+"\" no encontrada. Línea: "+linea);
-        }   
-        
-        return s != null ? s.getValor() : null;
+        System.out.println("la dir actual es ");
+        return null;
     }
 
     @Override
@@ -51,8 +54,5 @@ public class Identificador implements Expresion {
     public int getColumna() {
         return columna;
     }
-
-    public String getId() {
-        return id;
-    }
+    
 }

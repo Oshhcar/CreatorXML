@@ -43,7 +43,7 @@ public class Map implements Expresion {
     }
 
     @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
         if (array instanceof Arreglo) {
             if (parametros.size() == 1) {
                 Expresion ident = parametros.getFirst();
@@ -82,7 +82,7 @@ public class Map implements Expresion {
 
                                 LlamadaFuncion llamada = new LlamadaFuncion(id, parms, linea, columna);
                                 llamada.setMostrarError(false);
-                                Object ret = llamada.getValor(tabla, salida);
+                                Object ret = llamada.getValor(tabla, salida, dirActual);
                                 Tipo tipRet = llamada.getTipo(tabla);
 
                                 if (tipRet != null) {

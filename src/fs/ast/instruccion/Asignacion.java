@@ -43,11 +43,11 @@ public class Asignacion implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
         if (null != valor) {
             Simbolo s = tabla.getSimbolo(id);
             if (s != null) {
-                Object val = valor.getValor(tabla, salida);
+                Object val = valor.getValor(tabla, salida, dirActual);
                 Tipo tip = valor.getTipo(tabla);
                 if (tip != null) {
                     if (tip != Tipo.VAR) {
@@ -78,7 +78,7 @@ public class Asignacion implements Instruccion {
 
                                 Aritmetica operacion = new Aritmetica(exp1, exp2, op, linea, columna);
 
-                                Object valAsignar = operacion.getValor(tabla, salida);
+                                Object valAsignar = operacion.getValor(tabla, salida, dirActual);
                                 if (valAsignar != null) {
                                     s.setValor(valAsignar);
                                 }

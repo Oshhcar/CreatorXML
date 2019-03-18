@@ -34,8 +34,8 @@ public class Unario implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
-        Object valExp = exp.getValor(tabla, salida);
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
+        Object valExp = exp.getValor(tabla, salida, dirActual);
         if (valExp != null) {
             Tipo tipoExp = exp.getTipo(tabla);
             if (tipoExp != null) {
@@ -60,15 +60,15 @@ public class Unario implements Instruccion {
                     if (exp instanceof Identificador) {
                         Identificador id = (Identificador) exp;
                         Asignacion asigna = new Asignacion(id.getId(), "=", valor, linea, columna);
-                        return asigna.ejecutar(tabla, salida, fun, sel);
+                        return asigna.ejecutar(tabla, salida, fun, sel, dirActual);
                     } else if (exp instanceof AccesoArreglo) {
                         AccesoArreglo ar = (AccesoArreglo) exp;
                         AsignacionArreglo asigna = new AsignacionArreglo(ar.getId(), ar.getPosicion(), "=", valor, linea, columna);
-                        return asigna.ejecutar(tabla, salida, fun, sel);
+                        return asigna.ejecutar(tabla, salida, fun, sel, dirActual);
                     } else if (exp instanceof AccesoObjeto) {
                         AccesoObjeto obj = (AccesoObjeto) exp;
                         AsignacionObjeto asigna = new AsignacionObjeto(obj.getId(), obj.getClave(), obj.getPosicion(), "=", valor, linea, columna);
-                        return asigna.ejecutar(tabla, salida, fun, sel);
+                        return asigna.ejecutar(tabla, salida, fun, sel, dirActual);
                     } else {
                         if (operador == Operacion.Operador.AUMENTO) {
                             System.err.println("Error, se necesita de una variable para aumentar. Línea: " + linea);

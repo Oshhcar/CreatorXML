@@ -30,9 +30,9 @@ public class Logica extends Operacion implements Expresion {
     }
 
     @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
-        Object val1 = op1.getValor(tabla, salida);
-        Object val2 = op2 == null ? null : op2.getValor(tabla, salida);
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
+        Object val1 = op1.getValor(tabla, salida, dirActual);
+        Object val2 = op2 == null ? null : op2.getValor(tabla, salida, dirActual);
         Tipo tip1 = op1.getTipo(tabla);
         Tipo tip2 = op2 == null ? null : op2.getTipo(tabla);
         

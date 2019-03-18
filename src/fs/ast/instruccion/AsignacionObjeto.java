@@ -39,7 +39,7 @@ public class AsignacionObjeto extends Asignacion implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
         if (null != valor) {
             Simbolo s = tabla.getSimbolo(id);
             if (s != null) {
@@ -50,7 +50,7 @@ public class AsignacionObjeto extends Asignacion implements Instruccion {
                         Map<String, Object> objeto = (Map<String, Object>) s.getValor();
                         if (objeto != null) {
                             if (objeto.containsKey(clave)) {
-                                Object valorAsignar = valor.getValor(tabla, salida);
+                                Object valorAsignar = valor.getValor(tabla, salida, dirActual);
                                 Tipo tipoAsignar = valor.getTipo(tabla);
                                 if (tipoAsignar != null) {
                                     if (tipoAsignar != Tipo.VAR) {
@@ -98,13 +98,13 @@ public class AsignacionObjeto extends Asignacion implements Instruccion {
 
                                                     Aritmetica operacion = new Aritmetica(exp1, exp2, op, super.getLinea(), super.getColumna());
 
-                                                    Object valAsignar = operacion.getValor(tabla, salida);
+                                                    Object valAsignar = operacion.getValor(tabla, salida, dirActual);
                                                     if (valAsignar != null) {
                                                         objeto.replace(clave, valAsignar);
                                                     }
                                                 }
                                             } else {
-                                                Object valPosicion = posicion.getValor(tabla, salida);
+                                                Object valPosicion = posicion.getValor(tabla, salida, dirActual);
                                                 Tipo tipPosicion = posicion.getTipo(tabla);
 
                                                 if (valPosicion != null && tipPosicion != null) {
@@ -156,7 +156,7 @@ public class AsignacionObjeto extends Asignacion implements Instruccion {
 
                                                                     Aritmetica operacion = new Aritmetica(exp1, exp2, op, super.getLinea(), super.getColumna());
 
-                                                                    Object valAsignar = operacion.getValor(tabla, salida);
+                                                                    Object valAsignar = operacion.getValor(tabla, salida, dirActual);
                                                                     if (valAsignar != null) {
                                                                         arreglo.replace(pos, valAsignar);
                                                                     }

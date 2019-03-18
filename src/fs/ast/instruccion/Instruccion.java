@@ -14,5 +14,5 @@ import javax.swing.JTextArea;
  * @author oscar
  */
 public interface Instruccion extends NodoAST {
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel);
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual);
 }

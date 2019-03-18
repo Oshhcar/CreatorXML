@@ -54,7 +54,7 @@ public class Caso implements Instruccion {
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
         if (isContinuar()) {
             if (!isDefecto) {
                 tabla.add(new Simbolos());
@@ -63,7 +63,7 @@ public class Caso implements Instruccion {
                         if (bloque instanceof Detener) {
                             this.continuar = false;
                         } else {
-                            Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                            Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel, dirActual);
 
                             if (o != null) {
                                 if (o instanceof Detener) {
@@ -78,7 +78,7 @@ public class Caso implements Instruccion {
                         if (bloque instanceof Retornar) {
                             Retornar ret = (Retornar) bloque;
                             if (fun) {
-                                Object valor = ret.getValor(tabla, salida);
+                                Object valor = ret.getValor(tabla, salida, dirActual);
                                 Tipo tipo = ret.getTipo(tabla);
 
                                 if (valor == null) {
@@ -100,8 +100,8 @@ public class Caso implements Instruccion {
         } else {
             if (!isDefecto) {
                 if (expSwitch != null) {
-                    Object valExpSwitch = expSwitch.getValor(tabla, salida);
-                    Object valExpresion = expresion.getValor(tabla, salida);
+                    Object valExpSwitch = expSwitch.getValor(tabla, salida, dirActual);
+                    Object valExpresion = expresion.getValor(tabla, salida, dirActual);
                     Object tipExpSwitch = expSwitch.getTipo(tabla);
                     Object tipExpresion = expresion.getTipo(tabla);
 
@@ -116,7 +116,7 @@ public class Caso implements Instruccion {
                                         if (bloque instanceof Detener) {
                                             this.continuar = false;
                                         } else {
-                                            Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                                            Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel, dirActual);
 
                                             if (o != null) {
                                                 if (o instanceof Detener) {
@@ -131,7 +131,7 @@ public class Caso implements Instruccion {
                                         if (bloque instanceof Retornar) {
                                             Retornar ret = (Retornar) bloque;
                                             if (fun) {
-                                                Object valor = ret.getValor(tabla, salida);
+                                                Object valor = ret.getValor(tabla, salida, dirActual);
                                                 Tipo tipo = ret.getTipo(tabla);
 
                                                 if (valor == null) {
@@ -163,7 +163,7 @@ public class Caso implements Instruccion {
                     tabla.add(new Simbolos());
                     for (NodoAST bloque : bloques) {
                         if (bloque instanceof Instruccion) {
-                            Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel);
+                            Object o = ((Instruccion) bloque).ejecutar(tabla, salida, fun, sel, dirActual);
                             
                             if(o != null){
                                 if(o instanceof Literal){
@@ -175,7 +175,7 @@ public class Caso implements Instruccion {
                             if (bloque instanceof Retornar) {
                                 Retornar ret = (Retornar) bloque;
                                 if (fun) {
-                                    Object valor = ret.getValor(tabla, salida);
+                                    Object valor = ret.getValor(tabla, salida, dirActual);
                                     Tipo tipo = ret.getTipo(tabla);
 
                                     if (valor == null) {

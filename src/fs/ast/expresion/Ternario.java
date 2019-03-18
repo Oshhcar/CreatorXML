@@ -36,10 +36,10 @@ public class Ternario implements Expresion {
     }
 
     @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida) {
-        Object condicionVal = condicion.getValor(tabla, salida);
-        Object verdaderoVal = verdadero.getValor(tabla, salida);
-        Object falsoVal = falso.getValor(tabla, salida);
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
+        Object condicionVal = condicion.getValor(tabla, salida, dirActual);
+        Object verdaderoVal = verdadero.getValor(tabla, salida, dirActual);
+        Object falsoVal = falso.getValor(tabla, salida, dirActual);
 
         Tipo condicionTip = condicion.getTipo(tabla);
         Tipo verdaderoTip = condicion.getTipo(tabla);
