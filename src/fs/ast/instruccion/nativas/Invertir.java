@@ -46,6 +46,7 @@ public class Invertir implements Instruccion {
                         }
 
                         s.setValor(invertido);
+                        return invertido;
 
                     } else {
                         System.err.println("Error, arreglo \"" + id + "\" indefinido. Línea:" + linea);

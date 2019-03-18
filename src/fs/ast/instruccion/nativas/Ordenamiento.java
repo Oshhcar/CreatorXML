@@ -77,7 +77,7 @@ public class Ordenamiento implements Instruccion {
                                 i++;
                             }
                             s.setValor(sortedMap);
-
+                            return sortedMap;
                         } else if (exp0 instanceof Double) {
                             Map<Integer, Double> arregloInt = new HashMap<>();
 
@@ -108,6 +108,7 @@ public class Ordenamiento implements Instruccion {
                                 i++;
                             }
                             s.setValor(sortedMap);
+                            return sortedMap;
                         } else if (exp0 instanceof String) {
                             Map<Integer, String> arregloInt = new HashMap<>();
 
@@ -138,6 +139,7 @@ public class Ordenamiento implements Instruccion {
                                 i++;
                             }
                             s.setValor(sortedMap);
+                            return sortedMap;
                         } else {
                             System.err.println("Error, no se puede ordenar el arreglo. Línea: " + linea);
                         }

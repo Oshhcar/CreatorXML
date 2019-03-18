@@ -61,6 +61,9 @@ public class LlamadaFunciones implements Expresion {
                         }
                         Ordenamiento desc = new Ordenamiento(id, "desc", linea, columna);
                         arreglo = desc.ejecutar(tabla, salida, false, false, dirActual);
+                        if (arreglo != null) {
+                            tipo = Tipo.ARREGLO;
+                        }
                         break;
                     case "ascendente":
                         if (llamada.getParametros() != null) {
@@ -68,6 +71,9 @@ public class LlamadaFunciones implements Expresion {
                         }
                         Ordenamiento asc = new Ordenamiento(id, "asc", linea, columna);
                         arreglo = asc.ejecutar(tabla, salida, false, false, dirActual);
+                        if (arreglo != null) {
+                            tipo = Tipo.ARREGLO;
+                        }
                         break;
                     case "invertir":
                         if (llamada.getParametros() != null) {
@@ -75,6 +81,9 @@ public class LlamadaFunciones implements Expresion {
                         }
                         Invertir inv = new Invertir(id, linea, columna);
                         arreglo = inv.ejecutar(tabla, salida, false, false, dirActual);
+                        if(arreglo != null){
+                            tipo = Tipo.ARREGLO;
+                        }
                         break;
                     case "maximo":
                         if (llamada.getParametros() != null) {
