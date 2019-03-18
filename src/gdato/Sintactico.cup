@@ -1,0 +1,93 @@
+package gdato;
+
+import fs.ast.simbolos.Arreglo;
+import fs.ast.simbolos.Objeto;
+import java.util.Map;
+import java_cup.runtime.Symbol;
+
+parser code
+{:
+	private int contador = 0;
+	
+	private Map<Integer, Object> arreglo = new Arreglo();
+	
+	public Map<Integer, Object> getArreglo(){
+		return this.arreglo;
+	}
+	
+    @Override
+    public void syntax_error(Symbol s){
+        System.out.println("Error Sintactico en la Linea " + (s.right+1) +" Columna "+(s.left+1)+ ". Identificador " +s.value + " no reconocido." );
+    }
+
+    @Override
+    public void unrecovered_syntax_error(Symbol s){
+        System.out.println("Error Sintactico en la Linea " + (s.right+1)+ " Columna "+(s.left+1)+". Identificador " + s.value + " no reconocido.");
+		//report_fatal_error("Error sintactico: <"+s.value+">", cur_token);
+	}
+:}
+
+action code
+{:
+
+:}
+
+terminal String tstring, entero, decimal, identificador;
+terminal mayorque, menorque, diagonal;
+
+non terminal INICIO;
+non terminal Map<Integer, Object> LISTA;
+non terminal Map<Integer, Object> DATOS;
+non terminal Map<String, Object> ELEMENTOS;
+non terminal Object VALOR;
+
+start with INICIO;
+
+INICIO ::= LISTA:lista 
+		{:
+			arreglo = lista;
+            System.out.println("gdato OK");
+			
+		:};
+
+LISTA ::= menorque identificador mayorque DATOS:datos menorque diagonal identificador mayorque
+		{:
+			RESULT = datos;
+		:};
+
+DATOS ::= DATOS:datos menorque identificador:a mayorque ELEMENTOS:elementos menorque diagonal identificador mayorque 
+		{:
+			RESULT = datos;
+			RESULT.put(contador++, elementos);
+		:}
+		| menorque identificador:a mayorque ELEMENTOS:elementos menorque diagonal identificador mayorque 
+		{: 
+			RESULT = new Arreglo();
+			RESULT.put(contador++, elementos);
+		:};
+		
+		
+ELEMENTOS ::= ELEMENTOS:elementos menorque identificador:a mayorque VALOR:valor menorque diagonal identificador mayorque  
+			{:
+				RESULT = elementos;
+				RESULT.put(a, valor);
+				
+			:}
+			| menorque identificador:a mayorque VALOR:valor menorque diagonal identificador mayorque  
+			{: 
+				RESULT = new Objeto();
+				RESULT.put(a, valor);
+		
+			:};
+				
+
+VALOR ::= entero:a{:RESULT = new Integer(a);:}
+		| decimal:a{:RESULT = new Double(a);:}
+		| tstring:a{:RESULT = a;:};
+		
+		
+		
+		
+		
+		
+		
