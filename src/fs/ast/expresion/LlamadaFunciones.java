@@ -5,6 +5,7 @@
  */
 package fs.ast.expresion;
 
+import fs.ast.expresion.nativas.Buscar;
 import fs.ast.expresion.nativas.Filtrar;
 import fs.ast.expresion.nativas.Maximo;
 import fs.ast.expresion.nativas.Minimo;
@@ -73,6 +74,16 @@ public class LlamadaFunciones implements Expresion {
                             Filtrar filtrar = new Filtrar(arreglo, llamada.getParametros(), linea, columna);
                             arreglo = filtrar.getValor(tabla, salida);
                             tipo = filtrar.getTipo(tabla);
+                        }
+                        break;
+                    case "buscar":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Buscar buscar = new Buscar(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = buscar.getValor(tabla, salida);
+                            tipo = buscar.getTipo(tabla);
                         }
                         break;
                 }
