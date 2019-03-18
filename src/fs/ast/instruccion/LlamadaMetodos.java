@@ -6,8 +6,14 @@
 package fs.ast.instruccion;
 
 import fs.ast.expresion.Expresion;
+import fs.ast.expresion.nativas.Alguno;
+import fs.ast.expresion.nativas.Buscar;
+import fs.ast.expresion.nativas.Filtrar;
+import fs.ast.expresion.nativas.Map;
 import fs.ast.expresion.nativas.Maximo;
 import fs.ast.expresion.nativas.Minimo;
+import fs.ast.expresion.nativas.Reduce;
+import fs.ast.expresion.nativas.Todos;
 import fs.ast.instruccion.nativas.Invertir;
 import fs.ast.instruccion.nativas.Ordenamiento;
 import fs.ast.simbolos.Simbolo;
@@ -80,6 +86,62 @@ public class LlamadaMetodos implements Instruccion {
                         arreglo = minimo.getValor(tabla, salida);
                         System.out.println("el min es " + arreglo);
                         break;
+                    case "filtrar":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Filtrar filtrar = new Filtrar(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = filtrar.getValor(tabla, salida);
+                        }
+                        break;
+                    case "buscar":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Buscar buscar = new Buscar(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = buscar.getValor(tabla, salida);
+                        }
+                        break;
+                    case "map":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Map map = new Map(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = map.getValor(tabla, salida);
+                        }
+                        break;
+                    case "reduce":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Reduce reduce = new Reduce(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = reduce.getValor(tabla, salida);
+                        }
+                        break;
+                    case "todos":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Todos todos = new Todos(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = todos.getValor(tabla, salida);
+                        }
+                        break;
+                    case "alguno":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
+                            //retornar
+                        } else {
+                            Alguno alguno = new Alguno(arreglo, llamada.getParametros(), linea, columna);
+                            arreglo = alguno.getValor(tabla, salida);
+                        }
+                        break;
+                    default:
+                        System.err.println("Error, metodo nativo \"" + llamada.getId() + "\" no definida. Línea: " + linea);
                 }
 
             }

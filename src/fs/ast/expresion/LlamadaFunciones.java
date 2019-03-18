@@ -13,6 +13,8 @@ import fs.ast.expresion.nativas.Minimo;
 import fs.ast.expresion.nativas.Map;
 import fs.ast.expresion.nativas.Reduce;
 import fs.ast.expresion.nativas.Todos;
+import fs.ast.instruccion.nativas.Invertir;
+import fs.ast.instruccion.nativas.Ordenamiento;
 import fs.ast.simbolos.Simbolo;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
@@ -53,6 +55,27 @@ public class LlamadaFunciones implements Expresion {
                 LlamadaFuncion llamada = this.funciones.get(i);
 
                 switch (llamada.getId().toLowerCase()) {
+                    case "descendente":
+                        if (llamada.getParametros() != null) {
+                            System.err.println("Error, la funcion descendente no necesita parámetros. Linea: " + linea);
+                        }
+                        Ordenamiento desc = new Ordenamiento(id, "desc", linea, columna);
+                        arreglo = desc.ejecutar(tabla, salida, false, false);
+                        break;
+                    case "ascendente":
+                        if (llamada.getParametros() != null) {
+                            System.err.println("Error, la funcion ascendente no necesita parámetros. Linea: " + linea);
+                        }
+                        Ordenamiento asc = new Ordenamiento(id, "asc", linea, columna);
+                        arreglo = asc.ejecutar(tabla, salida, false, false);
+                        break;
+                    case "invertir":
+                        if (llamada.getParametros() != null) {
+                            System.err.println("Error, la funcion invertir no necesita parámetros. Linea: " + linea);
+                        }
+                        Invertir inv = new Invertir(id, linea, columna);
+                        arreglo = inv.ejecutar(tabla, salida, false, false);
+                        break;
                     case "maximo":
                         if (llamada.getParametros() != null) {
                             System.err.println("Error, la funcion maximo no necesita parámetros. Linea: " + linea);
@@ -108,7 +131,7 @@ public class LlamadaFunciones implements Expresion {
                             arreglo = reduce.getValor(tabla, salida);
                             tipo = reduce.getTipo(tabla);
                         }
-                    break;
+                        break;
                     case "todos":
                         if (llamada.getParametros() == null) {
                             System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
@@ -118,7 +141,7 @@ public class LlamadaFunciones implements Expresion {
                             arreglo = todos.getValor(tabla, salida);
                             tipo = todos.getTipo(tabla);
                         }
-                    break;
+                        break;
                     case "alguno":
                         if (llamada.getParametros() == null) {
                             System.err.println("Error, la funcion filtrar como parámetro el nombre de la funcion. Linea: " + linea);
@@ -128,7 +151,10 @@ public class LlamadaFunciones implements Expresion {
                             arreglo = alguno.getValor(tabla, salida);
                             tipo = alguno.getTipo(tabla);
                         }
-                    break;
+                        break;
+                    default:
+                        System.err.println("Error, funcion nativa \"" + llamada.getId() + "\" no definida. Línea: " + linea);
+
                 }
             }
             return arreglo;
