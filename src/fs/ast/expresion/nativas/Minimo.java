@@ -81,6 +81,34 @@ public class Minimo implements Expresion {
 
                         tipo = Tipo.DECIMAL;
                         return max;
+                    } else if (exp0 instanceof String) {
+                        boolean isBoleano = false;
+                        String max = (String) exp0;
+
+                        if (max.equals("verdadero") || max.equals("falso")) {
+                            isBoleano = true;
+                        }
+
+                        for (int i = 0; i < arreglo.size(); i++) {
+                            Object exp = arreglo.get(i);
+                            if (!(exp instanceof String)) {
+                                System.err.println("Error, los valores deben ser del mismo tipo para encontrar el máximo. Línea: " + linea);
+                                return null;
+                            } else {
+                                String tmp = (String) exp;
+                                if (tmp.compareTo(max) < 0) {
+                                    max = tmp;
+                                }
+
+                                isBoleano = isBoleano && (tmp.equals("verdadero") || tmp.equals("falso"));
+                            }
+                        }
+                        if (!isBoleano) {
+                            tipo = Tipo.CADENA;
+                        } else {
+                            tipo = Tipo.BOOLEANO;
+                        }
+                        return max;
                     } else {
                         System.err.println("Error, el arreglo debe ser númerico. Línea: " + linea);
                     }
