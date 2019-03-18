@@ -38,31 +38,34 @@ public class Ternario implements Expresion {
     @Override
     public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
         Object condicionVal = condicion.getValor(tabla, salida, dirActual);
-        Object verdaderoVal = verdadero.getValor(tabla, salida, dirActual);
-        Object falsoVal = falso.getValor(tabla, salida, dirActual);
-
-        Tipo condicionTip = condicion.getTipo(tabla);
-        Tipo verdaderoTip = condicion.getTipo(tabla);
-        Tipo falsoTip = condicion.getTipo(tabla);
-
-        if (condicionTip != null) {
-            if (condicionTip == Tipo.BOOLEANO) {
-                if ("verdadero".equals(condicionVal.toString())) {
-                    if (verdaderoTip != null) {
-                        tipo = verdaderoTip;
-                        return verdaderoVal;
+        if (condicionVal != null) {
+            Tipo condicionTip = condicion.getTipo(tabla);
+            if (condicionTip != null) {
+                if (condicionTip == Tipo.BOOLEANO) {
+                    if ("verdadero".equals(condicionVal.toString())) {
+                        Object verdaderoVal = verdadero.getValor(tabla, salida, dirActual);
+                        if (verdaderoVal != null) {
+                            Tipo verdaderoTip = verdadero.getTipo(tabla);
+                            if (verdaderoTip != null) {
+                                tipo = verdaderoTip;
+                                return verdaderoVal;
+                            }
+                        }
+                    } else {
+                        Object falsoVal = falso.getValor(tabla, salida, dirActual);
+                        if (falsoVal != null) {
+                            Tipo falsoTip = falso.getTipo(tabla);
+                            if (falsoTip != null) {
+                                tipo = falsoTip;
+                                return falsoVal;
+                            }
+                        }
                     }
                 } else {
-                    if (falsoTip != null) {
-                        tipo = falsoTip;
-                        return falsoVal;
-                    }
+                    System.err.println("Error en op ternario, la condicion debe ser booleana. Linea:" + linea);
                 }
-            } else {
-                System.err.println("Error en op ternario, la condicion debe ser booleana. Linea:" + linea);
             }
         }
-
         return null;
     }
 
