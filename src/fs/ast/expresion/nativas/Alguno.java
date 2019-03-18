@@ -72,6 +72,7 @@ public class Alguno implements Expresion{
                                     tipExp = Tipo.ARREGLO;
                                 }
                                 Literal lit = new Literal(tipExp, exp, linea, columna);
+                                lit.setSetearValor(false);
                                 LinkedList<Expresion> parms = new LinkedList<>();
                                 parms.add(lit);
 

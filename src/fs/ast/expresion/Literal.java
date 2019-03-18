@@ -21,12 +21,14 @@ public class Literal implements Expresion {
 
     private final Tipo tipo;
     private final Object valor;
+    private boolean setearValor;
     private final int linea;
     private final int columna;
 
     public Literal(Tipo tipo, Object valor, int linea, int columna) {
         this.tipo = tipo;
         this.valor = valor;
+        this.setearValor = true;
         this.linea = linea;
         this.columna = columna;
     }
@@ -40,6 +42,9 @@ public class Literal implements Expresion {
     public Object getValor(TablaSimbolos tabla, JTextArea salida) {
         switch (tipo) {
             case ARREGLO:
+                if(!setearValor){
+                    return valor;
+                }
                 if (valor != null) {
                     LinkedList<Expresion> arrActual = (LinkedList<Expresion>) valor;
                     Map<Integer, Object> valAsignar = new Arreglo();
@@ -66,6 +71,9 @@ public class Literal implements Expresion {
                 }
                 return new Arreglo();
             case OBJETO:
+                if(!setearValor){
+                    return valor;
+                }
                 if (valor != null) {
                     Map<String, Expresion> actual = (Map<String, Expresion>) valor;
                     Map<String, Object> valores = new Objeto();
@@ -104,6 +112,13 @@ public class Literal implements Expresion {
     @Override
     public int getColumna() {
         return columna;
+    }
+
+    /**
+     * @param setearValor the setearValor to set
+     */
+    public void setSetearValor(boolean setearValor) {
+        this.setearValor = setearValor;
     }
 
 }

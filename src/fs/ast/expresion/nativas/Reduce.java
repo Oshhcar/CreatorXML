@@ -102,7 +102,9 @@ public class Reduce implements Expresion {
                                     tipExp = Tipo.ARREGLO;
                                 }
                                 Literal total = new Literal(tipo, reduce, linea, columna);
+                                total.setSetearValor(false);
                                 Literal lit = new Literal(tipExp, exp, linea, columna);
+                                lit.setSetearValor(false);
                                 LinkedList<Expresion> parms = new LinkedList<>();
                                 parms.add(total);
                                 parms.add(lit);
