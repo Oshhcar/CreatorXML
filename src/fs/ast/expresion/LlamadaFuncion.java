@@ -129,6 +129,8 @@ public class LlamadaFuncion implements Expresion {
             }
             tabla.pollLast();
             System.err.println("Error, la funcion \"" + id + "\" no retorna valor. Línea: " + linea);
+        } else {
+            System.err.println("Error, la funcion \"" + id + "\" no está declarada. Línea: " + linea);
         }
         return null;
     }

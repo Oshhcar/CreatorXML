@@ -54,7 +54,7 @@ terminal igual, masigual, menosigual, porigual, diagonaligual;
 terminal var_, imprimir_, importar_, detener_, retornar_, si_, sino_, selecciona_, caso_, defecto_, funcion_;
 
 non terminal INICIO;
-non terminal IMPORTAR;
+non terminal Importar IMPORTAR;
 
 non terminal LinkedList<NodoAST> INSTRUCCIONES;
 non terminal NodoAST INSTRUCCION;
@@ -115,7 +115,7 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b{:RESULT = a; RESULT.add(b);:}
 INSTRUCCION ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 				|ASIGNACION:a puntoycoma{:RESULT = a;:}
 				|IMPRIMIR:a puntoycoma{:RESULT = a;:}
-				|IMPORTAR:a puntoycoma{::}
+				|IMPORTAR:a puntoycoma{:RESULT = a;:}
 				|SI:a {:RESULT = a;:}
 				|SELECCIONA:a {:RESULT = a;:}
 				|FUNCION:a {:RESULT = a;:}
@@ -152,8 +152,8 @@ OBJS ::= OBJS:a coma identificador:b dospuntos E:c{:RESULT = a; RESULT.put(b, c)
 IMPRIMIR ::= imprimir_:x parIzquierda parDerecha{:RESULT = new Imprimir(null, xleft+1, xright+1);:}
 			|imprimir_:x parIzquierda E:a parDerecha{:RESULT = new Imprimir(a, xleft+1, xright+1);:};
 
-IMPORTAR ::= importar_ parIzquierda parDerecha{::}
-			|importar_ parIzquierda E:a parDerecha{::};
+IMPORTAR ::= importar_:x parIzquierda parDerecha{:RESULT = new Importar(xleft+1, xright+1);:}
+			|importar_:x parIzquierda E:a parDerecha{:RESULT = new Importar(a, xleft+1, xright+1);:};
 
 BLOQUES ::= BLOQUES:a BLOQUE:b {:RESULT = a; RESULT.add(b);:}
 			|BLOQUE:a {:RESULT = new LinkedList<>(); RESULT.add(a);:};
@@ -162,7 +162,6 @@ BLOQUES ::= BLOQUES:a BLOQUE:b {:RESULT = a; RESULT.add(b);:}
 BLOQUE ::= DECLARACION:a puntoycoma{:RESULT = a;:}
 		|ASIGNACION:a puntoycoma{:RESULT = a;:}
 		|IMPRIMIR:a puntoycoma{:RESULT = a;:}
-		|IMPORTAR:a puntoycoma{::}
 		| detener_:x puntoycoma{:RESULT = new Detener(xleft+1, xright+1);:}
 		| retornar_:x E:a puntoycoma{:RESULT = new Retornar(a, xleft+1, xright+1);:}
 		| retornar_:x puntoycoma {:RESULT = new Retornar(xleft+1, xright+1);:}

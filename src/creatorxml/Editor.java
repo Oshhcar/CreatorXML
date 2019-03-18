@@ -937,7 +937,8 @@ public class Editor extends javax.swing.JFrame {
             }
 
             String name = a.getName().replaceAll("\\.([a-zA-ZñÑ]+)", "");
-
+            
+            
             //lexicoGenericxml = new genericxml.Lexico(new BufferedReader(new StringReader(entrada)));
             //sintacticoGenericxml = new genericxml.Sintactico(lexicoGenericxml);
             
@@ -966,7 +967,7 @@ public class Editor extends javax.swing.JFrame {
                 ast = sintacticoFs.getAST();
                 
                 if(ast != null) {
-                    ast.ejecutar(this.jTextArea1);
+                    ast.ejecutar(this.jTextArea1, text.getName());
                     this.jTextArea1.append("-------------------------------------------------------------\n");
 
                 } else {

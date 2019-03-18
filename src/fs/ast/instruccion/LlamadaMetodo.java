@@ -106,6 +106,9 @@ public class LlamadaMetodo implements Instruccion {
                 }
             }
             tabla.pollLast();
+        } else {
+            System.err.println("Error, el método \"" + id + "\" no está declarado. Línea: " + linea);
+
         }
         return null;
     }
