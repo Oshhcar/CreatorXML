@@ -39,7 +39,6 @@ public class AST {
             if (nodo instanceof Instruccion) {
                 if (nodo instanceof Importar) {
                     Importar imp = (Importar) nodo;
-                    imp.setDirActual(dirActual);
                     imp.ejecutar(global, salida, false, false, dirActual);
                 }
             }

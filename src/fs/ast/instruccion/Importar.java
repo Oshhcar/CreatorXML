@@ -28,20 +28,17 @@ public class Importar implements Instruccion {
     private SintacticoFs sintacticoFs;
 
     private final Expresion ruta;
-    private String dirActual;
     private final int linea;
     private final int columna;
 
     public Importar(Expresion ruta, int linea, int columna) {
         this.ruta = ruta;
-        this.dirActual = null;
         this.linea = linea;
         this.columna = columna;
     }
 
     public Importar(int linea, int columna) {
         this.ruta = null;
-        this.dirActual = null;
         this.linea = linea;
         this.columna = columna;
     }
@@ -52,9 +49,9 @@ public class Importar implements Instruccion {
             if (ruta != null) {
                 Object valRuta = ruta.getValor(tabla, salida, dirActual);
                 if (valRuta != null) {
-                    String rutaImport = valRuta.toString();
                     Tipo tipRuta = ruta.getTipo(tabla);
                     if (tipRuta == Tipo.CADENA) {
+                        String rutaImport = valRuta.toString();
                         String ext = rutaImport.substring(rutaImport.lastIndexOf('.'));
 
                         if (ext.toLowerCase().equals(".fs")) {
@@ -104,7 +101,6 @@ public class Importar implements Instruccion {
                                             if (nodo instanceof Instruccion) {
                                                 if (nodo instanceof Importar) {
                                                     Importar imp = (Importar) nodo;
-                                                    imp.setDirActual(dirActual);
                                                     imp.ejecutar(tabla, salida, false, false, dirActual);
                                                 }
                                             }
@@ -145,12 +141,4 @@ public class Importar implements Instruccion {
     public int getColumna() {
         return columna;
     }
-
-    /**
-     * @param dirActual the dirActual to set
-     */
-    public void setDirActual(String dirActual) {
-        this.dirActual = dirActual;
-    }
-
 }
