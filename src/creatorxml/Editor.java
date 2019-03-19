@@ -939,40 +939,40 @@ public class Editor extends javax.swing.JFrame {
             String name = a.getName().replaceAll("\\.([a-zA-ZñÑ]+)", "");
             
             
-            //lexicoGenericxml = new genericxml.Lexico(new BufferedReader(new StringReader(entrada)));
-            //sintacticoGenericxml = new genericxml.Sintactico(lexicoGenericxml);
+            lexicoGenericxml = new genericxml.Lexico(new BufferedReader(new StringReader(entrada)));
+            sintacticoGenericxml = new genericxml.Sintactico(lexicoGenericxml);
             
-            lexicoFs = new LexicoFs(new BufferedReader(new StringReader(entrada)));
-            sintacticoFs = new SintacticoFs(lexicoFs);
+//            lexicoFs = new LexicoFs(new BufferedReader(new StringReader(entrada)));
+//            sintacticoFs = new SintacticoFs(lexicoFs);
             
             Arbol arbol = null;
             AST ast = null;
             try {
-                //sintacticoGenericxml.parse();
-                //arbol = sintacticoGenericxml.getArbol();
+                sintacticoGenericxml.parse();
+                arbol = sintacticoGenericxml.getArbol();
 
-//                if (arbol != null) {
-//                    if (arbol.getEtiquetas() == null && arbol.getImports() == null) {
-//                        System.out.println("Error al generar el arbol.");
-//                    } else {
-//                        //arbol.traducir(name);
-//                        //arbol.recorrer();
-//                        System.out.println("" + arbol.traducir(name));
-//                    }
-//                } else {
-//                    System.out.println("No se pudo generar el arbol");
-//                }
-
-                sintacticoFs.parse();
-                ast = sintacticoFs.getAST();
-                
-                if(ast != null) {
-                    ast.ejecutar(this.jTextArea1, text.getName());
-                    this.jTextArea1.append("-------------------------------------------------------------\n");
-
+                if (arbol != null) {
+                    if (arbol.getEtiquetas() == null && arbol.getImports() == null) {
+                        System.out.println("Error al generar el arbol.");
+                    } else {
+                        //arbol.traducir(name);
+                        //arbol.recorrer();
+                        System.out.println("" + arbol.traducir(name, text.getName()));
+                    }
                 } else {
-                    System.out.println("No se genero el ast.");
+                    System.out.println("No se pudo generar el arbol");
                 }
+
+//                sintacticoFs.parse();
+//                ast = sintacticoFs.getAST();
+//                
+//                if(ast != null) {
+//                    ast.ejecutar(this.jTextArea1, text.getName());
+//                    this.jTextArea1.append("-------------------------------------------------------------\n");
+//
+//                } else {
+//                    System.out.println("No se genero el ast.");
+//                }
                 
             } catch (Exception ex) {
                 System.out.println("Exception " + ex);

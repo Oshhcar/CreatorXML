@@ -5,6 +5,7 @@
  */
 package genericxml;
 
+import fs.ast.simbolos.Objeto;
 import java.util.LinkedList;
 
 /**
@@ -21,12 +22,12 @@ public class Arbol {
         this.etiquetas = etiquetas;
     }
 
-    public String traducir(String name){
+    public String traducir(String name, String rutaActual){
         String cad = "";
         
         if(imports != null){
             for(Etiqueta i: imports){
-                cad = cad + i.traducir(null, name, "", "");
+                cad = cad + i.traducir(null, name, "", "", rutaActual, 1);
             }
         }
         
@@ -34,11 +35,23 @@ public class Arbol {
         
         if(etiquetas != null){
             for(Etiqueta e: etiquetas){
-                cad = cad + e.traducir(null, name, "", "");
+                cad = cad + e.traducir(null, name, "", "", rutaActual, 1);
             }
         }
         
         return cad;
+    }
+    
+    public LinkedList<Objeto> obtenerArchivo(String name, String rutaActual){
+        LinkedList<Objeto> archivo = new LinkedList<>();
+        
+        if(etiquetas != null){
+            for(Etiqueta e: etiquetas){
+                archivo.add((Objeto) e.traducir(null, name, "", "", rutaActual, 2));
+            }
+        }
+        
+        return archivo;
     }
     
     public void recorrer(){
