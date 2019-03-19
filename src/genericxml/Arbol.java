@@ -24,6 +24,10 @@ public class Arbol {
 
     public String traducir(String name, String rutaActual){
         String cad = "";
+        name = "_" + name;
+        //name = "";
+        
+        LinkedList<Objeto> archivo = new LinkedList<>();
         
         if(imports != null){
             for(Etiqueta i: imports){
@@ -35,6 +39,7 @@ public class Arbol {
         
         if(etiquetas != null){
             for(Etiqueta e: etiquetas){
+                
                 cad = cad + e.traducir(null, name, "", "", "", rutaActual, 1);
             }
         }

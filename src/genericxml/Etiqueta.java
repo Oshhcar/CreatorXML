@@ -5,7 +5,7 @@
  */
 package genericxml;
 
-import fs.ast.simbolos.Objeto;
+import fs.ast.simbolos.Arreglo;
 import java.util.LinkedList;
 
 /**
@@ -26,7 +26,8 @@ public class Etiqueta {
             public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
                 if (e.getPlano() != null) {
-                    cad = "Importar(\"" + e.getPlano().replaceAll(" ", "") + "\");\n";
+                    String rutaImport = e.getPlano().replaceAll(" ", "");
+                    cad = "Importar(\"" + e.getPlano() + "\");\n";
                 } else {
                     System.out.println("Error! importar");
                 }
@@ -50,44 +51,63 @@ public class Etiqueta {
                         for (Elemento elemento : e.getElementos()) {
                             if (null == elemento.getTipo()) {
                                 System.out.println("Error! Elemento incorrecto en ventana");
-                            } else switch (elemento.getTipo()) {
-                                case ID:
-                                    id = elemento.getValor().toString();
-                                    break;
-                                case TIPO:
-                                    tipo = elemento.getValor().toString();
-                                    break;
-                                case COLOR:
-                                    color = elemento.getValor().toString();
-                                    break;
-                                case ALTO:
-                                    alto = new Integer(elemento.getValor().toString());
-                                    break;
-                                case ANCHO:
-                                    ancho = new Integer(elemento.getValor().toString());
-                                    break;
-                                case ACCIONINICIAL:
-                                    accioninicial = elemento.getValor().toString();
-                                    break;
-                                case ACCIONFINAL:
-                                    accionfinal = elemento.getValor().toString();
-                                    break;
-                                default:
-                                    System.out.println("Error! Elemento incorrecto en ventana");
-                                    break;
+                            } else {
+                                switch (elemento.getTipo()) {
+                                    case ID:
+                                        id = elemento.getValor().toString();
+                                        break;
+                                    case TIPO:
+                                        tipo = elemento.getValor().toString();
+                                        break;
+                                    case COLOR:
+                                        color = elemento.getValor().toString();
+                                        break;
+                                    case ALTO:
+                                        alto = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case ANCHO:
+                                        ancho = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case ACCIONINICIAL:
+                                        accioninicial = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                        break;
+                                    case ACCIONFINAL:
+                                        accionfinal = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                        break;
+                                    default:
+                                        System.out.println("Error! Elemento incorrecto en ventana");
+                                        break;
+                                }
                             }
                         }
 
                         if (id != null && tipo != null) {
-                            cad = "Var " + id + "_" + name + " = CrearVentana(\"" + color + "\", "
-                                    + alto + ", " + ancho + ");\n";
+                            cad = "Var " + id + name + " = CrearVentana(\"" + color + "\", "
+                                    + alto + ", " + ancho + ");\n\n";
 
                             if (e.getEtiquetas() != null) {
                                 for (Etiqueta et : e.getEtiquetas()) {
-                                    cad = cad + et.traducir(e, name, id + "_" + name, color, ventana, rutaActual, t);
+                                    cad = cad + et.traducir(e, name, id + name, color, id, rutaActual, t);
                                 }
                             }
-                            cad = cad + "\n";
+
+                            if (accioninicial != null) {
+                                cad += id + name + ".AlCargar(" + accioninicial + ");\n";
+                            }
+
+                            if (accionfinal != null) {
+                                cad += id + name + ".AlCargar(" + accionfinal + ");\n";
+                            }
+
+                            //imports.
+                            cad += "\n";
+
+                            cad = cad + "funcion Guardar_" + id + name + "(){\n\t" + id + name
+                                    + ".crearArrayDesdeArchivo();\n}\n\n";
+
+                            cad = cad + "funcion CargarVentana_" + id + name + "(){\n\t" + id + name
+                                    + ".AlCargar();\n}\n\n";
+
                         } else {
                             System.out.println("Error! Faltan elementos ventana");
                         }
@@ -120,34 +140,45 @@ public class Etiqueta {
 
                         if (e.getElementos() != null) {
                             for (Elemento elemento : e.getElementos()) {
-                                if (elemento.getTipo() == Elemento.Tipo.ID) {
-                                    id = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.X) {
-                                    x = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.Y) {
-                                    y = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
-                                    alto = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
-                                    ancho = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
-                                    color = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.BORDE) {
-                                    borde = Boolean.valueOf(elemento.getValor().toString());
-                                } else {
+                                if (null == elemento.getTipo()) {
                                     System.out.println("Error! Elemento incorrecto en contenedor");
+                                } else switch (elemento.getTipo()) {
+                                    case ID:
+                                        id = elemento.getValor().toString();
+                                        break;
+                                    case X:
+                                        x = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case Y:
+                                        y = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case ALTO:
+                                        alto = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case ANCHO:
+                                        ancho = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case COLOR:
+                                        color = elemento.getValor().toString();
+                                        break;
+                                    case BORDE:
+                                        borde = Boolean.valueOf(elemento.getValor().toString());
+                                        break;
+                                    default:
+                                        System.out.println("Error! Elemento incorrecto en contenedor");
+                                        break;
                                 }
                             }
 
                             if (id != null && x != null && y != null) {
                                 String b = (borde) ? "verdadero" : "falso";
 
-                                cad = "Var " + id + "_" + name + " = " + padre + ".CrearContenedor(" + alto + ", " + ancho + ", \""
+                                cad = "Var " + id + name + " = " + padre + ".CrearContenedor(" + alto + ", " + ancho + ", \""
                                         + color + "\", " + b + ", " + x + ", " + y + ");\n";
 
                                 if (e.getEtiquetas() != null) {
                                     for (Etiqueta et : e.getEtiquetas()) {
-                                        cad = cad + et.traducir(e, name, id + "_" + name, color, ventana, rutaActual, t);
+                                        cad = cad + et.traducir(e, name, id + name, color, ventana, rutaActual, t);
                                     }
                                 }
                                 cad = cad + "\n";
@@ -188,24 +219,36 @@ public class Etiqueta {
 
                         if (e.getElementos() != null) {
                             for (Elemento elemento : e.getElementos()) {
-                                if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
-                                    nombre = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.X) {
-                                    x = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.Y) {
-                                    y = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.FUENTE) {
-                                    fuente = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.TAM) {
-                                    tam = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
-                                    color = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.NEGRITA) {
-                                    negrita = Boolean.valueOf(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.CURSIVA) {
-                                    cursiva = Boolean.valueOf(elemento.getValor().toString());
-                                } else {
+                                if (null == elemento.getTipo()) {
                                     System.out.println("Error! Elemento incorrecto en texto");
+                                } else switch (elemento.getTipo()) {
+                                    case NOMBRE:
+                                        nombre = elemento.getValor().toString();
+                                        break;
+                                    case X:
+                                        x = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case Y:
+                                        y = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case FUENTE:
+                                        fuente = elemento.getValor().toString();
+                                        break;
+                                    case TAM:
+                                        tam = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case COLOR:
+                                        color = elemento.getValor().toString();
+                                        break;
+                                    case NEGRITA:
+                                        negrita = Boolean.valueOf(elemento.getValor().toString());
+                                        break;
+                                    case CURSIVA:
+                                        cursiva = Boolean.valueOf(elemento.getValor().toString());
+                                        break;
+                                    default:
+                                        System.out.println("Error! Elemento incorrecto en texto");
+                                        break;
                                 }
                             }
 
@@ -261,36 +304,54 @@ public class Etiqueta {
 
                         if (e.getElementos() != null) {
                             for (Elemento elemento : e.getElementos()) {
-                                if (elemento.getTipo() == Elemento.Tipo.TIPO) {
-                                    tipo = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
-                                    nombre = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.X) {
-                                    x = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.Y) {
-                                    y = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
-                                    alto = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
-                                    ancho = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.FUENTE) {
-                                    fuente = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.TAM) {
-                                    tam = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
-                                    color = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.NEGRITA) {
-                                    negrita = Boolean.valueOf(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.CURSIVA) {
-                                    cursiva = Boolean.valueOf(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.MAXIMO) {
-                                    maximo = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.MINIMO) {
-                                    minimo = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.ACCION) {
-                                    accion = elemento.getValor().toString();
-                                } else {
+                                if (null == elemento.getTipo()) {
                                     System.out.println("Error! Elemento incorrecto en texto");
+                                } else switch (elemento.getTipo()) {
+                                    case TIPO:
+                                        tipo = elemento.getValor().toString();
+                                        break;
+                                    case NOMBRE:
+                                        nombre = elemento.getValor().toString();
+                                        break;
+                                    case X:
+                                        x = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case Y:
+                                        y = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case ALTO:
+                                        alto = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case ANCHO:
+                                        ancho = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case FUENTE:
+                                        fuente = elemento.getValor().toString();
+                                        break;
+                                    case TAM:
+                                        tam = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case COLOR:
+                                        color = elemento.getValor().toString();
+                                        break;
+                                    case NEGRITA:
+                                        negrita = Boolean.valueOf(elemento.getValor().toString());
+                                        break;
+                                    case CURSIVA:
+                                        cursiva = Boolean.valueOf(elemento.getValor().toString());
+                                        break;
+                                    case MAXIMO:
+                                        maximo = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case MINIMO:
+                                        minimo = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case ACCION:
+                                        accion = elemento.getValor().toString();
+                                        break;
+                                    default:
+                                        System.out.println("Error! Elemento incorrecto en texto");
+                                        break;
                                 }
                             }
 
@@ -522,12 +583,12 @@ public class Etiqueta {
                         String nombre = null;
                         Integer x = null;
                         Integer y = null;
-                        
+
                         int alto = 500;
                         int ancho = 500;
                         boolean auto_reproduccion = false;
-                        
-                        if  (e.getElementos() != null) {
+
+                        if (e.getElementos() != null) {
                             for (Elemento elemento : e.getElementos()) {
                                 if (elemento.getTipo() == Elemento.Tipo.PATH) {
                                     path = elemento.getValor().toString();
@@ -549,17 +610,17 @@ public class Etiqueta {
                                     System.out.println("Error! Elemento incorrecto en texto");
                                 }
                             }
-                            
-                            if (path != null && nombre!= null && tipo != null && x != null && y != null) {
-                                String auto = auto_reproduccion? "verdadero":"falso";
+
+                            if (path != null && nombre != null && tipo != null && x != null && y != null) {
+                                String auto = auto_reproduccion ? "verdadero" : "falso";
                                 if (tipo.toLowerCase().equals("imagen")) {
-                                    cad = padre + ".CrearImagen(\"" + path + "\", " + x + ", " + y + ", " 
+                                    cad = padre + ".CrearImagen(\"" + path + "\", " + x + ", " + y + ", "
                                             + auto + ", " + alto + ", " + ancho + ");\n";
                                 } else if (tipo.toLowerCase().equals("musica") || tipo.toLowerCase().equals("música")) {
-                                    cad = padre + ".CrearReproductor(\"" + path + "\", " + x + ", " + y + ", " 
+                                    cad = padre + ".CrearReproductor(\"" + path + "\", " + x + ", " + y + ", "
                                             + auto + ", " + alto + ", " + ancho + ");\n";
                                 } else if (tipo.toLowerCase().equals("video")) {
-                                    cad = padre + ".CrearVideo(\"" + path + "\", " + x + ", " + y + ", " 
+                                    cad = padre + ".CrearVideo(\"" + path + "\", " + x + ", " + y + ", "
                                             + auto + ", " + alto + ", " + ancho + ");\n";
                                 } else {
                                     System.out.println("Error! Tipo incorrecto en multimedia. Línea:" + e.getLinea());
@@ -567,7 +628,7 @@ public class Etiqueta {
                             } else {
                                 System.out.println("Error! Multimedia sin elementos obligatorios Línea:" + e.getLinea());
                             }
-                            
+
                         } else {
                             System.out.println("Error! Multimedia sin elementos Linea:" + e.getLinea());
                         }
@@ -605,28 +666,42 @@ public class Etiqueta {
 
                         if (e.getElementos() != null) {
                             for (Elemento elemento : e.getElementos()) {
-                                if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
-                                    nombre = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.X) {
-                                    x = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.Y) {
-                                    y = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.FUENTE) {
-                                    fuente = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.TAM) {
-                                    tam = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
-                                    color = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
-                                    alto = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
-                                    ancho = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.REFERENCIA) {
-                                    referencia = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.ACCION) {
-                                    accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
-                                } else {
+                                if (null == elemento.getTipo()) {
                                     System.out.println("Error! Elemento incorrecto en boton. Línea:" + e.getLinea());
+                                } else switch (elemento.getTipo()) {
+                                    case NOMBRE:
+                                        nombre = elemento.getValor().toString();
+                                        break;
+                                    case X:
+                                        x = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case Y:
+                                        y = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case FUENTE:
+                                        fuente = elemento.getValor().toString();
+                                        break;
+                                    case TAM:
+                                        tam = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case COLOR:
+                                        color = elemento.getValor().toString();
+                                        break;
+                                    case ALTO:
+                                        alto = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case ANCHO:
+                                        ancho = new Integer(elemento.getValor().toString());
+                                        break;
+                                    case REFERENCIA:
+                                        referencia = elemento.getValor().toString();
+                                        break;
+                                    case ACCION:
+                                        accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                        break;
+                                    default:
+                                        System.out.println("Error! Elemento incorrecto en boton. Línea:" + e.getLinea());
+                                        break;
                                 }
                             }
                         }
@@ -637,28 +712,42 @@ public class Etiqueta {
                                     plano = et.getPlano();
                                     if (et.getElementos() != null) {
                                         for (Elemento elemento : et.getElementos()) {
-                                            if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
-                                                nombre = elemento.getValor().toString();
-                                            } else if (elemento.getTipo() == Elemento.Tipo.X) {
-                                                x = new Integer(elemento.getValor().toString());
-                                            } else if (elemento.getTipo() == Elemento.Tipo.Y) {
-                                                y = new Integer(elemento.getValor().toString());
-                                            } else if (elemento.getTipo() == Elemento.Tipo.FUENTE) {
-                                                fuente = elemento.getValor().toString();
-                                            } else if (elemento.getTipo() == Elemento.Tipo.TAM) {
-                                                tam = new Integer(elemento.getValor().toString());
-                                            } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
-                                                color = elemento.getValor().toString();
-                                            } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
-                                                alto = new Integer(elemento.getValor().toString());
-                                            } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
-                                                ancho = new Integer(elemento.getValor().toString());
-                                            } else if (elemento.getTipo() == Elemento.Tipo.REFERENCIA) {
-                                                referencia = elemento.getValor().toString();
-                                            } else if (elemento.getTipo() == Elemento.Tipo.ACCION) {
-                                                accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
-                                            } else {
+                                            if (null == elemento.getTipo()) {
                                                 System.out.println("Error! Elemento incorrecto en texto. Línea:" + et.getLinea());
+                                            } else switch (elemento.getTipo()) {
+                                                case NOMBRE:
+                                                    nombre = elemento.getValor().toString();
+                                                    break;
+                                                case X:
+                                                    x = new Integer(elemento.getValor().toString());
+                                                    break;
+                                                case Y:
+                                                    y = new Integer(elemento.getValor().toString());
+                                                    break;
+                                                case FUENTE:
+                                                    fuente = elemento.getValor().toString();
+                                                    break;
+                                                case TAM:
+                                                    tam = new Integer(elemento.getValor().toString());
+                                                    break;
+                                                case COLOR:
+                                                    color = elemento.getValor().toString();
+                                                    break;
+                                                case ALTO:
+                                                    alto = new Integer(elemento.getValor().toString());
+                                                    break;
+                                                case ANCHO:
+                                                    ancho = new Integer(elemento.getValor().toString());
+                                                    break;
+                                                case REFERENCIA:
+                                                    referencia = elemento.getValor().toString();
+                                                    break;
+                                                case ACCION:
+                                                    accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                                    break;
+                                                default:
+                                                    System.out.println("Error! Elemento incorrecto en texto. Línea:" + et.getLinea());
+                                                    break;
                                             }
                                         }
                                     }
@@ -675,12 +764,12 @@ public class Etiqueta {
                         if (nombre != null && x != null && y != null) {
                             plano = plano == null ? "" : plano;
                             referencia = referencia == null ? "nulo" : "CargarVentana_" + referencia + "()";
-                            cad = "Var " + nombre + "_" + name + " = " + padre + ".CrearBoton(\"" + fuente + "\", " + tam
+                            cad = "Var " + nombre + name + " = " + padre + ".CrearBoton(\"" + fuente + "\", " + tam
                                     + ", \"" + color + "\", " + x + ", " + y + ", " + referencia + ", \"" + plano
                                     + "\", " + alto + ", " + ancho + ");\n";
 
                             if (accion != null) {
-                                cad = cad + nombre + "_" + name + ".AlClic(" + accion + ");\n";
+                                cad = cad + nombre + name + ".AlClic(" + accion + ");\n";
                             }
 
                         } else {
@@ -719,28 +808,44 @@ public class Etiqueta {
 
                         if (e.getElementos() != null) {
                             for (Elemento elemento : e.getElementos()) {
-                                if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
-                                    nombre = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.X) {
-                                    x = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.Y) {
-                                    y = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.FUENTE) {
-                                    fuente = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.TAM) {
-                                    tam = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
-                                    color = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
-                                    alto = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
-                                    ancho = new Integer(elemento.getValor().toString());
-                                } else if (elemento.getTipo() == Elemento.Tipo.REFERENCIA) {
-                                    referencia = elemento.getValor().toString();
-                                } else if (elemento.getTipo() == Elemento.Tipo.ACCION) {
-                                    accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
-                                } else {
+                                if (null == elemento.getTipo()) {
                                     System.out.println("Error! Elemento incorrecto en boton. Línea:" + e.getLinea());
+                                } else {
+                                    switch (elemento.getTipo()) {
+                                        case NOMBRE:
+                                            nombre = elemento.getValor().toString();
+                                            break;
+                                        case X:
+                                            x = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case Y:
+                                            y = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case FUENTE:
+                                            fuente = elemento.getValor().toString();
+                                            break;
+                                        case TAM:
+                                            tam = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case COLOR:
+                                            color = elemento.getValor().toString();
+                                            break;
+                                        case ALTO:
+                                            alto = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case ANCHO:
+                                            ancho = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case REFERENCIA:
+                                            referencia = elemento.getValor().toString();
+                                            break;
+                                        case ACCION:
+                                            accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                            break;
+                                        default:
+                                            System.out.println("Error! Elemento incorrecto en boton. Línea:" + e.getLinea());
+                                            break;
+                                    }
                                 }
                             }
                         }
@@ -751,28 +856,44 @@ public class Etiqueta {
                                     plano = et.getPlano();
                                     if (et.getElementos() != null) {
                                         for (Elemento elemento : et.getElementos()) {
-                                            if (elemento.getTipo() == Elemento.Tipo.NOMBRE) {
-                                                nombre = elemento.getValor().toString();
-                                            } else if (elemento.getTipo() == Elemento.Tipo.X) {
-                                                x = new Integer(elemento.getValor().toString());
-                                            } else if (elemento.getTipo() == Elemento.Tipo.Y) {
-                                                y = new Integer(elemento.getValor().toString());
-                                            } else if (elemento.getTipo() == Elemento.Tipo.FUENTE) {
-                                                fuente = elemento.getValor().toString();
-                                            } else if (elemento.getTipo() == Elemento.Tipo.TAM) {
-                                                tam = new Integer(elemento.getValor().toString());
-                                            } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
-                                                color = elemento.getValor().toString();
-                                            } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
-                                                alto = new Integer(elemento.getValor().toString());
-                                            } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
-                                                ancho = new Integer(elemento.getValor().toString());
-                                            } else if (elemento.getTipo() == Elemento.Tipo.REFERENCIA) {
-                                                referencia = elemento.getValor().toString();
-                                            } else if (elemento.getTipo() == Elemento.Tipo.ACCION) {
-                                                accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
-                                            } else {
+                                            if (null == elemento.getTipo()) {
                                                 System.out.println("Error! Elemento incorrecto en texto. Línea:" + et.getLinea());
+                                            } else {
+                                                switch (elemento.getTipo()) {
+                                                    case NOMBRE:
+                                                        nombre = elemento.getValor().toString();
+                                                        break;
+                                                    case X:
+                                                        x = new Integer(elemento.getValor().toString());
+                                                        break;
+                                                    case Y:
+                                                        y = new Integer(elemento.getValor().toString());
+                                                        break;
+                                                    case FUENTE:
+                                                        fuente = elemento.getValor().toString();
+                                                        break;
+                                                    case TAM:
+                                                        tam = new Integer(elemento.getValor().toString());
+                                                        break;
+                                                    case COLOR:
+                                                        color = elemento.getValor().toString();
+                                                        break;
+                                                    case ALTO:
+                                                        alto = new Integer(elemento.getValor().toString());
+                                                        break;
+                                                    case ANCHO:
+                                                        ancho = new Integer(elemento.getValor().toString());
+                                                        break;
+                                                    case REFERENCIA:
+                                                        referencia = elemento.getValor().toString();
+                                                        break;
+                                                    case ACCION:
+                                                        accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                                        break;
+                                                    default:
+                                                        System.out.println("Error! Elemento incorrecto en texto. Línea:" + et.getLinea());
+                                                        break;
+                                                }
                                             }
                                         }
                                     }
@@ -789,12 +910,18 @@ public class Etiqueta {
                         if (nombre != null && x != null && y != null) {
                             plano = plano == null ? "" : plano;
                             referencia = referencia == null ? "nulo" : "CargarVentana_" + referencia + "()";
-                            cad = "Var " + nombre + "_" + name + " = " + padre + ".CrearBoton(\"" + fuente + "\", " + tam
+                            cad = "Var " + nombre + name + " = " + padre + ".CrearBoton(\"" + fuente + "\", " + tam
                                     + ", \"" + color + "\", " + x + ", " + y + ", " + referencia + ", \"" + plano
                                     + "\", " + alto + ", " + ancho + ");\n";
-                            cad = cad = cad + nombre + "_" + name + ".AlClic(Guardar_" + padre + ");\n"; //arreglar esto
+                            
+                            
+
                             if (accion != null) {
-                                cad = cad + nombre + "_" + name + ".AlClic(" + accion + ");\n";
+                                cad += nombre + name + ".AlClic(" + nombre + name + "AlClic());\n\n";
+                                cad += "funcion " + nombre + name + "AlClic(){\n\tGuardar_"+ventana+name+"();\n\t"
+                                        + accion +";\n}\n\n";
+                            } else {
+                                cad = cad + nombre + name + ".AlClic(Guardar_" + ventana + name + "());\n";
                             }
 
                         } else {
@@ -833,6 +960,8 @@ public class Etiqueta {
     private LinkedList<Etiqueta> etiquetas;
     private LinkedList<Elemento> elementos;
 
+    private LinkedList<Arreglo> archivo; 
+            
     public Etiqueta(Tipo tipo, String plano, int linea, int columna, LinkedList<Etiqueta> etiquetas, LinkedList<Elemento> elementos) {
         this.tipo = tipo;
         this.plano = plano;
@@ -840,6 +969,7 @@ public class Etiqueta {
         this.columna = columna;
         this.etiquetas = etiquetas;
         this.elementos = elementos;
+        this.archivo = null;
     }
 
     public Object traducir(Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
@@ -937,6 +1067,20 @@ public class Etiqueta {
      */
     public void setElementos(LinkedList<Elemento> elementos) {
         this.elementos = elementos;
+    }
+
+    /**
+     * @return the archivo
+     */
+    public LinkedList<Arreglo> getArchivo() {
+        return archivo;
+    }
+
+    /**
+     * @param archivo the archivo to set
+     */
+    public void setArchivo(LinkedList<Arreglo> archivo) {
+        this.archivo = archivo;
     }
 
 }

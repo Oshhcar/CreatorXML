@@ -146,8 +146,9 @@ codigo = "{""{"*([^"}"])*"}"*"}"
 								}
 [^<\r|\n|\r\n\t\f ]+  			{ string.append( yytext() ); blancos=true; }
 "<"  	  						{ string.append( yytext() ); blancos=true; }
-[ \n\r\t\f][ \n\r\t\f]*			{ string.append( " " ); }
-
+[ \r\f][ \r\f]*					{ string.append( " " ); }
+[ \n][ \n]*						{ string.append( "" ); }
+[ \t][ \t]*						{ string.append( "" ); }
 }
 
 /* ERRORES LEXICOS */
