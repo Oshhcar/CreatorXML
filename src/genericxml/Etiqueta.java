@@ -6,7 +6,13 @@
 package genericxml;
 
 import fs.ast.simbolos.Arreglo;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  *
@@ -23,11 +29,110 @@ public class Etiqueta {
     public static enum Tipo {
         IMPORTAR {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 if (e.getPlano() != null) {
-                    String rutaImport = e.getPlano().replaceAll(" ", "");
-                    cad = "Importar(\"" + e.getPlano() + "\");\n";
+                    String rutaImport = e.getPlano();
+                    String ext = rutaImport.substring(rutaImport.lastIndexOf('.'));
+
+                    if (ext.toLowerCase().equals(".fs") || ext.toLowerCase().equals(".gxml")) {
+
+                        if (ext.toLowerCase().equals(".fs")) {
+                            if (archivo == null) {
+                                cad = "Importar(\"" + e.getPlano() + "\");\n";
+                                return cad;
+                            }
+                        } else {
+                            File file;
+                            FileReader fr;
+                            BufferedReader br;
+
+                            File actual;
+
+                            try {
+                                actual = new File(rutaActual);
+                                if (rutaImport.charAt(0) == '/') {
+                                    rutaImport = rutaImport.replaceFirst("/", "");
+                                }
+                                rutaImport = rutaImport.replaceAll("/", "\\\\");
+
+                                String dirImport = actual.getParent() + "\\" + rutaImport;
+
+                                file = new File(dirImport);
+                                fr = new FileReader(file);
+                                br = new BufferedReader(fr);
+
+                                String texto = "";
+                                String line;
+                                while ((line = br.readLine()) != null) {
+                                    texto += line + "\n";
+                                }
+
+                                Lexico lexicoGenericxml = new Lexico(new BufferedReader(new StringReader(texto)));
+                                Sintactico sintacticoGenericxml = new Sintactico(lexicoGenericxml);
+
+                                Arbol arbol = null;
+
+                                try {
+                                    sintacticoGenericxml.parse();
+                                    arbol = sintacticoGenericxml.getArbol();
+
+                                    if (arbol != null) {
+                                        if (arbol.getEtiquetas() == null && arbol.getImports() == null) {
+                                            System.out.println("Error al generar el arbol.");
+                                        } else {
+                                            //cad += arbol.traducir(name, rutaActual, archivo);
+
+                                            if (archivo == null) {
+                                                if (arbol.getImports() != null) {
+                                                    for (Etiqueta i : arbol.getImports()) {
+                                                        cad += i.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
+                                                    }
+                                                }
+                                            } else {
+
+                                                if (arbol.getEtiquetas() != null) {
+                                                    for (Etiqueta et : arbol.getEtiquetas()) {
+                                                        cad += et.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
+                                                    }
+                                                }
+
+                                                if (arbol.getImports() != null) {
+                                                    for (Etiqueta i : arbol.getImports()) {
+                                                        cad += i.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
+                                                    }
+                                                }
+                                                
+                                                cad += "\n";
+                                                
+                                                if (arbol.getEtiquetas() != null) {
+                                                    for (Etiqueta et : arbol.getEtiquetas()) {
+                                                        if (et.getTipo() == Tipo.VENTANA) {
+                                                            cad += et.traducir(null, name, "", "", "", rutaActual, 1, archivo, true);
+                                                        }
+                                                    }
+                                                }
+
+                                            }
+
+                                            return cad;
+                                        }
+                                    } else {
+                                        System.out.println("No se pudo generar el arbol");
+                                    }
+
+                                } catch (Exception exc) {
+                                    System.err.println("Error, el archivo \"" + rutaImport + "\" contiene errores.");
+
+                                }
+
+                            } catch (IOException exc) {
+                                System.err.println("Error, intentando abrir el archivo \"" + rutaImport + "\".");
+                            }
+                        }
+                    } else {
+                        System.err.println("Error, la extension del arhcivo a importar debe ser \".fs\" o \".gxml\"");
+                    }
                 } else {
                     System.out.println("Error! importar");
                 }
@@ -36,7 +141,7 @@ public class Etiqueta {
         },
         VENTANA {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 if (p == null) {
                     String id = null;
@@ -82,32 +187,41 @@ public class Etiqueta {
                         }
 
                         if (id != null && tipo != null) {
-                            cad = "Var " + id + name + " = CrearVentana(\"" + color + "\", "
-                                    + alto + ", " + ancho + ");\n\n";
 
-                            if (e.getEtiquetas() != null) {
-                                for (Etiqueta et : e.getEtiquetas()) {
-                                    cad = cad + et.traducir(e, name, id + name, color, id, rutaActual, t);
+                            if (!func) {
+                                cad = "Var " + id + name + " = CrearVentana(\"" + color + "\", "
+                                        + alto + ", " + ancho + ");\n\n";
+
+                                if (e.getEtiquetas() != null) {
+                                    for (Etiqueta et : e.getEtiquetas()) {
+                                        cad = cad + et.traducir(e, name, id + name, color, id, rutaActual, t, archivo, func);
+                                    }
                                 }
+
+                                if (accioninicial != null) {
+                                    cad += id + name + ".AlCargar(" + accioninicial + ");\n";
+                                }
+
+                                if (accionfinal != null) {
+                                    cad += id + name + ".AlCargar(" + accionfinal + ");\n";
+                                }
+                            } else {
+
+                                cad = cad + "funcion Guardar_" + id + name + "(){\n\t" + id + name
+                                        + ".crearArrayDesdeArchivo();\n}\n\n";
+
+                                cad = cad + "funcion CargarVentana_" + id + name + "(){\n\t" + id + name
+                                        + ".AlCargar();\n}\n";
+                                
+                                if(tipo.toLowerCase().equals("principal") || tipo.toLowerCase().equals("secundaria")){
+                                    if(tipo.toLowerCase().equals("principal")){
+                                        cad += "\n"+id+name+".AlCargar();\n";
+                                    }
+                                } else {
+                                    System.err.println("Error, tipo debe ser principal o secundaria. ");
+                                }
+                                
                             }
-
-                            if (accioninicial != null) {
-                                cad += id + name + ".AlCargar(" + accioninicial + ");\n";
-                            }
-
-                            if (accionfinal != null) {
-                                cad += id + name + ".AlCargar(" + accionfinal + ");\n";
-                            }
-
-                            //imports.
-                            cad += "\n";
-
-                            cad = cad + "funcion Guardar_" + id + name + "(){\n\t" + id + name
-                                    + ".crearArrayDesdeArchivo();\n}\n\n";
-
-                            cad = cad + "funcion CargarVentana_" + id + name + "(){\n\t" + id + name
-                                    + ".AlCargar();\n}\n\n";
-
                         } else {
                             System.out.println("Error! Faltan elementos ventana");
                         }
@@ -124,7 +238,7 @@ public class Etiqueta {
         },
         CONTENEDOR {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -142,31 +256,33 @@ public class Etiqueta {
                             for (Elemento elemento : e.getElementos()) {
                                 if (null == elemento.getTipo()) {
                                     System.out.println("Error! Elemento incorrecto en contenedor");
-                                } else switch (elemento.getTipo()) {
-                                    case ID:
-                                        id = elemento.getValor().toString();
-                                        break;
-                                    case X:
-                                        x = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case Y:
-                                        y = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case ALTO:
-                                        alto = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case ANCHO:
-                                        ancho = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case COLOR:
-                                        color = elemento.getValor().toString();
-                                        break;
-                                    case BORDE:
-                                        borde = Boolean.valueOf(elemento.getValor().toString());
-                                        break;
-                                    default:
-                                        System.out.println("Error! Elemento incorrecto en contenedor");
-                                        break;
+                                } else {
+                                    switch (elemento.getTipo()) {
+                                        case ID:
+                                            id = elemento.getValor().toString();
+                                            break;
+                                        case X:
+                                            x = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case Y:
+                                            y = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case ALTO:
+                                            alto = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case ANCHO:
+                                            ancho = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case COLOR:
+                                            color = elemento.getValor().toString();
+                                            break;
+                                        case BORDE:
+                                            borde = Boolean.valueOf(elemento.getValor().toString());
+                                            break;
+                                        default:
+                                            System.out.println("Error! Elemento incorrecto en contenedor");
+                                            break;
+                                    }
                                 }
                             }
 
@@ -178,7 +294,7 @@ public class Etiqueta {
 
                                 if (e.getEtiquetas() != null) {
                                     for (Etiqueta et : e.getEtiquetas()) {
-                                        cad = cad + et.traducir(e, name, id + name, color, ventana, rutaActual, t);
+                                        cad = cad + et.traducir(e, name, id + name, color, ventana, rutaActual, t, archivo, func);
                                     }
                                 }
                                 cad = cad + "\n";
@@ -202,7 +318,7 @@ public class Etiqueta {
         },
         TEXTO {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -221,34 +337,36 @@ public class Etiqueta {
                             for (Elemento elemento : e.getElementos()) {
                                 if (null == elemento.getTipo()) {
                                     System.out.println("Error! Elemento incorrecto en texto");
-                                } else switch (elemento.getTipo()) {
-                                    case NOMBRE:
-                                        nombre = elemento.getValor().toString();
-                                        break;
-                                    case X:
-                                        x = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case Y:
-                                        y = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case FUENTE:
-                                        fuente = elemento.getValor().toString();
-                                        break;
-                                    case TAM:
-                                        tam = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case COLOR:
-                                        color = elemento.getValor().toString();
-                                        break;
-                                    case NEGRITA:
-                                        negrita = Boolean.valueOf(elemento.getValor().toString());
-                                        break;
-                                    case CURSIVA:
-                                        cursiva = Boolean.valueOf(elemento.getValor().toString());
-                                        break;
-                                    default:
-                                        System.out.println("Error! Elemento incorrecto en texto");
-                                        break;
+                                } else {
+                                    switch (elemento.getTipo()) {
+                                        case NOMBRE:
+                                            nombre = elemento.getValor().toString();
+                                            break;
+                                        case X:
+                                            x = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case Y:
+                                            y = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case FUENTE:
+                                            fuente = elemento.getValor().toString();
+                                            break;
+                                        case TAM:
+                                            tam = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case COLOR:
+                                            color = elemento.getValor().toString();
+                                            break;
+                                        case NEGRITA:
+                                            negrita = Boolean.valueOf(elemento.getValor().toString());
+                                            break;
+                                        case CURSIVA:
+                                            cursiva = Boolean.valueOf(elemento.getValor().toString());
+                                            break;
+                                        default:
+                                            System.out.println("Error! Elemento incorrecto en texto");
+                                            break;
+                                    }
                                 }
                             }
 
@@ -282,7 +400,7 @@ public class Etiqueta {
         },
         CONTROL {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 if (p != null && !"".equals(padre)) {
                     if (p.getTipo() == Etiqueta.Tipo.CONTENEDOR) {
@@ -306,52 +424,54 @@ public class Etiqueta {
                             for (Elemento elemento : e.getElementos()) {
                                 if (null == elemento.getTipo()) {
                                     System.out.println("Error! Elemento incorrecto en texto");
-                                } else switch (elemento.getTipo()) {
-                                    case TIPO:
-                                        tipo = elemento.getValor().toString();
-                                        break;
-                                    case NOMBRE:
-                                        nombre = elemento.getValor().toString();
-                                        break;
-                                    case X:
-                                        x = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case Y:
-                                        y = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case ALTO:
-                                        alto = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case ANCHO:
-                                        ancho = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case FUENTE:
-                                        fuente = elemento.getValor().toString();
-                                        break;
-                                    case TAM:
-                                        tam = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case COLOR:
-                                        color = elemento.getValor().toString();
-                                        break;
-                                    case NEGRITA:
-                                        negrita = Boolean.valueOf(elemento.getValor().toString());
-                                        break;
-                                    case CURSIVA:
-                                        cursiva = Boolean.valueOf(elemento.getValor().toString());
-                                        break;
-                                    case MAXIMO:
-                                        maximo = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case MINIMO:
-                                        minimo = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case ACCION:
-                                        accion = elemento.getValor().toString();
-                                        break;
-                                    default:
-                                        System.out.println("Error! Elemento incorrecto en texto");
-                                        break;
+                                } else {
+                                    switch (elemento.getTipo()) {
+                                        case TIPO:
+                                            tipo = elemento.getValor().toString();
+                                            break;
+                                        case NOMBRE:
+                                            nombre = elemento.getValor().toString();
+                                            break;
+                                        case X:
+                                            x = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case Y:
+                                            y = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case ALTO:
+                                            alto = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case ANCHO:
+                                            ancho = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case FUENTE:
+                                            fuente = elemento.getValor().toString();
+                                            break;
+                                        case TAM:
+                                            tam = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case COLOR:
+                                            color = elemento.getValor().toString();
+                                            break;
+                                        case NEGRITA:
+                                            negrita = Boolean.valueOf(elemento.getValor().toString());
+                                            break;
+                                        case CURSIVA:
+                                            cursiva = Boolean.valueOf(elemento.getValor().toString());
+                                            break;
+                                        case MAXIMO:
+                                            maximo = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case MINIMO:
+                                            minimo = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case ACCION:
+                                            accion = elemento.getValor().toString();
+                                            break;
+                                        default:
+                                            System.out.println("Error! Elemento incorrecto en texto");
+                                            break;
+                                    }
                                 }
                             }
 
@@ -364,7 +484,7 @@ public class Etiqueta {
                                 for (Etiqueta et : e.getEtiquetas()) {
                                     if (et.getTipo() == Etiqueta.Tipo.DEFECTO) {
                                         if (defecto == null) {
-                                            defecto = (String) et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t);
+                                            defecto = (String) et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t, archivo, func);
                                         } else {
                                             System.out.println("Error! Definicion de mas de un defecto. Control. Línea:" + et.getLinea());
                                         }
@@ -411,7 +531,7 @@ public class Etiqueta {
                                         for (Etiqueta et : e.getEtiquetas()) {
                                             if (et.getTipo() == Etiqueta.Tipo.LISTADATOS) {
                                                 if ("".equals(res)) {
-                                                    res = (String) et.traducir(e, name, nombre, defecto, ventana, rutaActual, t);
+                                                    res = (String) et.traducir(e, name, nombre, defecto, ventana, rutaActual, t, archivo, func);
                                                 } else {
                                                     System.out.println("Error! Ya se definio una lista. Linea:" + et.getLinea());
                                                 }
@@ -467,7 +587,7 @@ public class Etiqueta {
         },
         LISTADATOS {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -479,12 +599,12 @@ public class Etiqueta {
                             int i = 0;
                             for (Etiqueta et : e.getEtiquetas()) {
                                 if (et.tipo == Etiqueta.Tipo.DATO) {
-                                    if (!"".equals(et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t))) {
+                                    if (!"".equals(et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t, archivo, func))) {
                                         if (bandera) {
                                             cad = cad + ", ";
                                         }
                                         bandera = true;
-                                        String valor = (String) et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t);
+                                        String valor = (String) et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t, archivo, func);
                                         cad = cad + "\"" + valor + "\"";
 
                                         if (colorPadre != null) {
@@ -519,7 +639,7 @@ public class Etiqueta {
         },
         DATO {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -546,7 +666,7 @@ public class Etiqueta {
         },
         DEFECTO {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -573,7 +693,7 @@ public class Etiqueta {
         },
         MULTIMEDIA {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -645,7 +765,7 @@ public class Etiqueta {
         },
         BOTON {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -668,40 +788,42 @@ public class Etiqueta {
                             for (Elemento elemento : e.getElementos()) {
                                 if (null == elemento.getTipo()) {
                                     System.out.println("Error! Elemento incorrecto en boton. Línea:" + e.getLinea());
-                                } else switch (elemento.getTipo()) {
-                                    case NOMBRE:
-                                        nombre = elemento.getValor().toString();
-                                        break;
-                                    case X:
-                                        x = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case Y:
-                                        y = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case FUENTE:
-                                        fuente = elemento.getValor().toString();
-                                        break;
-                                    case TAM:
-                                        tam = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case COLOR:
-                                        color = elemento.getValor().toString();
-                                        break;
-                                    case ALTO:
-                                        alto = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case ANCHO:
-                                        ancho = new Integer(elemento.getValor().toString());
-                                        break;
-                                    case REFERENCIA:
-                                        referencia = elemento.getValor().toString();
-                                        break;
-                                    case ACCION:
-                                        accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
-                                        break;
-                                    default:
-                                        System.out.println("Error! Elemento incorrecto en boton. Línea:" + e.getLinea());
-                                        break;
+                                } else {
+                                    switch (elemento.getTipo()) {
+                                        case NOMBRE:
+                                            nombre = elemento.getValor().toString();
+                                            break;
+                                        case X:
+                                            x = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case Y:
+                                            y = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case FUENTE:
+                                            fuente = elemento.getValor().toString();
+                                            break;
+                                        case TAM:
+                                            tam = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case COLOR:
+                                            color = elemento.getValor().toString();
+                                            break;
+                                        case ALTO:
+                                            alto = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case ANCHO:
+                                            ancho = new Integer(elemento.getValor().toString());
+                                            break;
+                                        case REFERENCIA:
+                                            referencia = elemento.getValor().toString();
+                                            break;
+                                        case ACCION:
+                                            accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                            break;
+                                        default:
+                                            System.out.println("Error! Elemento incorrecto en boton. Línea:" + e.getLinea());
+                                            break;
+                                    }
                                 }
                             }
                         }
@@ -714,40 +836,42 @@ public class Etiqueta {
                                         for (Elemento elemento : et.getElementos()) {
                                             if (null == elemento.getTipo()) {
                                                 System.out.println("Error! Elemento incorrecto en texto. Línea:" + et.getLinea());
-                                            } else switch (elemento.getTipo()) {
-                                                case NOMBRE:
-                                                    nombre = elemento.getValor().toString();
-                                                    break;
-                                                case X:
-                                                    x = new Integer(elemento.getValor().toString());
-                                                    break;
-                                                case Y:
-                                                    y = new Integer(elemento.getValor().toString());
-                                                    break;
-                                                case FUENTE:
-                                                    fuente = elemento.getValor().toString();
-                                                    break;
-                                                case TAM:
-                                                    tam = new Integer(elemento.getValor().toString());
-                                                    break;
-                                                case COLOR:
-                                                    color = elemento.getValor().toString();
-                                                    break;
-                                                case ALTO:
-                                                    alto = new Integer(elemento.getValor().toString());
-                                                    break;
-                                                case ANCHO:
-                                                    ancho = new Integer(elemento.getValor().toString());
-                                                    break;
-                                                case REFERENCIA:
-                                                    referencia = elemento.getValor().toString();
-                                                    break;
-                                                case ACCION:
-                                                    accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
-                                                    break;
-                                                default:
-                                                    System.out.println("Error! Elemento incorrecto en texto. Línea:" + et.getLinea());
-                                                    break;
+                                            } else {
+                                                switch (elemento.getTipo()) {
+                                                    case NOMBRE:
+                                                        nombre = elemento.getValor().toString();
+                                                        break;
+                                                    case X:
+                                                        x = new Integer(elemento.getValor().toString());
+                                                        break;
+                                                    case Y:
+                                                        y = new Integer(elemento.getValor().toString());
+                                                        break;
+                                                    case FUENTE:
+                                                        fuente = elemento.getValor().toString();
+                                                        break;
+                                                    case TAM:
+                                                        tam = new Integer(elemento.getValor().toString());
+                                                        break;
+                                                    case COLOR:
+                                                        color = elemento.getValor().toString();
+                                                        break;
+                                                    case ALTO:
+                                                        alto = new Integer(elemento.getValor().toString());
+                                                        break;
+                                                    case ANCHO:
+                                                        ancho = new Integer(elemento.getValor().toString());
+                                                        break;
+                                                    case REFERENCIA:
+                                                        referencia = elemento.getValor().toString();
+                                                        break;
+                                                    case ACCION:
+                                                        accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
+                                                        break;
+                                                    default:
+                                                        System.out.println("Error! Elemento incorrecto en texto. Línea:" + et.getLinea());
+                                                        break;
+                                                }
                                             }
                                         }
                                     }
@@ -788,7 +912,7 @@ public class Etiqueta {
         },
         ENVIAR {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 if (p != null && !"".equals(padre)) {
                     if (p.getTipo() == Etiqueta.Tipo.CONTENEDOR) {
@@ -913,13 +1037,11 @@ public class Etiqueta {
                             cad = "Var " + nombre + name + " = " + padre + ".CrearBoton(\"" + fuente + "\", " + tam
                                     + ", \"" + color + "\", " + x + ", " + y + ", " + referencia + ", \"" + plano
                                     + "\", " + alto + ", " + ancho + ");\n";
-                            
-                            
 
                             if (accion != null) {
-                                cad += nombre + name + ".AlClic(" + nombre + name + "AlClic());\n\n";
-                                cad += "funcion " + nombre + name + "AlClic(){\n\tGuardar_"+ventana+name+"();\n\t"
-                                        + accion +";\n}\n\n";
+                                cad += nombre + name + ".AlClic(" + nombre + name + "AlClic());\n";
+                                cad += "funcion " + nombre + name + "AlClic(){\n\tGuardar_" + ventana + name + "();\n\t"
+                                        + accion + ";\n}\n\n";
                             } else {
                                 cad = cad + nombre + name + ".AlClic(Guardar_" + ventana + name + "());\n";
                             }
@@ -948,9 +1070,10 @@ public class Etiqueta {
          * @param ventana
          * @param rutaActual
          * @param t
+         * @param archivo
          * @return codigo traducido
          */
-        public abstract Object traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t);
+        public abstract Object traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func);
     }
 
     private Tipo tipo;
@@ -960,8 +1083,8 @@ public class Etiqueta {
     private LinkedList<Etiqueta> etiquetas;
     private LinkedList<Elemento> elementos;
 
-    private LinkedList<Arreglo> archivo; 
-            
+    protected Map<Integer, Object> archivo;
+
     public Etiqueta(Tipo tipo, String plano, int linea, int columna, LinkedList<Etiqueta> etiquetas, LinkedList<Elemento> elementos) {
         this.tipo = tipo;
         this.plano = plano;
@@ -972,8 +1095,8 @@ public class Etiqueta {
         this.archivo = null;
     }
 
-    public Object traducir(Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
-        return this.tipo.traducir(this, p, name, padre, colorPadre, ventana, rutaActual, t);
+    public Object traducir(Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+        return this.tipo.traducir(this, p, name, padre, colorPadre, ventana, rutaActual, t, archivo, func);
     }
 
     public void recorrer() {
@@ -1072,14 +1195,14 @@ public class Etiqueta {
     /**
      * @return the archivo
      */
-    public LinkedList<Arreglo> getArchivo() {
+    public Map<Integer, Object> getArchivo() {
         return archivo;
     }
 
     /**
      * @param archivo the archivo to set
      */
-    public void setArchivo(LinkedList<Arreglo> archivo) {
+    public void setArchivo(Map<Integer, Object> archivo) {
         this.archivo = archivo;
     }
 

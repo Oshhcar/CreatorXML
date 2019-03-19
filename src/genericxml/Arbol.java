@@ -5,8 +5,11 @@
  */
 package genericxml;
 
+import fs.ast.simbolos.Arreglo;
 import fs.ast.simbolos.Objeto;
+import genericxml.Etiqueta.Tipo;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  *
@@ -27,36 +30,41 @@ public class Arbol {
         name = "_" + name;
         //name = "";
         
-        LinkedList<Objeto> archivo = new LinkedList<>();
+        Map<Integer, Object> archivo = new Arreglo();
         
         if(imports != null){
             for(Etiqueta i: imports){
-                cad = cad + i.traducir(null, name, "", "", "", rutaActual, 1);
+                cad = cad + i.traducir(null, name, "", "", "", rutaActual, 1, null, false);
             }
         }
         
-        cad = cad + "\n";
-        
+        cad += "\n";
+               
         if(etiquetas != null){
             for(Etiqueta e: etiquetas){
                 
-                cad = cad + e.traducir(null, name, "", "", "", rutaActual, 1);
+                cad = cad + e.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
             }
         }
         
-        return cad;
-    }
-    
-    public LinkedList<Objeto> obtenerArchivo(String name, String rutaActual){
-        LinkedList<Objeto> archivo = new LinkedList<>();
+        if(imports != null){
+            for(Etiqueta i: imports){
+                cad = cad + i.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
+            }
+        }
+        
+        cad += "\n";
         
         if(etiquetas != null){
             for(Etiqueta e: etiquetas){
-                archivo.add((Objeto) e.traducir(null, name, "", "", "", rutaActual, 2));
+                if(e.getTipo() == Tipo.VENTANA){
+                    cad = cad + e.traducir(null, name, "", "", "", rutaActual, 1, archivo, true);
+                }
             }
         }
         
-        return archivo;
+        
+        return cad;
     }
     
     public void recorrer(){
