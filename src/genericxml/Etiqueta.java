@@ -23,7 +23,7 @@ public class Etiqueta {
     public static enum Tipo {
         IMPORTAR {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
                 if (e.getPlano() != null) {
                     cad = "Importar(\"" + e.getPlano().replaceAll(" ", "") + "\");\n";
@@ -35,7 +35,7 @@ public class Etiqueta {
         },
         VENTANA {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
                 if (p == null) {
                     String id = null;
@@ -48,22 +48,33 @@ public class Etiqueta {
 
                     if (e.getElementos() != null) {
                         for (Elemento elemento : e.getElementos()) {
-                            if (elemento.getTipo() == Elemento.Tipo.ID) {
-                                id = elemento.getValor().toString();
-                            } else if (elemento.getTipo() == Elemento.Tipo.TIPO) {
-                                tipo = elemento.getValor().toString();
-                            } else if (elemento.getTipo() == Elemento.Tipo.COLOR) {
-                                color = elemento.getValor().toString();
-                            } else if (elemento.getTipo() == Elemento.Tipo.ALTO) {
-                                alto = new Integer(elemento.getValor().toString());
-                            } else if (elemento.getTipo() == Elemento.Tipo.ANCHO) {
-                                ancho = new Integer(elemento.getValor().toString());
-                            } else if (elemento.getTipo() == Elemento.Tipo.ACCIONINICIAL) {
-                                accioninicial = elemento.getValor().toString();
-                            } else if (elemento.getTipo() == Elemento.Tipo.ACCIONFINAL) {
-                                accionfinal = elemento.getValor().toString();
-                            } else {
+                            if (null == elemento.getTipo()) {
                                 System.out.println("Error! Elemento incorrecto en ventana");
+                            } else switch (elemento.getTipo()) {
+                                case ID:
+                                    id = elemento.getValor().toString();
+                                    break;
+                                case TIPO:
+                                    tipo = elemento.getValor().toString();
+                                    break;
+                                case COLOR:
+                                    color = elemento.getValor().toString();
+                                    break;
+                                case ALTO:
+                                    alto = new Integer(elemento.getValor().toString());
+                                    break;
+                                case ANCHO:
+                                    ancho = new Integer(elemento.getValor().toString());
+                                    break;
+                                case ACCIONINICIAL:
+                                    accioninicial = elemento.getValor().toString();
+                                    break;
+                                case ACCIONFINAL:
+                                    accionfinal = elemento.getValor().toString();
+                                    break;
+                                default:
+                                    System.out.println("Error! Elemento incorrecto en ventana");
+                                    break;
                             }
                         }
 
@@ -73,7 +84,7 @@ public class Etiqueta {
 
                             if (e.getEtiquetas() != null) {
                                 for (Etiqueta et : e.getEtiquetas()) {
-                                    cad = cad + et.traducir(e, name, id + "_" + name, color, rutaActual, t);
+                                    cad = cad + et.traducir(e, name, id + "_" + name, color, ventana, rutaActual, t);
                                 }
                             }
                             cad = cad + "\n";
@@ -93,7 +104,7 @@ public class Etiqueta {
         },
         CONTENEDOR {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -136,7 +147,7 @@ public class Etiqueta {
 
                                 if (e.getEtiquetas() != null) {
                                     for (Etiqueta et : e.getEtiquetas()) {
-                                        cad = cad + et.traducir(e, name, id + "_" + name, color, rutaActual, t);
+                                        cad = cad + et.traducir(e, name, id + "_" + name, color, ventana, rutaActual, t);
                                     }
                                 }
                                 cad = cad + "\n";
@@ -160,7 +171,7 @@ public class Etiqueta {
         },
         TEXTO {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -228,7 +239,7 @@ public class Etiqueta {
         },
         CONTROL {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
                 if (p != null && !"".equals(padre)) {
                     if (p.getTipo() == Etiqueta.Tipo.CONTENEDOR) {
@@ -292,7 +303,7 @@ public class Etiqueta {
                                 for (Etiqueta et : e.getEtiquetas()) {
                                     if (et.getTipo() == Etiqueta.Tipo.DEFECTO) {
                                         if (defecto == null) {
-                                            defecto = (String) et.traducir(e, name, padre, colorPadre, rutaActual, t);
+                                            defecto = (String) et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t);
                                         } else {
                                             System.out.println("Error! Definicion de mas de un defecto. Control. Línea:" + et.getLinea());
                                         }
@@ -339,7 +350,7 @@ public class Etiqueta {
                                         for (Etiqueta et : e.getEtiquetas()) {
                                             if (et.getTipo() == Etiqueta.Tipo.LISTADATOS) {
                                                 if ("".equals(res)) {
-                                                    res = (String) et.traducir(e, name, nombre, defecto, rutaActual, t);
+                                                    res = (String) et.traducir(e, name, nombre, defecto, ventana, rutaActual, t);
                                                 } else {
                                                     System.out.println("Error! Ya se definio una lista. Linea:" + et.getLinea());
                                                 }
@@ -395,7 +406,7 @@ public class Etiqueta {
         },
         LISTADATOS {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -407,12 +418,12 @@ public class Etiqueta {
                             int i = 0;
                             for (Etiqueta et : e.getEtiquetas()) {
                                 if (et.tipo == Etiqueta.Tipo.DATO) {
-                                    if (!"".equals(et.traducir(e, name, padre, colorPadre, rutaActual, t))) {
+                                    if (!"".equals(et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t))) {
                                         if (bandera) {
                                             cad = cad + ", ";
                                         }
                                         bandera = true;
-                                        String valor = (String) et.traducir(e, name, padre, colorPadre, rutaActual, t);
+                                        String valor = (String) et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t);
                                         cad = cad + "\"" + valor + "\"";
 
                                         if (colorPadre != null) {
@@ -447,7 +458,7 @@ public class Etiqueta {
         },
         DATO {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -474,7 +485,7 @@ public class Etiqueta {
         },
         DEFECTO {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -501,7 +512,7 @@ public class Etiqueta {
         },
         MULTIMEDIA {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -573,7 +584,7 @@ public class Etiqueta {
         },
         BOTON {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -688,7 +699,7 @@ public class Etiqueta {
         },
         ENVIAR {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
                 String cad = "";
                 if (p != null && !"".equals(padre)) {
                     if (p.getTipo() == Etiqueta.Tipo.CONTENEDOR) {
@@ -807,9 +818,12 @@ public class Etiqueta {
          * @param name nombre del archivo
          * @param padre nombre del padre
          * @param colorPadre codigo de color del padre
+         * @param ventana
+         * @param rutaActual
+         * @param t
          * @return codigo traducido
          */
-        public abstract Object traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t);
+        public abstract Object traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t);
     }
 
     private Tipo tipo;
@@ -828,8 +842,8 @@ public class Etiqueta {
         this.elementos = elementos;
     }
 
-    public Object traducir(Etiqueta p, String name, String padre, String colorPadre, String rutaActual, int t) {
-        return this.tipo.traducir(this, p, name, padre, colorPadre, rutaActual, t);
+    public Object traducir(Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t) {
+        return this.tipo.traducir(this, p, name, padre, colorPadre, ventana, rutaActual, t);
     }
 
     public void recorrer() {

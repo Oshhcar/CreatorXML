@@ -27,7 +27,7 @@ public class Arbol {
         
         if(imports != null){
             for(Etiqueta i: imports){
-                cad = cad + i.traducir(null, name, "", "", rutaActual, 1);
+                cad = cad + i.traducir(null, name, "", "", "", rutaActual, 1);
             }
         }
         
@@ -35,7 +35,7 @@ public class Arbol {
         
         if(etiquetas != null){
             for(Etiqueta e: etiquetas){
-                cad = cad + e.traducir(null, name, "", "", rutaActual, 1);
+                cad = cad + e.traducir(null, name, "", "", "", rutaActual, 1);
             }
         }
         
@@ -47,7 +47,7 @@ public class Arbol {
         
         if(etiquetas != null){
             for(Etiqueta e: etiquetas){
-                archivo.add((Objeto) e.traducir(null, name, "", "", rutaActual, 2));
+                archivo.add((Objeto) e.traducir(null, name, "", "", "", rutaActual, 2));
             }
         }
         
