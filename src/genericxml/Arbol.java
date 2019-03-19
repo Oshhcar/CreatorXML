@@ -27,8 +27,6 @@ public class Arbol {
 
     public String traducir(String name, String rutaActual){
         String cad = "";
-        name = "_" + name;
-        //name = "";
         
         Map<Integer, Object> archivo = new Arreglo();
         

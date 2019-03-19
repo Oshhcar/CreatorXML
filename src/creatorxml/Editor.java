@@ -47,7 +47,7 @@ public class Editor extends javax.swing.JFrame {
 
     Lexico lexicoGenericxml;
     Sintactico sintacticoGenericxml;
-    
+
     LexicoFs lexicoFs;
     SintacticoFs sintacticoFs;
 
@@ -106,6 +106,7 @@ public class Editor extends javax.swing.JFrame {
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem7 = new javax.swing.JMenuItem();
+        jRadioButtonMenuItem1 = new javax.swing.JRadioButtonMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
@@ -249,7 +250,7 @@ public class Editor extends javax.swing.JFrame {
                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 449, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -292,11 +293,11 @@ public class Editor extends javax.swing.JFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
+                .addGap(7, 7, 7)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -386,6 +387,9 @@ public class Editor extends javax.swing.JFrame {
             }
         });
         jMenu2.add(jMenuItem7);
+
+        jRadioButtonMenuItem1.setText("Nombre Archivo");
+        jMenu2.add(jRadioButtonMenuItem1);
 
         jMenuBar1.add(jMenu2);
 
@@ -937,14 +941,13 @@ public class Editor extends javax.swing.JFrame {
             }
 
             String name = a.getName().replaceAll("\\.([a-zA-ZñÑ]+)", "");
-            
-            
+            name = "_" + name;
+
             lexicoGenericxml = new genericxml.Lexico(new BufferedReader(new StringReader(entrada)));
             sintacticoGenericxml = new genericxml.Sintactico(lexicoGenericxml);
-            
+
 //            lexicoFs = new LexicoFs(new BufferedReader(new StringReader(entrada)));
 //            sintacticoFs = new SintacticoFs(lexicoFs);
-            
             Arbol arbol = null;
             AST ast = null;
             try {
@@ -957,7 +960,13 @@ public class Editor extends javax.swing.JFrame {
                     } else {
                         //arbol.traducir(name);
                         //arbol.recorrer();
+
+                        if (!this.jRadioButtonMenuItem1.isSelected()) {
+                            name = "";
+                        }
+
                         System.out.println("" + arbol.traducir(name, text.getName()));
+
                     }
                 } else {
                     System.out.println("No se pudo generar el arbol");
@@ -973,7 +982,6 @@ public class Editor extends javax.swing.JFrame {
 //                } else {
 //                    System.out.println("No se genero el ast.");
 //                }
-                
             } catch (Exception ex) {
                 System.out.println("Exception " + ex);
             }
@@ -1064,6 +1072,7 @@ public class Editor extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextArea1;
