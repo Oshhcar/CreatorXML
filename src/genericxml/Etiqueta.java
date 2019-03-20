@@ -205,16 +205,19 @@ public class Etiqueta {
 
                             if (!func) {
                                 cad = "Var " + id + name + " = CrearVentana(\"" + color + "\", "
-                                        + alto + ", " + ancho + ");\n\n";
+                                        + alto + ", " + ancho + ", \"" + id + name + "\");\n\n";
 
-                                archivo.put(archivo.size(), objeto);
-
+                                Map<Integer, Object> etiquetas = new Arreglo();
+                                
                                 if (e.getEtiquetas() != null) {
                                     for (Etiqueta et : e.getEtiquetas()) {
-                                        cad = cad + et.traducir(e, name, id + name, color, id, rutaActual, archivo, func);
+                                        cad = cad + et.traducir(e, name, id + name, color, id, rutaActual, etiquetas, func);
                                     }
                                 }
-
+                                
+                                objeto.put("etiquetas", etiquetas);
+                                archivo.put(archivo.size(), objeto);
+                                
                                 if (accioninicial != null) {
                                     cad += id + name + ".AlCargar(" + accioninicial + ");\n";
                                 }
@@ -635,9 +638,9 @@ public class Etiqueta {
                                         objeto.put("maximo", "nulo");
                                     }
                                     if (minimo != null) {
-                                        objeto.put("maximo", minimo);
+                                        objeto.put("minimo", minimo);
                                     } else {
-                                        objeto.put("maximo", "nulo");
+                                        objeto.put("minimo", "nulo");
                                     }
 
                                     archivo.put(archivo.size(), objeto);

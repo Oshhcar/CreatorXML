@@ -967,6 +967,7 @@ public class Editor extends javax.swing.JFrame {
                                     JOptionPane.ERROR_MESSAGE);
                         }
                     } catch (Exception ex) {
+                        System.out.println("Exception " + ex);
                         JOptionPane.showMessageDialog(null,
                                 "El archivo contiene errores.",
                                 "Mensaje de Error",

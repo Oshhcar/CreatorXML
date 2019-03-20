@@ -11,6 +11,7 @@ import fs.ast.expresion.nativas.Filtrar;
 import fs.ast.expresion.nativas.Maximo;
 import fs.ast.expresion.nativas.Minimo;
 import fs.ast.expresion.nativas.Map;
+import fs.ast.expresion.nativas.Obtener;
 import fs.ast.expresion.nativas.Reduce;
 import fs.ast.expresion.nativas.Todos;
 import fs.ast.instruccion.nativas.Invertir;
@@ -81,7 +82,7 @@ public class LlamadaFunciones implements Expresion {
                         }
                         Invertir inv = new Invertir(id, linea, columna);
                         arreglo = inv.ejecutar(tabla, salida, false, false, dirActual);
-                        if(arreglo != null){
+                        if (arreglo != null) {
                             tipo = Tipo.ARREGLO;
                         }
                         break;
@@ -159,6 +160,33 @@ public class LlamadaFunciones implements Expresion {
                             Alguno alguno = new Alguno(arreglo, llamada.getParametros(), linea, columna);
                             arreglo = alguno.getValor(tabla, salida, dirActual);
                             tipo = alguno.getTipo(tabla);
+                        }
+                        break;
+                    case "obtenerporetiqueta":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, ObtenerPorEtiqueta necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            Obtener porEtiqueta = new Obtener(arreglo, llamada.getParametros(), 1, linea, columna);
+                            arreglo = porEtiqueta.getValor(tabla, salida, dirActual);
+                            tipo = porEtiqueta.getTipo(tabla);
+                        }
+                        break;
+                    case "obtenerporid":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, ObtenerPorId necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            Obtener porId = new Obtener(arreglo, llamada.getParametros(), 2, linea, columna);
+                            arreglo = porId.getValor(tabla, salida, dirActual);
+                            tipo = porId.getTipo(tabla);
+                        }
+                        break;
+                    case "obtenerpornombre":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, ObtenerPorNombre necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            Obtener porNombre = new Obtener(arreglo, llamada.getParametros(), 3, linea, columna);
+                            arreglo = porNombre.getValor(tabla, salida, dirActual);
+                            tipo = porNombre.getTipo(tabla);
                         }
                         break;
                     default:
