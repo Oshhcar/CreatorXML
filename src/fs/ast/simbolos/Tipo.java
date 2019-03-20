@@ -10,76 +10,90 @@ package fs.ast.simbolos;
  * @author oscar
  */
 public enum Tipo {
-    CADENA{
+    CADENA {
         @Override
         public boolean isNumero() {
             return false;
         }
-    
+
     },
-    ENTERO{
+    ENTERO {
         @Override
         public boolean isNumero() {
             return true;
         }
-        
+
     },
-    DECIMAL{
+    DECIMAL {
         @Override
         public boolean isNumero() {
             return true;
         }
-    
+
     },
-    BOOLEANO{
+    BOOLEANO {
         @Override
         public boolean isNumero() {
             return false;
         }
-    
+
     },
-    NULL{
+    NULL {
         @Override
         public boolean isNumero() {
             return false;
         }
-    
+
     },
-    IDENTIFICADOR{
+    IDENTIFICADOR {
         @Override
         public boolean isNumero() {
             return false;
         }
-    
+
     },
-    VAR{
+    VAR {
         @Override
         public boolean isNumero() {
             return false;
         }
-        
-    }, 
-    FUNCION{
+
+    },
+    FUNCION {
         @Override
         public boolean isNumero() {
             return false;
         }
-    
-    }, 
-    OBJETO{
+
+    },
+    OBJETO {
         @Override
         public boolean isNumero() {
             return false;
         }
-    
-    }, 
-    ARREGLO{
+
+    },
+    ARREGLO {
         @Override
         public boolean isNumero() {
             return false;
         }
-    
+
+    },
+    VENTANA {
+        @Override
+        public boolean isNumero() {
+            return false;
+        }
+
+    },
+    CONTENEDOR {
+        @Override
+        public boolean isNumero() {
+            return false;
+        }
+
     };
-    
+
     public abstract boolean isNumero();
 }

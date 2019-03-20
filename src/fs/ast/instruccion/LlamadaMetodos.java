@@ -8,6 +8,7 @@ package fs.ast.instruccion;
 import fs.ast.expresion.Expresion;
 import fs.ast.expresion.nativas.Alguno;
 import fs.ast.expresion.nativas.Buscar;
+import fs.ast.expresion.nativas.CrearContenedor;
 import fs.ast.expresion.nativas.Filtrar;
 import fs.ast.expresion.nativas.Map;
 import fs.ast.expresion.nativas.Maximo;
@@ -15,11 +16,13 @@ import fs.ast.expresion.nativas.Minimo;
 import fs.ast.expresion.nativas.Obtener;
 import fs.ast.expresion.nativas.Reduce;
 import fs.ast.expresion.nativas.Todos;
+import fs.ast.instruccion.nativas.CrearTexto;
 import fs.ast.instruccion.nativas.Invertir;
 import fs.ast.instruccion.nativas.Ordenamiento;
 import fs.ast.simbolos.Simbolo;
 import fs.ast.simbolos.TablaSimbolos;
 import java.util.LinkedList;
+import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
 /**
@@ -163,6 +166,36 @@ public class LlamadaMetodos implements Instruccion {
                         } else {
                             Obtener porNombre = new Obtener(arreglo, llamada.getParametros(), 3, linea, columna);
                             arreglo = porNombre.getValor(tabla, salida, dirActual);
+                        }
+                        break;
+                    case "alcargar":
+                        if (llamada.getParametros() != null) {
+                            System.err.println("Error, AlCargar no necesita parametros. Linea: " + linea);
+                        } else {
+                            
+                            if(arreglo instanceof JFrame) {
+                                JFrame ven = (JFrame) arreglo;
+                                //ven.paintAll(ven.getGraphics());
+                                ven.setVisible(true);
+                            }
+                        }
+                        break;
+                    case "crearcontenedor":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearContenedor necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            CrearContenedor cont = new CrearContenedor(arreglo, llamada.getParametros(), linea, columna);
+                            Object valRet = cont.getValor(tabla, salida, dirActual);
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "creartexto":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearTexto necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            CrearTexto texto = new CrearTexto(arreglo, llamada.getParametros(), linea, columna);
+                            Object valRet = texto.ejecutar(tabla, salida, fun, sel, dirActual);
+                            arreglo = valRet;
                         }
                         break;
                     default:

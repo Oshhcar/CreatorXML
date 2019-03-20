@@ -5,6 +5,10 @@
  */
 package fs.ast.simbolos;
 
+import java.awt.Container;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 /**
  *
  * @author oscar
@@ -75,6 +79,10 @@ public class Simbolo {
                 tipo = Tipo.OBJETO;
             } else if (valor instanceof Arreglo) {
                 tipo = Tipo.ARREGLO;
+            } else if (valor instanceof JFrame) {
+                tipo = Tipo.VENTANA;
+            } else if (valor instanceof JPanel) {
+                tipo = Tipo.CONTENEDOR;
             }
         }
         this.valor = valor;

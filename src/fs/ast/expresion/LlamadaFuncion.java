@@ -7,6 +7,7 @@ package fs.ast.expresion;
 
 import fs.ast.NodoAST;
 import fs.ast.expresion.nativas.CrearArray;
+import fs.ast.expresion.nativas.CrearVentana;
 import fs.ast.expresion.nativas.LeerGxml;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.FuncionSim;
@@ -69,7 +70,8 @@ public class LlamadaFuncion implements Expresion {
 
     @Override
     public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
-        if (!id.toLowerCase().equals("creararraydesdearchivo") && !id.toLowerCase().equals("leergxml")) {
+        if (!id.toLowerCase().equals("creararraydesdearchivo") && !id.toLowerCase().equals("leergxml")
+                && !id.toLowerCase().equals("crearventana")) {
             FuncionSim fun;
 
             if (this.parametros != null) {
@@ -146,10 +148,15 @@ public class LlamadaFuncion implements Expresion {
                 Object valRet = crearArray.getValor(tabla, salida, dirActual);
                 tipo = crearArray.getTipo(tabla);
                 return valRet;
-            } else {
+            } else if(id.toLowerCase().equals("leergxml")){
                 LeerGxml leerGxml = new LeerGxml(this.parametros, linea, columna);
                 Object valRet = leerGxml.getValor(tabla, salida, dirActual);
                 tipo = leerGxml.getTipo(tabla);
+                return valRet;
+            } else if(id.toLowerCase().equals("crearventana")){
+                CrearVentana ventana = new CrearVentana(this.parametros, linea, columna);
+                Object valRet = ventana.getValor(tabla, salida, dirActual);
+                tipo = ventana.getTipo(tabla);
                 return valRet;
             }
         }
