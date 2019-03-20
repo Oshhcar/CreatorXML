@@ -15,6 +15,8 @@ import fs.ast.expresion.nativas.Map;
 import fs.ast.expresion.nativas.Obtener;
 import fs.ast.expresion.nativas.Reduce;
 import fs.ast.expresion.nativas.Todos;
+import fs.ast.instruccion.nativas.CrearCajaTexto;
+import fs.ast.instruccion.nativas.CrearTexto;
 import fs.ast.instruccion.nativas.Invertir;
 import fs.ast.instruccion.nativas.Ordenamiento;
 import fs.ast.simbolos.Simbolo;
@@ -209,6 +211,36 @@ public class LlamadaFunciones implements Expresion {
                             CrearContenedor cont = new CrearContenedor(arreglo, llamada.getParametros(), linea, columna);
                             Object valRet = cont.getValor(tabla, salida, dirActual);
                             tipo = cont.getTipo(tabla);
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "creartexto":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearTexto necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            CrearTexto texto = new CrearTexto(arreglo, llamada.getParametros(), linea, columna);
+                            Object valRet = texto.ejecutar(tabla, salida, false, false, dirActual);
+                            tipo = Tipo.NULL;
+                            arreglo = valRet;
+                        }
+                        break;
+                     case "crearcajatexto":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearCajaTexto necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            CrearCajaTexto texto = new CrearCajaTexto(arreglo, llamada.getParametros(), 1, linea, columna);
+                            Object valRet = texto.ejecutar(tabla, salida, false, false, dirActual);
+                            tipo = Tipo.NULL;
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "crearareatexto":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearCajaTexto necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            CrearCajaTexto texto = new CrearCajaTexto(arreglo, llamada.getParametros(), 2, linea, columna);
+                            Object valRet = texto.ejecutar(tabla, salida, false, false, dirActual);
+                            tipo = Tipo.NULL;
                             arreglo = valRet;
                         }
                         break;

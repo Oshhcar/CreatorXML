@@ -16,6 +16,8 @@ import fs.ast.expresion.nativas.Minimo;
 import fs.ast.expresion.nativas.Obtener;
 import fs.ast.expresion.nativas.Reduce;
 import fs.ast.expresion.nativas.Todos;
+import fs.ast.instruccion.nativas.CrearCajaTexto;
+import fs.ast.instruccion.nativas.CrearControlNumerico;
 import fs.ast.instruccion.nativas.CrearTexto;
 import fs.ast.instruccion.nativas.Invertir;
 import fs.ast.instruccion.nativas.Ordenamiento;
@@ -195,6 +197,33 @@ public class LlamadaMetodos implements Instruccion {
                         } else {
                             CrearTexto texto = new CrearTexto(arreglo, llamada.getParametros(), linea, columna);
                             Object valRet = texto.ejecutar(tabla, salida, fun, sel, dirActual);
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "crearcajatexto":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearCajaTexto necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            CrearCajaTexto texto = new CrearCajaTexto(arreglo, llamada.getParametros(), 1, linea, columna);
+                            Object valRet = texto.ejecutar(tabla, salida, fun, sel, dirActual);
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "crearareatexto":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearCajaTexto necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            CrearCajaTexto texto = new CrearCajaTexto(arreglo, llamada.getParametros(), 2, linea, columna);
+                            Object valRet = texto.ejecutar(tabla, salida, fun, sel, dirActual);
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "crearcontrolnumerico":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearControlNumerico necesita el nombre de la etiqueta. Linea: " + linea);
+                        } else {
+                            CrearControlNumerico numerico = new CrearControlNumerico(arreglo, llamada.getParametros(), linea, columna);
+                            Object valRet = numerico.ejecutar(tabla, salida, fun, sel, dirActual);
                             arreglo = valRet;
                         }
                         break;
