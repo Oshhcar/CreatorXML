@@ -941,49 +941,118 @@ public class Editor extends javax.swing.JFrame {
             }
 
             String name = a.getName().replaceAll("\\.([a-zA-ZñÑ]+)", "");
+            String nameActual = name;
             name = "_" + name;
 
-            lexicoGenericxml = new genericxml.Lexico(new BufferedReader(new StringReader(entrada)));
-            sintacticoGenericxml = new genericxml.Sintactico(lexicoGenericxml);
+            if (!text.getName().equals("")) {
+                String ext = text.getName().substring(text.getName().lastIndexOf('.'));
 
-//            lexicoFs = new LexicoFs(new BufferedReader(new StringReader(entrada)));
-//            sintacticoFs = new SintacticoFs(lexicoFs);
-            Arbol arbol = null;
-            AST ast = null;
-            try {
-                sintacticoGenericxml.parse();
-                arbol = sintacticoGenericxml.getArbol();
+                if (ext.toLowerCase().equals(".fs")) {
+                    lexicoFs = new LexicoFs(new BufferedReader(new StringReader(entrada)));
+                    sintacticoFs = new SintacticoFs(lexicoFs);
+                    AST ast = null;
 
-                if (arbol != null) {
-                    if (arbol.getEtiquetas() == null && arbol.getImports() == null) {
-                        System.out.println("Error al generar el arbol.");
-                    } else {
-                        //arbol.traducir(name);
-                        //arbol.recorrer();
+                    try {
+                        sintacticoFs.parse();
+                        ast = sintacticoFs.getAST();
 
-                        if (!this.jRadioButtonMenuItem1.isSelected()) {
-                            name = "";
+                        if (ast != null) {
+                            ast.ejecutar(this.jTextArea1, text.getName());
+                            this.jTextArea1.append("-------------------------------------------------------------\n");
+                        } else {
+                            //System.out.println("No se genero el ast.");
+                            JOptionPane.showMessageDialog(null,
+                                    "El archivo contiene errores.",
+                                    "Mensaje de Error",
+                                    JOptionPane.ERROR_MESSAGE);
                         }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null,
+                                "El archivo contiene errores.",
+                                "Mensaje de Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
 
-                        System.out.println("" + arbol.traducir(name, text.getName(), true));
+                } else if (ext.toLowerCase().equals(".gxml")) {
+                    lexicoGenericxml = new genericxml.Lexico(new BufferedReader(new StringReader(entrada)));
+                    sintacticoGenericxml = new genericxml.Sintactico(lexicoGenericxml);
+                    Arbol arbol = null;
 
+                    try {
+                        sintacticoGenericxml.parse();
+                        arbol = sintacticoGenericxml.getArbol();
+
+                        if (arbol != null) {
+                            if (arbol.getEtiquetas() == null && arbol.getImports() == null) {
+                                JOptionPane.showMessageDialog(null,
+                                        "El archivo está vacío.",
+                                        "Mensaje de Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                            } else {
+
+                                if (!this.jRadioButtonMenuItem1.isSelected()) {
+                                    name = "";
+                                }
+
+                                String traducido = (String) arbol.traducir(name, text.getName(), true);
+
+                                String dir = a.getParent() + "\\" + nameActual + "_traducido.fs";
+
+                                FileWriter archivoTraducido = null;
+                                PrintWriter pw = null;
+
+                                try {
+                                    archivoTraducido = new FileWriter(dir);
+                                    pw = new PrintWriter(archivoTraducido);
+
+                                    for (String line : traducido.split("\n")) {
+                                        pw.println(line);
+                                    }
+
+                                    JOptionPane.showMessageDialog(null,
+                                            "Se ha guardado el archivo traducido en \n" + dir,
+                                            "Mensaje Informativo",
+                                            JOptionPane.INFORMATION_MESSAGE);
+
+                                } catch (Exception ex) {
+
+                                } finally {
+                                    try {
+                                        if (null != archivoTraducido) {
+                                            archivoTraducido.close();
+                                            JFileChooser fileChooser = new JFileChooser();
+                                            fileChooser.setSelectedFile(new File(dir));
+                                            this.leerArchivo(fileChooser);
+                                        }
+                                    } catch (Exception e2) {
+                                        //e2.printStackTrace();
+                                    }
+                                }
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null,
+                                    "El archivo contiene errores.",
+                                    "Mensaje de Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        //System.out.println("Exception " + ex);
+                        JOptionPane.showMessageDialog(null,
+                                "El archivo contiene errores.",
+                                "Mensaje de Error",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    System.out.println("No se pudo generar el arbol");
+                    JOptionPane.showMessageDialog(null,
+                            "Solo se pueden ejecutar archivos \".fs\" y \".gxml\".",
+                            "Mensaje de Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
-
-//                sintacticoFs.parse();
-//                ast = sintacticoFs.getAST();
-//                
-//                if(ast != null) {
-//                    ast.ejecutar(this.jTextArea1, text.getName());
-//                    this.jTextArea1.append("-------------------------------------------------------------\n");
-//
-//                } else {
-//                    System.out.println("No se genero el ast.");
-//                }
-            } catch (Exception ex) {
-                System.out.println("Exception " + ex);
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "No se ha guardado el archivo, guardelo primero.",
+                        "Mensaje de Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
 
         } else {
@@ -1022,16 +1091,24 @@ public class Editor extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Editor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Editor.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Editor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Editor.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Editor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Editor.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Editor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Editor.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
