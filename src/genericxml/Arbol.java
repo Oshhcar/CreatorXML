@@ -25,57 +25,56 @@ public class Arbol {
         this.etiquetas = etiquetas;
     }
 
-    public String traducir(String name, String rutaActual){
+    public Object traducir(String name, String rutaActual, boolean cadena) {
         String cad = "";
-        
+
         Map<Integer, Object> archivo = new Arreglo();
-        
-        if(imports != null){
-            for(Etiqueta i: imports){
-                cad = cad + i.traducir(null, name, "", "", "", rutaActual, 1, null, false);
+
+        if (imports != null) {
+            for (Etiqueta i : imports) {
+                cad = cad + i.traducir(null, name, "", "", "", rutaActual, null, false);
             }
         }
-        
+
         cad += "\n";
-               
-        if(etiquetas != null){
-            for(Etiqueta e: etiquetas){
-                cad = cad + e.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
+
+        if (etiquetas != null) {
+            for (Etiqueta e : etiquetas) {
+                cad = cad + e.traducir(null, name, "", "", "", rutaActual, archivo, false);
             }
         }
-        
-        if(imports != null){
-            for(Etiqueta i: imports){
-                cad = cad + i.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
+
+        if (imports != null) {
+            for (Etiqueta i : imports) {
+                cad = cad + i.traducir(null, name, "", "", "", rutaActual, archivo, false);
             }
         }
-        
+
         cad += "\n";
-        
-        if(etiquetas != null){
-            for(Etiqueta e: etiquetas){
-                if(e.getTipo() == Tipo.VENTANA){
-                    cad = cad + e.traducir(null, name, "", "", "", rutaActual, 1, archivo, true);
+
+        if (etiquetas != null) {
+            for (Etiqueta e : etiquetas) {
+                if (e.getTipo() == Tipo.VENTANA) {
+                    cad = cad + e.traducir(null, name, "", "", "", rutaActual, archivo, true);
                 }
             }
         }
-        
-        for(int i = 0; i < archivo.size(); i++){
-            Objeto o = (Objeto) archivo.get(i);
-            System.out.println(o.get("etiqueta")+" "+o.get("id"));
+
+        if (cadena) {
+            return cad;
+        } else {
+            return archivo;
         }
-        
-        return cad;
     }
-    
-    public void recorrer(){
-        if(etiquetas != null){
-            for (Etiqueta e: etiquetas){
+
+    public void recorrer() {
+        if (etiquetas != null) {
+            for (Etiqueta e : etiquetas) {
                 e.recorrer();
             }
         }
     }
-    
+
     /**
      * @return the imports
      */

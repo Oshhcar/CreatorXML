@@ -965,7 +965,7 @@ public class Editor extends javax.swing.JFrame {
                             name = "";
                         }
 
-                        System.out.println("" + arbol.traducir(name, text.getName()));
+                        System.out.println("" + arbol.traducir(name, text.getName(), true));
 
                     }
                 } else {

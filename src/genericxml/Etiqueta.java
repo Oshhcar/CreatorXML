@@ -30,7 +30,7 @@ public class Etiqueta {
     public static enum Tipo {
         IMPORTAR {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 if (e.getPlano() != null) {
                     String rutaImport = e.getPlano();
@@ -87,20 +87,20 @@ public class Etiqueta {
                                             if (archivo == null) {
                                                 if (arbol.getImports() != null) {
                                                     for (Etiqueta i : arbol.getImports()) {
-                                                        cad += i.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
+                                                        cad += i.traducir(null, name, "", "", "", rutaActual, archivo, false);
                                                     }
                                                 }
                                             } else {
 
                                                 if (arbol.getEtiquetas() != null) {
                                                     for (Etiqueta et : arbol.getEtiquetas()) {
-                                                        cad += et.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
+                                                        cad += et.traducir(null, name, "", "", "", rutaActual, archivo, false);
                                                     }
                                                 }
 
                                                 if (arbol.getImports() != null) {
                                                     for (Etiqueta i : arbol.getImports()) {
-                                                        cad += i.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
+                                                        cad += i.traducir(null, name, "", "", "", rutaActual, archivo, false);
                                                     }
                                                 }
 
@@ -109,7 +109,7 @@ public class Etiqueta {
                                                 if (arbol.getEtiquetas() != null) {
                                                     for (Etiqueta et : arbol.getEtiquetas()) {
                                                         if (et.getTipo() == Tipo.VENTANA) {
-                                                            cad += et.traducir(null, name, "", "", "", rutaActual, 1, archivo, true);
+                                                            cad += et.traducir(null, name, "", "", "", rutaActual, archivo, true);
                                                         }
                                                     }
                                                 }
@@ -142,7 +142,7 @@ public class Etiqueta {
         },
         VENTANA {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 Map<String, Object> objeto = new Objeto();
                 objeto.put("etiqueta", "ventana");
@@ -211,7 +211,7 @@ public class Etiqueta {
 
                                 if (e.getEtiquetas() != null) {
                                     for (Etiqueta et : e.getEtiquetas()) {
-                                        cad = cad + et.traducir(e, name, id + name, color, id, rutaActual, t, archivo, func);
+                                        cad = cad + et.traducir(e, name, id + name, color, id, rutaActual, archivo, func);
                                     }
                                 }
 
@@ -258,7 +258,7 @@ public class Etiqueta {
         },
         CONTENEDOR {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 Map<String, Object> objeto = new Objeto();
                 objeto.put("etiqueta", "contenedor");
@@ -333,7 +333,7 @@ public class Etiqueta {
 
                                 if (e.getEtiquetas() != null) {
                                     for (Etiqueta et : e.getEtiquetas()) {
-                                        cad = cad + et.traducir(e, name, id + name, color, ventana, rutaActual, t, archivo, func);
+                                        cad = cad + et.traducir(e, name, id + name, color, ventana, rutaActual, archivo, func);
                                     }
                                 }
                                 cad += "\n";
@@ -359,7 +359,7 @@ public class Etiqueta {
         },
         TEXTO {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 Map<String, Object> objeto = new Objeto();
                 objeto.put("etiqueta", "texto");
@@ -470,7 +470,7 @@ public class Etiqueta {
         },
         CONTROL {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 Map<String, Object> objeto = new Objeto();
                 objeto.put("etiqueta", "control");
@@ -574,7 +574,7 @@ public class Etiqueta {
                                 for (Etiqueta et : e.getEtiquetas()) {
                                     if (et.getTipo() == Etiqueta.Tipo.DEFECTO) {
                                         if (defecto == null) {
-                                            defecto = (String) et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t, archivo, func);
+                                            defecto = (String) et.traducir(e, name, padre, colorPadre, ventana, rutaActual, archivo, func);
                                             objeto.replace("defecto", defecto);
                                         } else {
                                             System.out.println("Error! Definicion de mas de un defecto. Control. Línea:" + et.getLinea());
@@ -672,7 +672,7 @@ public class Etiqueta {
                                         for (Etiqueta et : e.getEtiquetas()) {
                                             if (et.getTipo() == Etiqueta.Tipo.LISTADATOS) {
                                                 if ("".equals(res)) {
-                                                    res = (String) et.traducir(e, name, nombre, defecto, ventana, rutaActual, t, lista, func);
+                                                    res = (String) et.traducir(e, name, nombre, defecto, ventana, rutaActual, lista, func);
                                                 } else {
                                                     System.out.println("Error! Ya se definio una lista. Linea:" + et.getLinea());
                                                 }
@@ -737,7 +737,7 @@ public class Etiqueta {
         },
         LISTADATOS {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -749,12 +749,12 @@ public class Etiqueta {
                             int i = 0;
                             for (Etiqueta et : e.getEtiquetas()) {
                                 if (et.tipo == Etiqueta.Tipo.DATO) {
-                                    if (!"".equals(et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t, archivo, func))) {
+                                    if (!"".equals(et.traducir(e, name, padre, colorPadre, ventana, rutaActual, archivo, func))) {
                                         if (bandera) {
                                             cad = cad + ", ";
                                         }
                                         bandera = true;
-                                        String valor = (String) et.traducir(e, name, padre, colorPadre, ventana, rutaActual, t, archivo, func);
+                                        String valor = (String) et.traducir(e, name, padre, colorPadre, ventana, rutaActual, archivo, func);
                                         cad = cad + "\"" + valor + "\"";
 
                                         archivo.put(archivo.size(), valor);
@@ -792,7 +792,7 @@ public class Etiqueta {
         },
         DATO {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -819,7 +819,7 @@ public class Etiqueta {
         },
         DEFECTO {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
 
                 if (p != null && !"".equals(padre)) {
@@ -846,7 +846,7 @@ public class Etiqueta {
         },
         MULTIMEDIA {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 Map<String, Object> objeto = new Objeto();
                 objeto.put("etiqueta", "multimedia");
@@ -956,7 +956,7 @@ public class Etiqueta {
         },
         BOTON {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 Map<String, Object> objeto = new Objeto();
                 objeto.put("etiqueta", "boton");
@@ -1136,7 +1136,7 @@ public class Etiqueta {
         },
         ENVIAR {
             @Override
-            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
+            public String traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
                 String cad = "";
                 Map<String, Object> objeto = new Objeto();
                 objeto.put("etiqueta", "enviar");
@@ -1330,7 +1330,7 @@ public class Etiqueta {
          * @param archivo
          * @return codigo traducido
          */
-        public abstract Object traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func);
+        public abstract Object traducir(Etiqueta e, Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func);
     }
 
     private Tipo tipo;
@@ -1352,8 +1352,8 @@ public class Etiqueta {
         this.archivo = null;
     }
 
-    public Object traducir(Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, int t, Map<Integer, Object> archivo, boolean func) {
-        return this.tipo.traducir(this, p, name, padre, colorPadre, ventana, rutaActual, t, archivo, func);
+    public Object traducir(Etiqueta p, String name, String padre, String colorPadre, String ventana, String rutaActual, Map<Integer, Object> archivo, boolean func) {
+        return this.tipo.traducir(this, p, name, padre, colorPadre, ventana, rutaActual, archivo, func);
     }
 
     public void recorrer() {
