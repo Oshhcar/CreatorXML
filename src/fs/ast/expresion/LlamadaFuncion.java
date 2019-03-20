@@ -7,6 +7,7 @@ package fs.ast.expresion;
 
 import fs.ast.NodoAST;
 import fs.ast.expresion.nativas.CrearArray;
+import fs.ast.expresion.nativas.LeerGxml;
 import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.FuncionSim;
 import fs.ast.simbolos.Simbolo;
@@ -68,7 +69,7 @@ public class LlamadaFuncion implements Expresion {
 
     @Override
     public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
-        if (!id.toLowerCase().equals("creararraydesdearchivo")) {
+        if (!id.toLowerCase().equals("creararraydesdearchivo") && !id.toLowerCase().equals("leergxml")) {
             FuncionSim fun;
 
             if (this.parametros != null) {
@@ -140,10 +141,17 @@ public class LlamadaFuncion implements Expresion {
                 System.err.println("Error, la funcion \"" + id + "\" no está declarada. Línea: " + linea);
             }
         } else {
-            CrearArray crearArray = new CrearArray(this.parametros,linea,columna);
-            Object valRet = crearArray.getValor(tabla, salida, dirActual);
-            tipo = crearArray.getTipo(tabla);
-            return valRet;
+            if (id.toLowerCase().equals("creararraydesdearchivo")) {
+                CrearArray crearArray = new CrearArray(this.parametros, linea, columna);
+                Object valRet = crearArray.getValor(tabla, salida, dirActual);
+                tipo = crearArray.getTipo(tabla);
+                return valRet;
+            } else {
+                LeerGxml leerGxml = new LeerGxml(this.parametros, linea, columna);
+                Object valRet = leerGxml.getValor(tabla, salida, dirActual);
+                tipo = leerGxml.getTipo(tabla);
+                return valRet;
+            }
         }
         return null;
     }
