@@ -40,7 +40,6 @@ public class Arbol {
                
         if(etiquetas != null){
             for(Etiqueta e: etiquetas){
-                
                 cad = cad + e.traducir(null, name, "", "", "", rutaActual, 1, archivo, false);
             }
         }
@@ -61,6 +60,10 @@ public class Arbol {
             }
         }
         
+        for(int i = 0; i < archivo.size(); i++){
+            Objeto o = (Objeto) archivo.get(i);
+            System.out.println(o.get("etiqueta")+" "+o.get("id"));
+        }
         
         return cad;
     }
