@@ -233,8 +233,8 @@ public class Etiqueta {
                                 cad = cad + "funcion Guardar_" + id + name + "(){\n\t" + id + name
                                         + ".crearArrayDesdeArchivo();\n}\n\n";
 
-                                cad = cad + "funcion CargarVentana_" + id + name + "(){\n\t" + id + name
-                                        + ".AlCargar();\n}\n";
+                                //cad = cad + "funcion CargarVentana_" + id + name + "(){\n\t" + id + name
+                                        //+ ".AlCargar();\n}\n";
 
                                 if (tipo.toLowerCase().equals("principal") || tipo.toLowerCase().equals("secundaria")) {
                                     if (tipo.toLowerCase().equals("principal")) {
@@ -1026,6 +1026,7 @@ public class Etiqueta {
                                             break;
                                         case REFERENCIA:
                                             referencia = elemento.getValor().toString();
+                                            objeto.put("referencia", referencia);
                                             break;
                                         case ACCION:
                                             accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
@@ -1108,7 +1109,7 @@ public class Etiqueta {
 
                         if (nombre != null && x != null && y != null) {
                             plano = plano == null ? "" : plano;
-                            referencia = referencia == null ? "nulo" : "CargarVentana_" + referencia + "()";
+                            referencia = referencia == null ? "nulo" : "\"" + referencia + "\"";
                             cad = "Var " + nombre + name + " = " + padre + ".CrearBoton(\"" + fuente + "\", " + tam
                                     + ", \"" + color + "\", " + x + ", " + y + ", " + referencia + ", \"" + plano
                                     + "\", " + alto + ", " + ancho + ");\n";
@@ -1118,7 +1119,6 @@ public class Etiqueta {
                             }
                             
                             objeto.put("texto", plano);
-                            objeto.put("referencia", referencia);
                             
                             archivo.put(archivo.size(), objeto);
                             return cad;
@@ -1206,6 +1206,7 @@ public class Etiqueta {
                                             break;
                                         case REFERENCIA:
                                             referencia = elemento.getValor().toString();
+                                            objeto.put("referencia", referencia);
                                             break;
                                         case ACCION:
                                             accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
@@ -1263,6 +1264,7 @@ public class Etiqueta {
                                                         break;
                                                     case REFERENCIA:
                                                         referencia = elemento.getValor().toString();
+                                                        objeto.replace("referencia", referencia);
                                                         break;
                                                     case ACCION:
                                                         accion = elemento.getValor().toString().replaceAll("\\{", "").replaceAll("\\}", "");
@@ -1287,13 +1289,13 @@ public class Etiqueta {
 
                         if (nombre != null && x != null && y != null) {
                             plano = plano == null ? "" : plano;
-                            referencia = referencia == null ? "nulo" : "CargarVentana_" + referencia + "()";
+                            referencia = referencia == null ? "nulo" : "\"" + referencia + "\"";
                             cad = "Var " + nombre + name + " = " + padre + ".CrearBoton(\"" + fuente + "\", " + tam
                                     + ", \"" + color + "\", " + x + ", " + y + ", " + referencia + ", \"" + plano
                                     + "\", " + alto + ", " + ancho + ");\n";
 
                             if (accion != null) {
-                                cad += nombre + name + ".AlClic(" + nombre + name + "AlClic());\n";
+                                cad +=nombre + name + ".AlClic(" + nombre + name + "AlClic());\n\n";
                                 cad += "funcion " + nombre + name + "AlClic(){\n\tGuardar_" + ventana + name + "();\n\t"
                                         + accion + ";\n}\n\n";
                             } else {
@@ -1301,7 +1303,6 @@ public class Etiqueta {
                             }
                             
                             objeto.put("texto", plano);
-                            objeto.put("referencia", referencia);
                             
                             archivo.put(archivo.size(), objeto);
                             return cad;

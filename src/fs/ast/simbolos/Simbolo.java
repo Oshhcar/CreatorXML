@@ -6,6 +6,7 @@
 package fs.ast.simbolos;
 
 import java.awt.Container;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -82,6 +83,8 @@ public class Simbolo {
             } else if (valor instanceof JFrame) {
                 tipo = Tipo.VENTANA;
             } else if (valor instanceof JPanel) {
+                tipo = Tipo.CONTENEDOR;
+            } else if (valor instanceof JButton) {
                 tipo = Tipo.CONTENEDOR;
             }
         }

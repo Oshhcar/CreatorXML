@@ -93,6 +93,13 @@ public enum Tipo {
             return false;
         }
 
+    },
+    BOTON {
+        @Override
+        public boolean isNumero() {
+            return false;
+        }
+
     };
 
     public abstract boolean isNumero();

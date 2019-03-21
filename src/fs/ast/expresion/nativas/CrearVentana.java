@@ -114,6 +114,7 @@ public class CrearVentana implements Expresion {
                 } 
 
                 JFrame ventana = new JFrame(id);
+                ventana.setName(id);
                 ventana.setSize(ancho, alto);
                 //ventana.setBackground(c);
                 //ventana.setLayout(new FlowLayout());

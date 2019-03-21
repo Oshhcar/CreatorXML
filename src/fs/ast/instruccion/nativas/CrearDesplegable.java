@@ -3,18 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fs.ast.expresion.nativas;
+package fs.ast.instruccion.nativas;
 
 import fs.ast.expresion.Expresion;
+import fs.ast.instruccion.Instruccion;
+import fs.ast.simbolos.Arreglo;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.util.LinkedList;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
+import java.util.Map;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -22,38 +20,32 @@ import javax.swing.JTextArea;
  *
  * @author oscar
  */
-public class CrearContenedor implements Expresion {
+public class CrearDesplegable implements Instruccion {
 
-    private final Object ven;
+    private final Object cont;
     private final LinkedList<Expresion> parametros;
-    private Tipo tipo;
     private final int linea;
     private final int columna;
 
-    public CrearContenedor(Object ven, LinkedList<Expresion> parametros, int linea, int columna) {
-        this.ven = ven;
+    public CrearDesplegable(Object cont, LinkedList<Expresion> parametros, int linea, int columna) {
+        this.cont = cont;
         this.parametros = parametros;
-        this.tipo = null;
         this.linea = linea;
         this.columna = columna;
     }
 
     @Override
-    public Tipo getTipo(TablaSimbolos tabla) {
-        return tipo;
-    }
-
-    @Override
-    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
-        if (ven != null) {
-            if (ven instanceof JFrame) {
+    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
+        if (cont != null) {
+            if (cont instanceof JPanel) {
                 if (this.parametros != null) {
                     Integer alto = null;
                     Integer ancho = null;
-                    String color = null;
-                    Boolean borde = null;
+                    Map<Integer, Object> lista = null;
                     Integer x = null;
                     Integer y = null;
+                    String defecto = null;
+                    String nombre = null;
 
                     for (int i = 0; i < this.parametros.size(); i++) {
                         Expresion expActual = this.parametros.get(i);
@@ -84,17 +76,11 @@ public class CrearContenedor implements Expresion {
                                         }
                                         break;
                                     case 2:
-                                        if (tipActual == Tipo.CADENA) {
-                                            color = (String) valActual;
+                                        if (tipActual == Tipo.ARREGLO) {
+                                            lista = (Arreglo) valActual;
                                         }
                                         break;
                                     case 3:
-                                        if (tipActual == Tipo.BOOLEANO) {
-                                            String b = (String) valActual;
-                                            borde = b.equals("verdadero");
-                                        }
-                                        break;
-                                    case 4:
                                         if (tipActual == Tipo.DECIMAL || tipActual == Tipo.ENTERO) {
                                             if (tipActual == Tipo.ENTERO) {
                                                 x = (Integer) valActual;
@@ -104,7 +90,7 @@ public class CrearContenedor implements Expresion {
                                             }
                                         }
                                         break;
-                                    case 5:
+                                    case 4:
                                         if (tipActual == Tipo.DECIMAL || tipActual == Tipo.ENTERO) {
                                             if (tipActual == Tipo.ENTERO) {
                                                 y = (Integer) valActual;
@@ -114,6 +100,16 @@ public class CrearContenedor implements Expresion {
                                             }
                                         }
                                         break;
+                                    case 5:
+                                        if (tipActual == Tipo.CADENA) {
+                                            defecto = (String) valActual;
+                                        }
+                                        break;
+                                    case 6:
+                                        if (tipActual == Tipo.CADENA) {
+                                            nombre = (String) valActual;
+                                        }
+                                        break;
                                 }
                             }
                         } else {
@@ -121,58 +117,36 @@ public class CrearContenedor implements Expresion {
                         }
                     }
 
-                    if (alto != null && ancho != null && color != null && x != null && y != null) {
-                        Color c = Color.WHITE;
-
-                        if (color.charAt(0) == '#') {
-                            color = color.replace("#", "");
-                            try {
-                                switch (color.length()) {
-                                    case 6:
-                                        c = new Color(
-                                                Integer.valueOf(color.substring(0, 2), 16),
-                                                Integer.valueOf(color.substring(2, 4), 16),
-                                                Integer.valueOf(color.substring(4, 6), 16));
-                                    case 8:
-                                        c = new Color(
-                                                Integer.valueOf(color.substring(0, 2), 16),
-                                                Integer.valueOf(color.substring(2, 4), 16),
-                                                Integer.valueOf(color.substring(4, 6), 16),
-                                                Integer.valueOf(color.substring(6, 8), 16));
-                                }
-                            } catch (Exception ex) {
+                    if (alto != null && ancho != null && lista != null && x != null && y != null && defecto != null && nombre != null) {
+                        
+                        JPanel panel = (JPanel) cont;
+                        
+                        JComboBox desplegable = new JComboBox();
+                        desplegable.setName(nombre);
+                        try{
+                            for(int i = 0; i < lista.size(); i++){
+                                Object dato = lista.get(i);
+                                desplegable.addItem(dato);
                             }
+                            desplegable.setSelectedItem(defecto);
+                            desplegable.setBounds(x, y, ancho, alto);
+                        }catch(Exception ex){
+                        
                         }
                         
-                        JFrame ventana = (JFrame) ven;
-                        //Container contenedor = ventana.getContentPane();
+                        panel.add(desplegable);
 
-                        JPanel panel = new JPanel();
-                        panel.setName(ventana.getName());
-                        panel.setLayout(null);
-                        //panel.setPreferredSize(new Dimension(ancho, alto));
-                        panel.setBounds(x,y,ancho, alto);
-                        //panel.setLocation(x, y);
-                        panel.setBackground(c);
-                        if(borde){
-                            panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                        }
-                        
-                        //panel.add(new JButton("uno"));
-                        
-                        ventana.getContentPane().add(panel);
-
-                        tipo = Tipo.CONTENEDOR;
-                        return panel;
                     } else {
-                        System.err.println("Error, hacen falta parametros para crear el contenedor. Línea: " + linea);
+                        System.err.println("Error, hacen falta parametros para crear el texto. Línea: " + linea);
 
                     }
+
                 } else {
-                    System.err.println("Error, se necesitan parametros para crear el contenedor. Línea: " + linea);
+                    System.err.println("Error, se necesitan parametros para crear el desplegable. Línea: " + linea);
+
                 }
             } else {
-                System.err.println("Error, la variable no es una ventana. Línea: " + linea);
+                System.err.println("Error, la variable no es un contenedor. Línea: " + linea);
             }
         }
         return null;

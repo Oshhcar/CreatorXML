@@ -7,6 +7,7 @@ package fs.ast.expresion;
 
 import fs.ast.expresion.nativas.Alguno;
 import fs.ast.expresion.nativas.Buscar;
+import fs.ast.expresion.nativas.CrearBoton;
 import fs.ast.expresion.nativas.CrearContenedor;
 import fs.ast.expresion.nativas.Filtrar;
 import fs.ast.expresion.nativas.Maximo;
@@ -16,13 +17,18 @@ import fs.ast.expresion.nativas.Obtener;
 import fs.ast.expresion.nativas.Reduce;
 import fs.ast.expresion.nativas.Todos;
 import fs.ast.instruccion.nativas.CrearCajaTexto;
+import fs.ast.instruccion.nativas.CrearControlNumerico;
+import fs.ast.instruccion.nativas.CrearDesplegable;
 import fs.ast.instruccion.nativas.CrearTexto;
 import fs.ast.instruccion.nativas.Invertir;
 import fs.ast.instruccion.nativas.Ordenamiento;
 import fs.ast.simbolos.Simbolo;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
@@ -193,20 +199,9 @@ public class LlamadaFunciones implements Expresion {
                             tipo = porNombre.getTipo(tabla);
                         }
                         break;
-                    case "alcargar":
-                        if (llamada.getParametros() != null) {
-                            System.err.println("Error, AlCargar no necesita parametros. Linea: " + linea);
-                        } else {
-
-                            if (arreglo instanceof JFrame) {
-                                JFrame ven = (JFrame) arreglo;
-                                ven.setVisible(true);
-                            }
-                        }
-                        break;
                     case "crearcontenedor":
                         if (llamada.getParametros() == null) {
-                            System.err.println("Error, CrearContenedor necesita el nombre de la etiqueta. Linea: " + linea);
+                            System.err.println("Error, CrearContenedor necesita parametros. Linea: " + linea);
                         } else {
                             CrearContenedor cont = new CrearContenedor(arreglo, llamada.getParametros(), linea, columna);
                             Object valRet = cont.getValor(tabla, salida, dirActual);
@@ -216,7 +211,7 @@ public class LlamadaFunciones implements Expresion {
                         break;
                     case "creartexto":
                         if (llamada.getParametros() == null) {
-                            System.err.println("Error, CrearTexto necesita el nombre de la etiqueta. Linea: " + linea);
+                            System.err.println("Error, CrearTexto necesita parametros. Linea: " + linea);
                         } else {
                             CrearTexto texto = new CrearTexto(arreglo, llamada.getParametros(), linea, columna);
                             Object valRet = texto.ejecutar(tabla, salida, false, false, dirActual);
@@ -224,9 +219,9 @@ public class LlamadaFunciones implements Expresion {
                             arreglo = valRet;
                         }
                         break;
-                     case "crearcajatexto":
+                    case "crearcajatexto":
                         if (llamada.getParametros() == null) {
-                            System.err.println("Error, CrearCajaTexto necesita el nombre de la etiqueta. Linea: " + linea);
+                            System.err.println("Error, CrearCajaTexto necesita parametros. Linea: " + linea);
                         } else {
                             CrearCajaTexto texto = new CrearCajaTexto(arreglo, llamada.getParametros(), 1, linea, columna);
                             Object valRet = texto.ejecutar(tabla, salida, false, false, dirActual);
@@ -236,13 +231,89 @@ public class LlamadaFunciones implements Expresion {
                         break;
                     case "crearareatexto":
                         if (llamada.getParametros() == null) {
-                            System.err.println("Error, CrearCajaTexto necesita el nombre de la etiqueta. Linea: " + linea);
+                            System.err.println("Error, CrearCajaTexto necesita parametros. Linea: " + linea);
                         } else {
                             CrearCajaTexto texto = new CrearCajaTexto(arreglo, llamada.getParametros(), 2, linea, columna);
                             Object valRet = texto.ejecutar(tabla, salida, false, false, dirActual);
                             tipo = Tipo.NULL;
                             arreglo = valRet;
                         }
+                        break;
+                    case "crearcontrolnumerico":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearControlNumerico necesita parametros. Linea: " + linea);
+                        } else {
+                            CrearControlNumerico numerico = new CrearControlNumerico(arreglo, llamada.getParametros(), linea, columna);
+                            Object valRet = numerico.ejecutar(tabla, salida, false, false, dirActual);
+                            tipo = Tipo.NULL;
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "creardesplegable":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearDesplegable necesita parametros. Linea: " + linea);
+                        } else {
+                            CrearDesplegable desplegable = new CrearDesplegable(arreglo, llamada.getParametros(), linea, columna);
+                            Object valRet = desplegable.ejecutar(tabla, salida, false, false, dirActual);
+                            tipo = Tipo.NULL;
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "crearboton":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearBoton necesita parametros. Linea: " + linea);
+                        } else {
+                            CrearBoton boton = new CrearBoton(arreglo, llamada.getParametros(), linea, columna);
+                            Object valRet = boton.getValor(tabla, salida, dirActual);
+                            tipo = Tipo.BOTON;
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "alcargar":
+                        if (llamada.getParametros() != null) {
+                            System.err.println("Error, AlCargar no necesita parametros. Linea: " + linea);
+                        }
+                        if (arreglo instanceof JFrame) {
+                            JFrame ven = (JFrame) arreglo;
+                            ven.setVisible(true);
+                        } else {
+                            System.err.println("Error, variable no es una ventana. Line: " + linea);
+                        }
+                        tipo = Tipo.NULL;
+                        arreglo = "nulo";
+                        break;
+                    case "alclic":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, AlClic necesita la funcion a ejecutar. Linea: " + linea);
+                        } else {
+                            if (arreglo instanceof JButton) {
+                                JButton boton = (JButton) arreglo;
+                                if (llamada.getParametros().size() >= 1) {
+                                    Expresion exp = llamada.getParametros().get(0);
+                                    if (exp != null) {
+                                        if (exp instanceof LlamadaFuncion) {
+                                            LlamadaFuncion call = (LlamadaFuncion) exp;
+
+                                            call.setMostrarError(false);
+                                            boton.addActionListener(new ActionListener() {
+                                                @Override
+                                                public void actionPerformed(ActionEvent ae) {
+                                                    call.getValor(tabla, salida, dirActual);
+                                                }
+                                            });
+                                        } else {
+                                            System.err.println("Error, se esperaba una llamada a un metodol. Línea: " + linea);
+                                        }
+                                    }
+                                } else {
+                                    System.err.println("Error, AlClic sin parametros. Línea:" + linea);
+                                }
+                            } else {
+                                System.err.println("Error, variable no es un boton. Line: " + linea);
+                            }
+                        }
+                        tipo = Tipo.NULL;
+                        arreglo = "nulo";
                         break;
                     default:
                         System.err.println("Error, funcion nativa \"" + llamada.getId() + "\" no definida. Línea: " + linea);

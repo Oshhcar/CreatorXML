@@ -3,55 +3,61 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fs.ast.instruccion.nativas;
+package fs.ast.expresion.nativas;
 
 import fs.ast.expresion.Expresion;
-import fs.ast.instruccion.Instruccion;
+import fs.ast.simbolos.Simbolo;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 /**
  *
  * @author oscar
  */
-public class CrearCajaTexto implements Instruccion {
+public class CrearBoton implements Expresion {
 
     private final Object cont;
     private final LinkedList<Expresion> parametros;
-    private final int tipo;
+    private Tipo tipo;
     private final int linea;
     private final int columna;
 
-    public CrearCajaTexto(Object cont, LinkedList<Expresion> parametros, int tipo, int linea, int columna) {
+    public CrearBoton(Object cont, LinkedList<Expresion> parametros, int linea, int columna) {
         this.cont = cont;
+        this.tipo = null;
         this.parametros = parametros;
-        this.tipo = tipo;
         this.linea = linea;
         this.columna = columna;
     }
 
     @Override
-    public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
+    public Tipo getTipo(TablaSimbolos tabla) {
+        return tipo;
+    }
+
+    @Override
+    public Object getValor(TablaSimbolos tabla, JTextArea salida, String dirActual) {
         if (cont != null) {
             if (cont instanceof JPanel) {
                 if (this.parametros != null) {
-                    Integer alto = null;
-                    Integer ancho = null;
                     String fuente = null;
                     Integer tam = null;
                     String color = null;
                     Integer x = null;
                     Integer y = null;
-                    Boolean negrilla = null;
-                    Boolean cursiva = null;
-                    String defecto = null;
-                    String nombre = null;
+                    String referencia = null;
+                    String texto = null;
+                    Integer alto = null;
+                    Integer ancho = null;
 
                     for (int i = 0; i < this.parametros.size(); i++) {
                         Expresion expActual = this.parametros.get(i);
@@ -62,31 +68,11 @@ public class CrearCajaTexto implements Instruccion {
                             if (valActual != null) {
                                 switch (i) {
                                     case 0:
-                                        if (tipActual == Tipo.DECIMAL || tipActual == Tipo.ENTERO) {
-                                            if (tipActual == Tipo.ENTERO) {
-                                                alto = (Integer) valActual;
-                                            } else {
-                                                Double d = (Double) valActual;
-                                                alto = d.intValue();
-                                            }
-                                        }
-                                        break;
-                                    case 1:
-                                        if (tipActual == Tipo.DECIMAL || tipActual == Tipo.ENTERO) {
-                                            if (tipActual == Tipo.ENTERO) {
-                                                ancho = (Integer) valActual;
-                                            } else {
-                                                Double d = (Double) valActual;
-                                                ancho = d.intValue();
-                                            }
-                                        }
-                                        break;
-                                    case 2:
                                         if (tipActual == Tipo.CADENA) {
                                             fuente = (String) valActual;
                                         }
                                         break;
-                                    case 3:
+                                    case 1:
                                         if (tipActual == Tipo.DECIMAL || tipActual == Tipo.ENTERO) {
                                             if (tipActual == Tipo.ENTERO) {
                                                 tam = (Integer) valActual;
@@ -96,12 +82,12 @@ public class CrearCajaTexto implements Instruccion {
                                             }
                                         }
                                         break;
-                                    case 4:
+                                    case 2:
                                         if (tipActual == Tipo.CADENA) {
                                             color = (String) valActual;
                                         }
                                         break;
-                                    case 5:
+                                    case 3:
                                         if (tipActual == Tipo.DECIMAL || tipActual == Tipo.ENTERO) {
                                             if (tipActual == Tipo.ENTERO) {
                                                 x = (Integer) valActual;
@@ -111,7 +97,7 @@ public class CrearCajaTexto implements Instruccion {
                                             }
                                         }
                                         break;
-                                    case 6:
+                                    case 4:
                                         if (tipActual == Tipo.DECIMAL || tipActual == Tipo.ENTERO) {
                                             if (tipActual == Tipo.ENTERO) {
                                                 y = (Integer) valActual;
@@ -121,26 +107,34 @@ public class CrearCajaTexto implements Instruccion {
                                             }
                                         }
                                         break;
+                                    case 5:
+                                        if (tipActual == Tipo.CADENA || tipActual == Tipo.NULL) {
+                                            referencia = (String) valActual;
+                                        }
+                                        break;
+                                    case 6:
+                                        if (tipActual == Tipo.CADENA) {
+                                            texto = (String) valActual;
+                                        }
+                                        break;
                                     case 7:
-                                        if (tipActual == Tipo.BOOLEANO) {
-                                            String b = (String) valActual;
-                                            negrilla = b.equals("verdadero");
+                                        if (tipActual == Tipo.DECIMAL || tipActual == Tipo.ENTERO) {
+                                            if (tipActual == Tipo.ENTERO) {
+                                                alto = (Integer) valActual;
+                                            } else {
+                                                Double d = (Double) valActual;
+                                                alto = d.intValue();
+                                            }
                                         }
                                         break;
                                     case 8:
-                                        if (tipActual == Tipo.BOOLEANO) {
-                                            String b = (String) valActual;
-                                            cursiva = b.equals("verdadero");
-                                        }
-                                        break;
-                                    case 9:
-                                        if (tipActual == Tipo.CADENA) {
-                                            defecto = (String) valActual;
-                                        }
-                                        break;
-                                    case 10:
-                                        if (tipActual == Tipo.CADENA) {
-                                            nombre = (String) valActual;
+                                        if (tipActual == Tipo.DECIMAL || tipActual == Tipo.ENTERO) {
+                                            if (tipActual == Tipo.ENTERO) {
+                                                ancho = (Integer) valActual;
+                                            } else {
+                                                Double d = (Double) valActual;
+                                                ancho = d.intValue();
+                                            }
                                         }
                                         break;
                                 }
@@ -150,9 +144,9 @@ public class CrearCajaTexto implements Instruccion {
                         }
                     }
 
-                    if (alto != null && ancho != null && fuente != null && tam != null && color != null && x != null && y != null
-                            && negrilla != null && cursiva != null && defecto != null && nombre != null) {
-                        Color c = Color.BLACK;
+                    if (fuente != null && tam != null && color != null && x != null && y != null
+                            && referencia != null && texto != null && alto != null && ancho != null) {
+                        Color c = Color.GRAY;
 
                         if (color.charAt(0) == '#') {
                             color = color.replace("#", "");
@@ -176,60 +170,60 @@ public class CrearCajaTexto implements Instruccion {
 
                         JPanel panel = (JPanel) cont;
 
-                        if (tipo == 1) {
-                            JTextField texto = new JTextField(defecto);
-                            texto.setName(nombre);
+                        JButton boton = new JButton(texto);
+                        boton.setName(referencia);
 
-                            try {
-                                int estilo = 0;
-                                if (negrilla) {
-                                    estilo = 1;
-                                }
-                                if (cursiva) {
-                                    estilo = 2;
-                                }
-                                if (negrilla && cursiva) {
-                                    estilo = 3;
-                                }
-
-                                texto.setFont(new Font(fuente, estilo, tam));
-                                texto.setBounds(x, y, ancho, alto);
-                            } catch (Exception ex) {
-                            }
-
-                            texto.setBackground(c);
-                            panel.add(texto);
-                        } else {
-                            JTextArea area = new JTextArea(defecto);
-                            area.setName(nombre);
-                            
-                            try {
-                                int estilo = 0;
-                                if (negrilla) {
-                                    estilo = 1;
-                                }
-                                if (cursiva) {
-                                    estilo = 2;
-                                }
-                                if (negrilla && cursiva) {
-                                    estilo = 3;
-                                }
-
-                                area.setFont(new Font(fuente, estilo, tam));
-                                area.setBounds(x, y, ancho, alto);
-                            } catch (Exception ex) {
-                            }
-                            
-                            area.setBackground(c);
-                            panel.add(area);
+                        try {
+                            boton.setFont(new Font(fuente, 0, tam));
+                            boton.setBackground(c);
+                            boton.setContentAreaFilled(false);
+                            boton.setOpaque(true);
+                            boton.setBounds(x, y, ancho, alto);
+                        } catch (Exception ex) {
                         }
 
-                    } else {
-                        System.err.println("Error, hacen falta parametros para crear el texto. Línea: " + linea);
-                    }
+                        if (!"".equals(referencia) && !"nulo".equals(referencia)) {
 
-                } else {
-                    System.err.println("Error, se necesitan parametros para crear el texto. Línea: " + linea);
+                            Simbolo refSimbolo = tabla.getSimbolo(referencia);
+
+                            if (refSimbolo != null) {
+                                if (refSimbolo.getTipo() == Tipo.VENTANA) {
+                                    JFrame refVentana = (JFrame) refSimbolo.getValor();
+                                    if (refVentana != null) {
+                                        Simbolo actSimbolo = tabla.getSimbolo(panel.getName());
+                                        if (actSimbolo != null) {
+                                            if (actSimbolo.getTipo() == Tipo.VENTANA) {
+                                                JFrame actVentana = (JFrame) actSimbolo.getValor();
+
+                                                if (actVentana != null) {
+                                                    boton.addActionListener(new ActionListener() {
+                                                        @Override
+                                                        public void actionPerformed(ActionEvent ae) {
+                                                            actVentana.setVisible(false);
+                                                            refVentana.setVisible(true);
+                                                        }
+                                                    });
+                                                }
+                                                
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    System.err.println("Error, referencia no es una ventana. Línea: " + linea);
+
+                                }
+                            } else {
+                                System.err.println("Error, referencia no encontrada. Línea: " + linea);
+
+                            }
+                        }
+                        panel.add(boton);
+                        tipo = Tipo.BOTON;
+                        return boton;
+
+                    } else {
+                        System.err.println("Error, hacen falta parametros para crear el boton. Línea: " + linea);
+                    }
 
                 }
             } else {
