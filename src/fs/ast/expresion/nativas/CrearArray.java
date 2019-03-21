@@ -10,13 +10,21 @@ import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import gdato.LexicoGDato;
 import gdato.SintacticoGDato;
+import java.awt.Container;
 import java.util.Map;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.LinkedList;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 /**
  *
@@ -27,6 +35,7 @@ public class CrearArray implements Expresion {
     private LexicoGDato lexicoGDato;
     private SintacticoGDato sintacticoGDato;
 
+    private Object ventana;
     private final LinkedList<Expresion> parametros;
     private Tipo tipo;
     private final int linea;
@@ -35,6 +44,7 @@ public class CrearArray implements Expresion {
     public CrearArray(LinkedList<Expresion> parametros, int linea, int columna) {
         this.parametros = parametros;
         this.tipo = null;
+        this.ventana = null;
         this.linea = linea;
         this.columna = columna;
     }
@@ -113,7 +123,97 @@ public class CrearArray implements Expresion {
                     }
                 }
             } else {
-                //hacer lo de sin parametros
+                if (ventana != null) {
+                    if (ventana instanceof JFrame) {
+                        JFrame vent = (JFrame) ventana;
+                        if (vent != null) {
+                            File archivo;
+
+                            FileReader fr;
+                            BufferedReader br;
+                            FileWriter fw = null;
+                            PrintWriter pw = null;
+
+                            File actual;
+
+                            try {
+                                actual = new File(dirActual);
+
+                                String dirArray = actual.getParent() + "\\" + vent.getName() + ".gdato";
+
+                                archivo = new File(dirArray);
+
+                                String textArray = "";
+
+                                Container c = vent.getContentPane();
+
+                                for (int i = 0; i < c.getComponentCount(); i++) {
+                                    Object p = c.getComponent(i);
+                                    if (p instanceof JPanel) {
+                                        JPanel panel = (JPanel) p;
+                                        for (int j = 0; j < panel.getComponentCount(); j++) {
+                                            Object control = panel.getComponent(j);
+                                            if (control instanceof JTextField) {
+                                                JTextField field = (JTextField) control;
+                                                textArray += "\t\t<" + field.getName() + ">\"" + field.getText() + "\"</" + field.getName() + ">\n";
+                                            } else if (control instanceof JTextArea) {
+                                                JTextArea area = (JTextArea) control;
+                                                textArray += "\t\t<" + area.getName() + ">\"" + area.getText() + "\"</" + area.getName() + ">\n";
+                                            } else if (control instanceof JSpinner) {
+                                                JSpinner spin = (JSpinner) control;
+                                                textArray += "\t\t<" + spin.getName() + ">" + spin.getValue() + "</" + spin.getName() + ">\n";
+                                            } else if (control instanceof JComboBox) {
+                                                JComboBox desp = (JComboBox) control;
+                                                textArray += "\t\t<" + desp.getName() + ">\"" + desp.getSelectedItem() + "\"</" + desp.getName() + ">\n";
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                String text = "";
+
+                                if (archivo.exists()) {
+                                    fr = new FileReader(archivo);
+                                    br = new BufferedReader(fr);
+                                    
+                                    String line;
+                                    while ((line = br.readLine()) != null) {
+                                        text += line + "\n";
+                                    }
+                                    
+                                    text = text.substring(0, text.lastIndexOf("</principal>"));
+                                    text += "</principal>\n";
+                                    text += "\t<principal>\n" + textArray +"\t</principal>\n</lista>";
+                                    
+                                } else {
+                                    text = "<lista>\n\t<principal>\n" + textArray + "\t</principal>\n</lista>";
+                                }
+
+                                try {
+                                    fw = new FileWriter(dirArray);
+                                    pw = new PrintWriter(fw);
+
+                                    for (String line : text.split("\n")) {
+                                        pw.println(line);
+                                    }
+
+                                } catch (Exception ex) {
+                                } finally {
+                                    if (null != fw) {
+                                        fw.close();
+                                    }
+                                }
+
+                            } catch (Exception ex) {
+
+                            }
+                        }
+                    } else {
+                        System.err.println("Error, la variable no es una ventana. Línea: " + linea);
+                    }
+                } else {
+                    System.err.println("Error, se necesita llamara desde una variable ventana. Línea: " + linea);
+                }
             }
         }
 
@@ -128,6 +228,20 @@ public class CrearArray implements Expresion {
     @Override
     public int getColumna() {
         return columna;
+    }
+
+    /**
+     * @return the ventana
+     */
+    public Object getVentana() {
+        return ventana;
+    }
+
+    /**
+     * @param ventana the ventana to set
+     */
+    public void setVentana(Object ventana) {
+        this.ventana = ventana;
     }
 
 }

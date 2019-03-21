@@ -10,6 +10,7 @@ import fs.ast.expresion.Expresion;
 import fs.ast.expresion.Literal;
 import fs.ast.expresion.Retornar;
 import fs.ast.expresion.nativas.CrearArray;
+import fs.ast.expresion.nativas.CrearVentana;
 import fs.ast.expresion.nativas.LeerGxml;
 import fs.ast.simbolos.FuncionSim;
 import fs.ast.simbolos.Simbolo;
@@ -46,7 +47,8 @@ public class LlamadaMetodo implements Instruccion {
 
     @Override
     public Object ejecutar(TablaSimbolos tabla, JTextArea salida, boolean fun, boolean sel, String dirActual) {
-        if (!id.toLowerCase().equals("creararraydesdearchivo") && !id.toLowerCase().equals("leergxml")) {
+        if (!id.toLowerCase().equals("creararraydesdearchivo") && !id.toLowerCase().equals("leergxml")
+                && !id.toLowerCase().equals("crearventana")) {
             FuncionSim funcion;
 
             if (this.parametros != null) {
@@ -118,9 +120,13 @@ public class LlamadaMetodo implements Instruccion {
                 CrearArray crearArray = new CrearArray(this.parametros, linea, columna);
                 Object valRet = crearArray.getValor(tabla, salida, dirActual);
                 return valRet;
-            } else {
+            } else if (id.toLowerCase().equals("leergxml")){
                 LeerGxml leerGxml = new LeerGxml(this.parametros, linea, columna);
                 Object valRet = leerGxml.getValor(tabla, salida, dirActual);
+                return valRet;
+            } else if(id.toLowerCase().equals("crearventana")){
+                CrearVentana ventana = new CrearVentana(this.parametros, linea, columna);
+                Object valRet = ventana.getValor(tabla, salida, dirActual);
                 return valRet;
             }
         }

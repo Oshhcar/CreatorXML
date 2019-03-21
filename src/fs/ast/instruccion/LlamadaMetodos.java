@@ -9,6 +9,7 @@ import fs.ast.expresion.Expresion;
 import fs.ast.expresion.LlamadaFuncion;
 import fs.ast.expresion.nativas.Alguno;
 import fs.ast.expresion.nativas.Buscar;
+import fs.ast.expresion.nativas.CrearArray;
 import fs.ast.expresion.nativas.CrearBoton;
 import fs.ast.expresion.nativas.CrearContenedor;
 import fs.ast.expresion.nativas.Filtrar;
@@ -250,6 +251,7 @@ public class LlamadaMetodos implements Instruccion {
                                 System.err.println("Error, variable no es una ventana. Line: " + linea);
                             }
                         }
+                        arreglo = null;
                         break;
                     case "alclic":
                         if (llamada.getParametros() == null) {
@@ -282,6 +284,13 @@ public class LlamadaMetodos implements Instruccion {
                                 System.err.println("Error, variable no es un boton. Line: " + linea);
                             }
                         }
+                        arreglo = null;
+                        break;
+                    case "creararraydesdearchivo":
+                        CrearArray crearArray = new CrearArray(llamada.getParametros(), linea, columna);
+                        crearArray.setVentana(arreglo);
+                        Object valRet = crearArray.getValor(tabla, salida, dirActual);
+                        arreglo = valRet;
                         break;
                     default:
                         System.err.println("Error, metodo nativo \"" + llamada.getId() + "\" no definida. Línea: " + linea);

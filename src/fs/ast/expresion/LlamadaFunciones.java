@@ -7,6 +7,7 @@ package fs.ast.expresion;
 
 import fs.ast.expresion.nativas.Alguno;
 import fs.ast.expresion.nativas.Buscar;
+import fs.ast.expresion.nativas.CrearArray;
 import fs.ast.expresion.nativas.CrearBoton;
 import fs.ast.expresion.nativas.CrearContenedor;
 import fs.ast.expresion.nativas.Filtrar;
@@ -314,6 +315,13 @@ public class LlamadaFunciones implements Expresion {
                         }
                         tipo = Tipo.NULL;
                         arreglo = "nulo";
+                        break;
+                    case "creararraydesdearchivo":
+                        CrearArray crearArray = new CrearArray(llamada.getParametros(), linea, columna);
+                        crearArray.setVentana(arreglo);
+                        Object valRet = crearArray.getValor(tabla, salida, dirActual);
+                        tipo = crearArray.getTipo(tabla);
+                        arreglo = valRet;
                         break;
                     default:
                         System.err.println("Error, funcion nativa \"" + llamada.getId() + "\" no definida. Línea: " + linea);
