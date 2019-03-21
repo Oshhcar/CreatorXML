@@ -21,6 +21,7 @@ import fs.ast.instruccion.nativas.CrearCajaTexto;
 import fs.ast.instruccion.nativas.CrearControlNumerico;
 import fs.ast.instruccion.nativas.CrearDesplegable;
 import fs.ast.instruccion.nativas.CrearImagen;
+import fs.ast.instruccion.nativas.CrearReproductor;
 import fs.ast.instruccion.nativas.CrearTexto;
 import fs.ast.instruccion.nativas.Invertir;
 import fs.ast.instruccion.nativas.Ordenamiento;
@@ -279,6 +280,16 @@ public class LlamadaFunciones implements Expresion {
                         } else {
                             CrearImagen imagen = new CrearImagen(arreglo, llamada.getParametros(), linea, columna);
                             Object valRet = imagen.ejecutar(tabla, salida, false, false, dirActual);
+                            tipo = Tipo.NULL;
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "crearreproductor":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearReproductor necesita parametros. Linea: " + linea);
+                        } else {
+                            CrearReproductor reproductor = new CrearReproductor(arreglo, llamada.getParametros(), linea, columna);
+                            Object valRet = reproductor.ejecutar(tabla, salida, false, false, dirActual);
                             tipo = Tipo.NULL;
                             arreglo = valRet;
                         }
