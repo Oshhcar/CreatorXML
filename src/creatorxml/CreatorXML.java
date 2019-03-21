@@ -5,6 +5,8 @@
  */
 package creatorxml;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author oscar
@@ -14,7 +16,11 @@ public class CreatorXML {
     /**
      * @param args the command line arguments
      */
+    
+    public static ArrayList<AnalizadorError> errores;
+    
     public static void main(String[] args) {
+        errores = new ArrayList<>();
         // TODO code application logic here
         Editor e = new Editor();
         e.show();

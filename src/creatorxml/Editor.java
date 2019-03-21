@@ -35,6 +35,9 @@ import javax.swing.text.BadLocationException;
 import genericxml.*;
 import fs.*;
 import fs.ast.AST;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  *
@@ -399,6 +402,11 @@ public class Editor extends javax.swing.JFrame {
         jMenuItem8.setBackground(java.awt.Color.white);
         jMenuItem8.setIcon(new ImageIcon("iconos/errorReporte.png"));
         jMenuItem8.setText("Errores");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem8);
 
         jMenuItem9.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
@@ -480,7 +488,7 @@ public class Editor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-
+        reporteErrores();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
@@ -519,6 +527,86 @@ public class Editor extends javax.swing.JFrame {
         compilarActual();
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        // TODO add your handling code here:
+        reporteErrores();
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+        public void reporteErrores() {
+        try {
+            ArrayList <AnalizadorError> lexicos = CreatorXML.errores;
+            
+            if (lexicos.size() != 0) {
+                FileWriter archivo = null;
+                PrintWriter pw = null;
+
+                try {
+                    archivo = new FileWriter("Errores.html");
+                    pw = new PrintWriter(archivo);
+
+                    pw.println("<!DOCTYPE html PUBLIC \" -//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+                    pw.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+                    pw.println("<head>");
+                    pw.println("<meta http-equiv=\"Content - Type\" content=\"text / html; charset = utf - 8\" />");
+                    pw.println("<title>Errores</title>");
+                    pw.println("<style type=\"text/css\">");
+                    pw.println("  p { color: white; font-family: Arial; text-align:center; font-size:28px; }");
+                    pw.println("  h1 {color: white; font-family: Arial; color:#C00; font-size:36px; text-align:center;}");
+                    pw.println("  h2 {color:#FF0; font-family:Arial; font-size:36px; text-align:center;}");
+                    pw.println("  table{color:#FFF; font-family:Arial; border-color:#9F3;}");
+                    pw.println("</style>");
+                    pw.println("</head>");
+                    pw.println("<body bgcolor=\"#000000\">");
+                    pw.println("<h1>Errores</h1>");
+                    pw.println("</b>");
+                    pw.println("</b>");
+                    pw.println("</b>");
+                    Calendar calendario = new GregorianCalendar();
+                    int hora, minutos, segundos;
+                    hora = calendario.get(Calendar.HOUR_OF_DAY);
+                    minutos = calendario.get(Calendar.MINUTE);
+                    segundos = calendario.get(Calendar.SECOND);
+                    pw.println("<h2>Hora: " + hora + ":" + minutos + ":" + segundos + "</h2>");
+                    int dia, mes, año;
+                    dia = calendario.get(Calendar.DAY_OF_MONTH);
+                    mes = calendario.get(Calendar.MONTH);
+                    año = calendario.get(Calendar.YEAR);
+                    pw.println("<h2>Fecha: " + dia + "/" + (mes + 1) + "/" + año + "</h2>");
+                    pw.println("</b>");
+                    pw.println("</b>");
+                    pw.println("</b>");
+                    pw.println("<table align=\"center\" border=\"5\">\n");
+                    pw.println("<tr>\n<th>Tipo</th>\n<th>Valor</th>\n<th>Linea</th>\n<th>Columna</th>\n<th>Descripcion</th>\n</tr>\n");
+
+                    for (AnalizadorError error : lexicos) {
+                        pw.println("<tr>\n");
+                        pw.println("<td>" + error.getTipo() + "</td>");
+                        pw.println("<td>" + error.getValor() + "</td>");
+                        pw.println("<td>" + error.getLinea() + "</td>");
+                        pw.println("<td>" + error.getColumna() + "</td>");
+                        pw.println("<td> "+ error.getDescripcion() + "</td>");
+                        pw.println("</tr>\n");
+                    }
+                    
+                    
+                    pw.println("</table>");
+                    pw.println("</body>");
+                    pw.println("</html>");
+                    archivo.close();
+
+                    abrirarchivo("Errores.html");
+
+                } catch (Exception e) {
+                    System.out.println(e + " 1");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "La entrada no tiene errores!!");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "No ha compilado ningún archivo!");
+        }
+    }
+        
     protected Component makeTextPanel(File archivo) {
         //JPanel panel = new JPanel(false);
         JTextArea filler = new JTextArea();
