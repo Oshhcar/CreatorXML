@@ -114,6 +114,7 @@ public class CrearVentana implements Expresion {
                 } 
 
                 JFrame ventana = new JFrame(id);
+                ventana.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE );
                 ventana.setName(id);
                 ventana.setSize(ancho, alto);
                 //ventana.setBackground(c);

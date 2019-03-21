@@ -29,6 +29,9 @@ import fs.ast.simbolos.Simbolo;
 import fs.ast.simbolos.TablaSimbolos;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.LinkedList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -243,10 +246,71 @@ public class LlamadaMetodos implements Instruccion {
                     case "alcargar":
                         if (llamada.getParametros() != null) {
                             //System.err.println("Error, AlCargar no necesita parametros. Linea: " + linea);
+                            if (arreglo instanceof JFrame) {
+                                JFrame ven = (JFrame) arreglo;
+                                if (llamada.getParametros().size() >= 1) {
+                                    Expresion exp = llamada.getParametros().get(0);
+                                    if (exp != null) {
+                                        if (exp instanceof LlamadaFuncion) {
+                                            LlamadaFuncion call = (LlamadaFuncion) exp;
+
+                                            call.setMostrarError(false);
+
+                                            ven.addWindowListener(new WindowAdapter() {
+                                                public void windowActivated(WindowEvent e) {
+                                                    call.getValor(tabla, salida, dirActual);
+                                                }
+                                            });
+
+                                        } else {
+                                            System.err.println("Error, se esperaba una llamada a un metodol. Línea: " + linea);
+                                        }
+                                    }
+                                } else {
+                                    System.err.println("Error, AlClic sin parametros. Línea:" + linea);
+                                }
+                            }
                         } else {
                             if (arreglo instanceof JFrame) {
                                 JFrame ven = (JFrame) arreglo;
                                 ven.setVisible(true);
+                            } else {
+                                System.err.println("Error, variable no es una ventana. Line: " + linea);
+                            }
+                        }
+                        arreglo = null;
+                        break;
+                    case "alcerrar":
+                        if (llamada.getParametros() != null) {
+                            //System.err.println("Error, AlCargar no necesita parametros. Linea: " + linea);
+                            if (arreglo instanceof JFrame) {
+                                JFrame ven = (JFrame) arreglo;
+                                if (llamada.getParametros().size() >= 1) {
+                                    Expresion exp = llamada.getParametros().get(0);
+                                    if (exp != null) {
+                                        if (exp instanceof LlamadaFuncion) {
+                                            LlamadaFuncion call = (LlamadaFuncion) exp;
+
+                                            call.setMostrarError(false);
+
+                                            ven.addWindowListener(new WindowAdapter() {
+                                                public void windowDeactivated(WindowEvent e) {
+                                                    call.getValor(tabla, salida, dirActual);
+                                                }
+                                            });
+
+                                        } else {
+                                            System.err.println("Error, se esperaba una llamada a un metodol. Línea: " + linea);
+                                        }
+                                    }
+                                } else {
+                                    System.err.println("Error, AlClic sin parametros. Línea:" + linea);
+                                }
+                            }
+                        } else {
+                            if (arreglo instanceof JFrame) {
+                                JFrame ven = (JFrame) arreglo;
+                                ven.setVisible(false);
                             } else {
                                 System.err.println("Error, variable no es una ventana. Line: " + linea);
                             }
