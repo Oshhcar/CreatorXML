@@ -22,6 +22,7 @@ import fs.ast.expresion.nativas.Todos;
 import fs.ast.instruccion.nativas.CrearCajaTexto;
 import fs.ast.instruccion.nativas.CrearControlNumerico;
 import fs.ast.instruccion.nativas.CrearDesplegable;
+import fs.ast.instruccion.nativas.CrearImagen;
 import fs.ast.instruccion.nativas.CrearTexto;
 import fs.ast.instruccion.nativas.Invertir;
 import fs.ast.instruccion.nativas.Ordenamiento;
@@ -240,6 +241,15 @@ public class LlamadaMetodos implements Instruccion {
                         } else {
                             CrearBoton boton = new CrearBoton(arreglo, llamada.getParametros(), linea, columna);
                             Object valRet = boton.getValor(tabla, salida, dirActual);
+                            arreglo = valRet;
+                        }
+                        break;
+                    case "crearimagen":
+                        if (llamada.getParametros() == null) {
+                            System.err.println("Error, CrearImagen necesita parametros. Linea: " + linea);
+                        } else {
+                            CrearImagen imagen = new CrearImagen(arreglo, llamada.getParametros(), linea, columna);
+                            Object valRet = imagen.ejecutar(tabla, salida, fun, sel, dirActual);
                             arreglo = valRet;
                         }
                         break;

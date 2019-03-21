@@ -208,16 +208,16 @@ public class Etiqueta {
                                         + alto + ", " + ancho + ", \"" + id + name + "\");\n\n";
 
                                 Map<Integer, Object> etiquetas = new Arreglo();
-                                
+
                                 if (e.getEtiquetas() != null) {
                                     for (Etiqueta et : e.getEtiquetas()) {
                                         cad = cad + et.traducir(e, name, id + name, color, id, rutaActual, etiquetas, func);
                                     }
                                 }
-                                
+
                                 objeto.put("etiquetas", etiquetas);
                                 archivo.put(archivo.size(), objeto);
-                                
+
                                 if (accioninicial != null) {
                                     cad += id + name + ".AlCargar(" + accioninicial + ");\n";
                                 }
@@ -234,8 +234,7 @@ public class Etiqueta {
                                         + ".crearArrayDesdeArchivo();\n}\n\n";
 
                                 //cad = cad + "funcion CargarVentana_" + id + name + "(){\n\t" + id + name
-                                        //+ ".AlCargar();\n}\n";
-
+                                //+ ".AlCargar();\n}\n";
                                 if (tipo.toLowerCase().equals("principal") || tipo.toLowerCase().equals("secundaria")) {
                                     if (tipo.toLowerCase().equals("principal")) {
                                         cad += "\n" + id + name + ".AlCargar();\n";
@@ -926,7 +925,7 @@ public class Etiqueta {
 
                                 if (tipo.toLowerCase().equals("imagen")) {
                                     cad = padre + ".CrearImagen(\"" + path + "\", " + x + ", " + y + ", "
-                                            + auto + ", " + alto + ", " + ancho + ");\n";
+                                            + alto + ", " + ancho + ");\n";
                                     return cad;
                                 } else if (tipo.toLowerCase().equals("musica") || tipo.toLowerCase().equals("música")) {
                                     cad = padre + ".CrearReproductor(\"" + path + "\", " + x + ", " + y + ", "
@@ -1117,9 +1116,9 @@ public class Etiqueta {
                             if (accion != null) {
                                 cad = cad + nombre + name + ".AlClic(" + accion + ");\n";
                             }
-                            
+
                             objeto.put("texto", plano);
-                            
+
                             archivo.put(archivo.size(), objeto);
                             return cad;
 
@@ -1143,7 +1142,7 @@ public class Etiqueta {
                 String cad = "";
                 Map<String, Object> objeto = new Objeto();
                 objeto.put("etiqueta", "enviar");
-                
+
                 if (p != null && !"".equals(padre)) {
                     if (p.getTipo() == Etiqueta.Tipo.CONTENEDOR) {
                         String nombre = null;
@@ -1165,7 +1164,7 @@ public class Etiqueta {
                         objeto.put("color", "#000000");
                         objeto.put("alto", 500);
                         objeto.put("ancho", 500);
-                        
+
                         if (e.getElementos() != null) {
                             for (Elemento elemento : e.getElementos()) {
                                 if (null == elemento.getTipo()) {
@@ -1295,15 +1294,15 @@ public class Etiqueta {
                                     + "\", " + alto + ", " + ancho + ");\n";
 
                             if (accion != null) {
-                                cad +=nombre + name + ".AlClic(" + nombre + name + "AlClic());\n\n";
+                                cad += nombre + name + ".AlClic(" + nombre + name + "AlClic());\n\n";
                                 cad += "funcion " + nombre + name + "AlClic(){\n\tGuardar_" + ventana + name + "();\n\t"
                                         + accion + ";\n}\n\n";
                             } else {
                                 cad = cad + nombre + name + ".AlClic(Guardar_" + ventana + name + "());\n";
                             }
-                            
+
                             objeto.put("texto", plano);
-                            
+
                             archivo.put(archivo.size(), objeto);
                             return cad;
 
