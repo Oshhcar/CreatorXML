@@ -10,6 +10,7 @@ import fs.ast.instruccion.Instruccion;
 import fs.ast.simbolos.TablaSimbolos;
 import fs.ast.simbolos.Tipo;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.LinkedList;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -121,8 +122,7 @@ public class CrearReproductor implements Instruccion {
                             actual = new File(dirActual);
 
                             String path = actual.getParent() + "\\" + ruta;
-                            
-                            
+
                         } catch (Exception ex) {
                         }
                                             }
